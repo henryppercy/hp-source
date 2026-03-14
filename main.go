@@ -1,10 +1,7 @@
 package main
 
-import (
-	"github.com/henryppercy/hp-source/cmd"
-	"os"
-)
+import "github.com/henryppercy/hp-source/cmd"
 
 func main() {
-	cmd.Run(os.Args[1:])
+	cmd.Execute()
 }
