@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"charm.land/huh/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/henryppercy/hp-source/internal/database"
 	"github.com/spf13/cobra"
 )
@@ -32,13 +34,29 @@ var migrateCmd = &cobra.Command{
 	Short: "Run database migrations",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if freshMigrate {
-			fmt.Print("This will drop all tables. Are you sure? (y/n): ")
-			var confirm string
-			fmt.Scanln(&confirm)
-			if confirm != "y" && confirm != "Y" {
+			var confirm bool
+
+			form := huh.NewForm(
+				huh.NewGroup(
+					huh.NewConfirm().
+						WithButtonAlignment(lipgloss.Left).
+						Title("Drop all tables and re-run migrations?").
+						Affirmative("Yes").
+						Negative("Cancel").
+						Value(&confirm),
+				),
+			)
+
+			err := form.Run()
+			if err != nil {
+				return err
+			}
+
+			if !confirm {
 				fmt.Println("aborted")
 				return nil
 			}
+
 			if err := database.Fresh(db); err != nil {
 				return err
 			}
