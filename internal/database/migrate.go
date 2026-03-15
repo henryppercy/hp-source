@@ -21,6 +21,8 @@ func Migrate(db *sql.DB) error {
 			return fmt.Errorf("failed to read %s: %w", entry.Name(), err)
 		}
 
+		// TODO: add clause to check if migration has run
+
 		_, err = db.Exec(string(content))
 		if err != nil {
 			return fmt.Errorf("failed to execute %s: %w", entry.Name(), err)
@@ -33,6 +35,11 @@ func Migrate(db *sql.DB) error {
 }
 
 func Fresh(db *sql.DB) error {
+	_, err := db.Exec("PRAGMA foreign_keys=OFF")
+	if err != nil {
+		return fmt.Errorf("failed to disable foreign keys: %w", err)
+	}
+
 	rows, err := db.Query(
 		"SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
 	)
@@ -55,6 +62,11 @@ func Fresh(db *sql.DB) error {
 		if err != nil {
 			return fmt.Errorf("failed to drop table %s: %w", table, err)
 		}
+	}
+
+	_, err = db.Exec("PRAGMA foreign_keys=ON")
+	if err != nil {
+		return fmt.Errorf("failed to re-enable foreign keys: %w", err)
 	}
 
 	fmt.Println("dropped all tables")
