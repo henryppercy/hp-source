@@ -5,28 +5,8 @@ import (
 	"strings"
 
 	huh "charm.land/huh/v2"
+	"github.com/henryppercy/hp-source/internal/repo"
 )
-
-type Genre struct {
-	ID   int
-	Name string
-}
-
-type Author struct {
-	ID       int
-	Name     string
-	SortName string
-}
-
-type Tag struct {
-	ID   int
-	Name string
-}
-
-type Series struct {
-	ID   int
-	Name string
-}
 
 type AuthorInput struct {
 	ID       int
@@ -67,10 +47,10 @@ type BookInput struct {
 
 func AddBook(
 	input *BookInput,
-	genres []Genre,
-	authors []Author,
-	tags []Tag,
-	seriesList []Series,
+	genres []repo.Genre,
+	authors []repo.Author,
+	tags []repo.Tag,
+	seriesList []repo.Series,
 ) error {
 	genreOptions := make([]huh.Option[int], len(genres))
 	for i, g := range genres {
@@ -131,6 +111,7 @@ func AddBook(
 				Value(&input.BookType),
 			huh.NewSelect[int]().
 				Title("Genre").
+				Height(8).
 				Options(genreOptions...).
 				Value(&input.GenreID),
 		),
@@ -230,6 +211,7 @@ func AddBook(
 		huh.NewGroup(
 			huh.NewMultiSelect[int]().
 				Title("Tags").
+				Height(8).
 				Options(tagOptions...).
 				Value(&input.TagIDs),
 		).WithHideFunc(func() bool {

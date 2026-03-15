@@ -9,10 +9,12 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/henryppercy/hp-source/internal/database"
 	"github.com/henryppercy/hp-source/internal/forms"
+	"github.com/henryppercy/hp-source/internal/repo"
 	"github.com/spf13/cobra"
 )
 
 var db *sql.DB
+var r *repo.Repo
 var freshMigrate bool
 
 var rootCmd = &cobra.Command{
@@ -21,7 +23,11 @@ var rootCmd = &cobra.Command{
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		var err error
 		db, err = database.NewDB()
-		return err
+		if err != nil {
+			return err
+		}
+		r = repo.New(db)
+		return nil
 	},
 	PersistentPostRun: func(cmd *cobra.Command, args []string) {
 		if db != nil {
@@ -72,53 +78,30 @@ var bookAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a new book",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		mockGenres := []forms.Genre{
-			{ID: 1, Name: "literary"},
-			{ID: 2, Name: "thriller"},
-			{ID: 3, Name: "mystery"},
-			{ID: 4, Name: "science fiction"},
-			{ID: 5, Name: "fantasy"},
-			{ID: 6, Name: "horror"},
-			{ID: 7, Name: "romance"},
-			{ID: 8, Name: "historical"},
-			{ID: 9, Name: "adventure"},
-			{ID: 10, Name: "comedy"},
-			{ID: 11, Name: "short stories"},
-			{ID: 12, Name: "biography"},
-			{ID: 13, Name: "history"},
-			{ID: 14, Name: "science"},
-			{ID: 15, Name: "philosophy"},
-			{ID: 16, Name: "politics"},
-			{ID: 17, Name: "self-help"},
+		genres, err := r.ListGenres()
+		if err != nil {
+			return err
 		}
-
-		mockAuthors := []forms.Author{
-			{ID: 1, Name: "Frank Herbert", SortName: "Herbert, Frank"},
-			{ID: 2, Name: "Ursula K. Le Guin", SortName: "Le Guin, Ursula K."},
-			{ID: 3, Name: "George Orwell", SortName: "Orwell, George"},
+		authors, err := r.ListAuthors()
+		if err != nil {
+			return err
 		}
-
-		mockTags := []forms.Tag{
-			{ID: 1, Name: "dystopian"},
-			{ID: 2, Name: "classic"},
-			{ID: 3, Name: "space opera"},
-			{ID: 4, Name: "cyberpunk"},
-			{ID: 5, Name: "coming of age"},
+		tags, err := r.ListTags()
+		if err != nil {
+			return err
 		}
-
-		mockSeries := []forms.Series{
-			{ID: 1, Name: "Dune"},
-			{ID: 2, Name: "Earthsea"},
-			{ID: 3, Name: "The Lord of the Rings"},
+		series, err := r.ListSeries()
+		if err != nil {
+			return err
 		}
 
 		input := &forms.BookInput{}
 		if err := forms.AddBook(
 			input,
-			mockGenres,
-			mockAuthors,
-			mockTags,
-			mockSeries,
+			genres,
+			authors,
+			tags,
+			series,
 		); err != nil {
 			return err
 		}
