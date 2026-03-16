@@ -95,7 +95,7 @@ var bookAddCmd = &cobra.Command{
 			return err
 		}
 
-		input := &forms.BookInput{}
+		input := &repo.BookInput{}
 		if err := forms.AddBook(
 			input,
 			genres,
@@ -106,8 +106,11 @@ var bookAddCmd = &cobra.Command{
 			return err
 		}
 
-		// later: pass input to repo
-		fmt.Printf("%+v\n", input)
+		err = r.AddBook(input)
+		if err != nil {
+			return err
+		}
+
 		return nil
 	},
 }

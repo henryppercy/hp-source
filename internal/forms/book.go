@@ -8,45 +8,8 @@ import (
 	"github.com/henryppercy/hp-source/internal/repo"
 )
 
-type AuthorInput struct {
-	ID       int
-	Name     string
-	SortName string
-	Role     string
-}
-
-type SeriesInput struct {
-	ID       int
-	Name     string
-	Position float64
-}
-
-type BookInput struct {
-	Title            string
-	Headline         string
-	BookType         string
-	GenreID          int
-	DatePublished    string
-	OriginalLanguage string
-	URL              string
-	ShelfStatus      string
-
-	Authors []AuthorInput
-	Series  *SeriesInput
-	TagIDs  []int
-	NewTags []string
-
-	Format       string
-	PageCount    int
-	Language     string
-	ISBN         string
-	CoverImage   string
-	Source       string
-	DateAcquired string
-}
-
 func AddBook(
-	input *BookInput,
+	input *repo.BookInput,
 	genres []repo.Genre,
 	authors []repo.Author,
 	tags []repo.Tag,
@@ -85,7 +48,6 @@ func AddBook(
 	)
 
 	form := huh.NewForm(
-		// Intro
 		huh.NewGroup(
 			huh.NewNote().
 				Title("Add Book").
@@ -94,7 +56,6 @@ func AddBook(
 				NextLabel("Next"),
 		),
 
-		// Book details
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Title").
@@ -111,12 +72,11 @@ func AddBook(
 				Value(&input.BookType),
 			huh.NewSelect[int]().
 				Title("Genre").
-				Height(8).
+				Height(15).
 				Options(genreOptions...).
 				Value(&input.GenreID),
 		),
 
-		// Publishing details
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Date Published").
@@ -133,7 +93,6 @@ func AddBook(
 				Value(&input.URL),
 		),
 
-		// Author selection
 		huh.NewGroup(
 			huh.NewSelect[int]().
 				Title("Author").
@@ -141,7 +100,6 @@ func AddBook(
 				Value(&selectedAuthorID),
 		),
 
-		// New author — shown if "Add new" selected
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Author Name").
@@ -158,7 +116,6 @@ func AddBook(
 			return selectedAuthorID != 0
 		}),
 
-		// Series
 		huh.NewGroup(
 			huh.NewConfirm().
 				Title("Part of a series?").
@@ -167,7 +124,6 @@ func AddBook(
 				Value(&addSeries),
 		),
 
-		// Series selection — shown if yes
 		huh.NewGroup(
 			huh.NewSelect[int]().
 				Title("Series").
@@ -177,7 +133,6 @@ func AddBook(
 			return !addSeries
 		}),
 
-		// New series name — shown if "Add new" selected
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Series Name").
@@ -188,7 +143,6 @@ func AddBook(
 			return !addSeries || selectedSeriesID != 0
 		}),
 
-		// Series position — shown if any series selected
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Series Position").
@@ -199,7 +153,6 @@ func AddBook(
 			return !addSeries
 		}),
 
-		// Tags
 		huh.NewGroup(
 			huh.NewConfirm().
 				Title("Add tags?").
@@ -211,14 +164,13 @@ func AddBook(
 		huh.NewGroup(
 			huh.NewMultiSelect[int]().
 				Title("Tags").
-				Height(8).
+				Height(15).
 				Options(tagOptions...).
 				Value(&input.TagIDs),
 		).WithHideFunc(func() bool {
 			return !addTags
 		}),
 
-		// Shelf status
 		huh.NewGroup(
 			huh.NewSelect[string]().
 				Title("Shelf Status").
@@ -230,7 +182,6 @@ func AddBook(
 				Value(&input.ShelfStatus),
 		),
 
-		// Copy details — only shown if shelf status is "shelf"
 		huh.NewGroup(
 			huh.NewSelect[string]().
 				Title("Format").
@@ -292,16 +243,14 @@ func AddBook(
 		return err
 	}
 
-	// Post-processing
 	if input.OriginalLanguage == "" {
 		input.OriginalLanguage = "english"
 	}
 
-	// Author
 	if selectedAuthorID != 0 {
 		for _, a := range authors {
 			if a.ID == selectedAuthorID {
-				input.Authors = append(input.Authors, AuthorInput{
+				input.Authors = append(input.Authors, repo.AuthorInput{
 					ID:   a.ID,
 					Name: a.Name,
 					Role: "author",
@@ -313,23 +262,22 @@ func AddBook(
 		if authorSortName == "" {
 			authorSortName = sortName(authorName)
 		}
-		input.Authors = append(input.Authors, AuthorInput{
+		input.Authors = append(input.Authors, repo.AuthorInput{
 			Name:     authorName,
 			SortName: authorSortName,
 			Role:     "author",
 		})
 	}
 
-	// Series
 	if addSeries {
 		pos, _ := strconv.ParseFloat(seriesPosition, 64)
 		if selectedSeriesID != 0 {
-			input.Series = &SeriesInput{
+			input.Series = &repo.SeriesInput{
 				ID:       selectedSeriesID,
 				Position: pos,
 			}
 		} else {
-			input.Series = &SeriesInput{
+			input.Series = &repo.SeriesInput{
 				Name:     newSeriesName,
 				Position: pos,
 			}

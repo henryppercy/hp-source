@@ -6,7 +6,11 @@ type Tag struct {
 }
 
 func (r *Repo) ListTags() ([]Tag, error) {
-	rows, err := r.db.Query("SELECT id, name FROM tag ORDER BY name")
+	return listTags(r.db)
+}
+
+func listTags(tx TX) ([]Tag, error) {
+	rows, err := tx.Query("SELECT id, name FROM tag ORDER BY name")
 	if err != nil {
 		return nil, err
 	}
@@ -21,4 +25,12 @@ func (r *Repo) ListTags() ([]Tag, error) {
 		tags = append(tags, t)
 	}
 	return tags, nil
+}
+
+func linkBookTag(tx TX, bookID, tagID int) error {
+	_, err := tx.Exec(
+		"INSERT INTO book_tag (book_id, tag_id) VALUES (?, ?)",
+		bookID, tagID,
+	)
+	return err
 }
