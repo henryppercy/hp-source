@@ -115,6 +115,33 @@ var bookAddCmd = &cobra.Command{
 	},
 }
 
+var readCmd = &cobra.Command{
+	Use:   "read",
+	Short: "Manage your reading",
+}
+
+var readLogCmd = &cobra.Command{
+	Use:   "log",
+	Short: "Log a completed read",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		books, err := r.ListBooks(true)
+		if err != nil {
+			return err
+		}
+
+		input := &repo.ReadInput{}
+		if err := forms.LogRead(input, books, r.ListCopies); err != nil {
+			return err
+		}
+
+		if err := r.AddRead(input); err != nil {
+			return err
+		}
+
+		return nil
+	},
+}
+
 func Execute() {
 	rootCmd.AddCommand(migrateCmd)
 	migrateCmd.Flags().BoolVar(
@@ -126,6 +153,9 @@ func Execute() {
 
 	bookCmd.AddCommand(bookAddCmd)
 	rootCmd.AddCommand(bookCmd)
+
+	readCmd.AddCommand(readLogCmd)
+	rootCmd.AddCommand(readCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)

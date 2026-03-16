@@ -81,7 +81,7 @@ func AddBook(
 			huh.NewInput().
 				Title("Date Published").
 				Placeholder("required — e.g. 1963 or 1963-11-22").
-				Validate(validateDate).
+				Validate(validateDateOrYear).
 				Value(&input.DatePublished),
 			huh.NewInput().
 				Title("Original Language").

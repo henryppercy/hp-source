@@ -98,3 +98,44 @@ func (r *Repo) AddBook(input *BookInput) error {
 
 	return tx.Commit()
 }
+
+type BookSummary struct {
+	ID     int
+	Title  string
+	Author string
+}
+
+func (r *Repo) ListBooks(withCopies bool) ([]BookSummary, error) {
+	query := `SELECT b.id, b.title, a.name
+        FROM book b
+        LEFT JOIN book_author ba ON ba.book_id = b.id AND ba.role = 'author'
+        LEFT JOIN author a ON a.id = ba.author_id`
+
+	if withCopies {
+		query += `
+        WHERE EXISTS (SELECT 1 FROM book_copy bc WHERE bc.book_id = b.id)`
+	}
+
+	query += `
+        ORDER BY b.title`
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var books []BookSummary
+	for rows.Next() {
+		var b BookSummary
+		var author *string
+		if err := rows.Scan(&b.ID, &b.Title, &author); err != nil {
+			return nil, err
+		}
+		if author != nil {
+			b.Author = *author
+		}
+		books = append(books, b)
+	}
+	return books, nil
+}

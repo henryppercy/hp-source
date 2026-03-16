@@ -19,3 +19,29 @@ func createCopy(tx TX, bookID int, format string, pageCount *int, language, isbn
 	id, _ := result.LastInsertId()
 	return int(id), nil
 }
+
+type Copy struct {
+	ID     int
+	Format string
+}
+
+func (r *Repo) ListCopies(bookID int) ([]Copy, error) {
+	rows, err := r.db.Query(
+		"SELECT id, format FROM book_copy WHERE book_id = ? ORDER BY id",
+		bookID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var copies []Copy
+	for rows.Next() {
+		var c Copy
+		if err := rows.Scan(&c.ID, &c.Format); err != nil {
+			return nil, err
+		}
+		copies = append(copies, c)
+	}
+	return copies, nil
+}
