@@ -1,5 +1,3 @@
--- Migration 001: Initial schema
-
 CREATE TABLE author (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -77,8 +75,6 @@ CREATE TABLE read (
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- Triggers for updated_at
-
 CREATE TRIGGER book_updated_at AFTER UPDATE ON book
 BEGIN
     UPDATE book SET updated_at = datetime('now') WHERE id = NEW.id;
@@ -88,8 +84,6 @@ CREATE TRIGGER read_updated_at AFTER UPDATE ON read
 BEGIN
     UPDATE read SET updated_at = datetime('now') WHERE id = NEW.id;
 END;
-
--- Genre seeds
 
 INSERT INTO genre (name) VALUES
     ('literary'),
@@ -101,11 +95,99 @@ INSERT INTO genre (name) VALUES
     ('romance'),
     ('historical'),
     ('adventure'),
-    ('comedy'),
     ('short stories'),
     ('biography'),
     ('history'),
     ('science'),
     ('philosophy'),
     ('politics'),
-    ('self-help');
+    ('self-help'),
+    ('crime'),
+    ('western'),
+    ('classics'),
+    ('war'),
+    ('nature');
+
+INSERT INTO tag (name) VALUES
+    ('literary'),
+    ('thriller'),
+    ('mystery'),
+    ('science fiction'),
+    ('fantasy'),
+    ('horror'),
+    ('romance'),
+    ('historical'),
+    ('adventure'),
+    ('short stories'),
+    ('crime'),
+    ('western'),
+    ('war'),
+    ('nature'),
+    ('american'),
+    ('british'),
+    ('mexican'),
+    ('latin american'),
+    ('arctic'),
+    ('european'),
+    ('asian'),
+    ('african'),
+    ('middle eastern'),
+    ('victorian'),
+    ('medieval'),
+    ('ancient'),
+    ('cold war'),
+    ('modern'),
+    ('colonial'),
+    ('dark'),
+    ('satirical'),
+    ('dystopian'),
+    ('psychological'),
+    ('gothic'),
+    ('epic'),
+    ('philosophical'),
+    ('bleak'),
+    ('atmospheric'),
+    ('slow burn'),
+    ('political'),
+    ('espionage'),
+    ('survival'),
+    ('technology'),
+    ('data'),
+    ('environment'),
+    ('economics'),
+    ('food'),
+    ('coming of age'),
+    ('revenge'),
+    ('religious'),
+    ('class'),
+    ('race'),
+    ('identity'),
+    ('corruption'),
+    ('organised crime'),
+    ('serial killer'),
+    ('space opera'),
+    ('high fantasy'),
+    ('urban fantasy'),
+    ('cosmic horror'),
+    ('supernatural'),
+    ('domestic thriller'),
+    ('detective'),
+    ('noir'),
+    ('post-apocalyptic'),
+    ('cyberpunk'),
+    ('steampunk'),
+    ('grimdark'),
+    ('magical realism'),
+    ('dark fantasy'),
+    ('time travel'),
+    ('folk horror'),
+    ('haunted house'),
+    ('lovecraftian'),
+    ('heist'),
+    ('alternate history'),
+    ('classic'),
+    ('novella'),
+    ('true story'),
+    ('translated'),
+    ('debut');
+
