@@ -1,6 +1,8 @@
 package forms
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	huh "charm.land/huh/v2"
@@ -92,6 +94,59 @@ func LogRead(input *repo.ReadInput, books []repo.BookSummary, fetchCopies func(i
 				Title("Date Finished").
 				Placeholder(today).
 				Value(&input.DateFinished),
+		),
+
+		huh.NewGroup(
+			huh.NewNote().
+				Title("Confirm Read").
+				DescriptionFunc(func() string {
+					var sb strings.Builder
+
+					for _, b := range books {
+						if b.ID == input.BookID {
+							label := b.Title
+							if b.Author != "" {
+								label += " — " + b.Author
+							}
+							fmt.Fprintf(&sb, "Book:       %s\n", label)
+							break
+						}
+					}
+
+					copies, err := fetchCopies(input.BookID)
+					if err == nil {
+						for _, c := range copies {
+							if c.ID == input.CopyID {
+								fmt.Fprintf(&sb, "Copy:       %s\n", c.Format)
+								break
+							}
+						}
+					}
+
+					fmt.Fprintf(&sb, "Status:     %s\n", input.Status)
+
+					if input.Status != "abandoned" && input.Rating > 0 {
+						ratings := map[int]string{
+							10: "5", 9: "4.5", 8: "4", 7: "3.5", 6: "3",
+							5: "2.5", 4: "2", 3: "1.5", 2: "1", 1: "0.5",
+						}
+						fmt.Fprintf(&sb, "Rating:     %s/5\n", ratings[input.Rating])
+					}
+
+					if input.DateStarted != "" {
+						fmt.Fprintf(&sb, "Started:    %s\n", input.DateStarted)
+					}
+
+					finished := input.DateFinished
+					if finished == "" {
+						finished = "today"
+					}
+					fmt.Fprintf(&sb, "Finished:   %s\n", finished)
+
+					return sb.String()
+				}, &input.DateFinished).
+				Next(true).
+				NextLabel("Save"),
 		),
 	)
 	err := form.Run()

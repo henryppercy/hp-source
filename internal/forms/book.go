@@ -1,6 +1,7 @@
 package forms
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -165,6 +166,7 @@ func AddBook(
 			huh.NewMultiSelect[int]().
 				Title("Tags").
 				Height(15).
+				Limit(6).
 				Options(tagOptions...).
 				Value(&input.TagIDs),
 		).WithHideFunc(func() bool {
@@ -236,6 +238,128 @@ func AddBook(
 		).WithHideFunc(func() bool {
 			return input.ShelfStatus != "shelf"
 		}),
+
+		huh.NewGroup(
+			huh.NewNote().
+				Title("Confirm Book Details").
+				DescriptionFunc(func() string {
+					var sb strings.Builder
+
+					fmt.Fprintf(&sb, "Title:      %s\n", input.Title)
+					if input.Headline != "" {
+						fmt.Fprintf(&sb, "Headline:   %s\n", input.Headline)
+					}
+					fmt.Fprintf(&sb, "Type:       %s\n", input.BookType)
+
+					for _, g := range genres {
+						if g.ID == input.GenreID {
+							fmt.Fprintf(&sb, "Genre:      %s\n", g.Name)
+							break
+						}
+					}
+
+					fmt.Fprintf(&sb, "Published:  %s\n", input.DatePublished)
+
+					lang := input.OriginalLanguage
+					if lang == "" {
+						lang = "english"
+					}
+					fmt.Fprintf(&sb, "Language:   %s\n", lang)
+
+					if input.URL != "" {
+						fmt.Fprintf(&sb, "URL:        %s\n", input.URL)
+					}
+
+					fmt.Fprintf(&sb, "\n")
+					if selectedAuthorID != 0 {
+						for _, a := range authors {
+							if a.ID == selectedAuthorID {
+								fmt.Fprintf(&sb, "Author:     %s\n", a.Name)
+								break
+							}
+						}
+					} else {
+						sort := authorSortName
+						if sort == "" {
+							sort = sortName(authorName)
+						}
+						fmt.Fprintf(&sb, "Author:     %s (%s) — new\n", authorName, sort)
+					}
+
+					if addSeries {
+						fmt.Fprintf(&sb, "\n")
+						if selectedSeriesID != 0 {
+							for _, s := range seriesList {
+								if s.ID == selectedSeriesID {
+									fmt.Fprintf(&sb, "Series:     %s (#%s)\n", s.Name, seriesPosition)
+									break
+								}
+							}
+						} else {
+							fmt.Fprintf(&sb, "Series:     %s (#%s) — new\n", newSeriesName, seriesPosition)
+						}
+					}
+
+					if len(input.TagIDs) > 0 {
+						fmt.Fprintf(&sb, "\n")
+						var tagNames []string
+						for _, id := range input.TagIDs {
+							for _, t := range tags {
+								if t.ID == id {
+									tagNames = append(tagNames, t.Name)
+									break
+								}
+							}
+						}
+						fmt.Fprintf(&sb, "Tags:       %s\n", strings.Join(tagNames, ", "))
+					}
+
+					fmt.Fprintf(&sb, "\n")
+					status := input.ShelfStatus
+					if status == "" {
+						status = "none"
+					}
+					fmt.Fprintf(&sb, "Shelf:      %s\n", status)
+
+					if input.ShelfStatus == "shelf" {
+						fmt.Fprintf(&sb, "\nFormat:     %s\n", input.Format)
+						if pageCountStr != "" {
+							fmt.Fprintf(&sb, "Pages:      %s\n", pageCountStr)
+						}
+						copyLang := input.Language
+						if copyLang == "" {
+							if input.OriginalLanguage != "" {
+								copyLang = input.OriginalLanguage
+							} else {
+								copyLang = "english"
+							}
+						}
+						fmt.Fprintf(&sb, "Copy Lang:  %s\n", copyLang)
+						if input.ISBN != "" {
+							fmt.Fprintf(&sb, "ISBN:       %s\n", input.ISBN)
+						}
+						cover := input.CoverImage
+						if cover == "" {
+							cover = coverImageName(input.Title)
+						}
+						if cover != "" {
+							fmt.Fprintf(&sb, "Cover:      %s\n", cover)
+						}
+						if input.Source != "" {
+							fmt.Fprintf(&sb, "Source:     %s\n", input.Source)
+						}
+						acquired := input.DateAcquired
+						if acquired == "" {
+							acquired = "today"
+						}
+						fmt.Fprintf(&sb, "Acquired:   %s\n", acquired)
+					}
+
+					return sb.String()
+				}, &input.ShelfStatus).
+				Next(true).
+				NextLabel("Save"),
+		),
 	)
 
 	err := form.Run()
