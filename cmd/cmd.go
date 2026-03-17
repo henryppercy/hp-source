@@ -142,6 +142,62 @@ var readLogCmd = &cobra.Command{
 	},
 }
 
+var readStartCmd = &cobra.Command{
+	Use:   "start",
+	Short: "Start reading a book",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		books, err := r.ListBooksAvailableToRead()
+		if err != nil {
+			return err
+		}
+
+		if len(books) == 0 {
+			fmt.Println("No books available to start reading.")
+			return nil
+		}
+
+		input := &repo.StartReadInput{}
+		if err := forms.StartRead(input, books, r.ListCopies); err != nil {
+			return err
+		}
+
+		if err := r.StartRead(input.BookID, input.CopyID, input.DateStarted); err != nil {
+			return err
+		}
+
+		fmt.Println("Read started.")
+		return nil
+	},
+}
+
+var readFinishCmd = &cobra.Command{
+	Use:   "finish",
+	Short: "Finish or abandon a read",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		reads, err := r.ListActiveReads()
+		if err != nil {
+			return err
+		}
+
+		if len(reads) == 0 {
+			fmt.Println("No active reads to finish.")
+			return nil
+		}
+
+		input := &repo.FinishReadInput{}
+		if err := forms.FinishRead(input, reads); err != nil {
+			return err
+		}
+
+		if err := r.FinishRead(input.ReadID, input.Status, input.Rating, input.DateFinished); err != nil {
+			return err
+		}
+
+		fmt.Println("Read updated.")
+		return nil
+	},
+}
+
 func Execute() {
 	rootCmd.AddCommand(migrateCmd)
 	migrateCmd.Flags().BoolVar(
@@ -154,6 +210,8 @@ func Execute() {
 	bookCmd.AddCommand(bookAddCmd)
 	rootCmd.AddCommand(bookCmd)
 
+	readCmd.AddCommand(readStartCmd)
+	readCmd.AddCommand(readFinishCmd)
 	readCmd.AddCommand(readLogCmd)
 	rootCmd.AddCommand(readCmd)
 
