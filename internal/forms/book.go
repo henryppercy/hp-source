@@ -452,5 +452,5 @@ func coverImageName(title string) string {
 		return ' '
 	}, name)
 	parts := strings.Fields(name)
-	return strings.Join(parts, "_") + ".jpg"
+	return strings.Join(parts, "-") + ".jpg"
 }
