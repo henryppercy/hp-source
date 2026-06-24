@@ -14,7 +14,7 @@ func LogRead(input *repo.ReadInput, books []repo.BookSummary, fetchCopies func(i
 	for i, b := range books {
 		label := b.Title
 		if b.Author != "" {
-			label += " — " + b.Author
+			label += " - " + b.Author
 		}
 		bookOptions[i] = huh.NewOption(label, b.ID)
 	}
@@ -106,7 +106,7 @@ func LogRead(input *repo.ReadInput, books []repo.BookSummary, fetchCopies func(i
 						if b.ID == input.BookID {
 							label := b.Title
 							if b.Author != "" {
-								label += " — " + b.Author
+								label += " - " + b.Author
 							}
 							fmt.Fprintf(&sb, "Book:       %s\n", label)
 							break
@@ -170,7 +170,7 @@ func StartRead(input *repo.StartReadInput, books []repo.BookSummary, fetchCopies
 	for i, b := range books {
 		label := b.Title
 		if b.Author != "" {
-			label += " — " + b.Author
+			label += " - " + b.Author
 		}
 		bookOptions[i] = huh.NewOption(label, b.ID)
 	}
@@ -230,7 +230,7 @@ func StartRead(input *repo.StartReadInput, books []repo.BookSummary, fetchCopies
 						if b.ID == input.BookID {
 							label := b.Title
 							if b.Author != "" {
-								label += " — " + b.Author
+								label += " - " + b.Author
 							}
 							fmt.Fprintf(&sb, "Book:       %s\n", label)
 							break
@@ -277,7 +277,7 @@ func FinishRead(input *repo.FinishReadInput, reads []repo.ActiveRead) error {
 	for i, r := range reads {
 		label := r.BookTitle
 		if r.Author != "" {
-			label += " — " + r.Author
+			label += " - " + r.Author
 		}
 		if r.Format != "" {
 			label += " (" + r.Format + ")"
@@ -347,7 +347,7 @@ func FinishRead(input *repo.FinishReadInput, reads []repo.ActiveRead) error {
 						if r.ReadID == input.ReadID {
 							label := r.BookTitle
 							if r.Author != "" {
-								label += " — " + r.Author
+								label += " - " + r.Author
 							}
 							fmt.Fprintf(&sb, "Book:       %s\n", label)
 							break

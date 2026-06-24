@@ -97,6 +97,7 @@ func AddBook(
 		huh.NewGroup(
 			huh.NewSelect[int]().
 				Title("Author").
+				Height(15).
 				Options(authorOptions...).
 				Value(&selectedAuthorID),
 		),
