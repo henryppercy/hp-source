@@ -9,6 +9,15 @@ import (
 	"github.com/henryppercy/hp-source/internal/repo"
 )
 
+func ratingHuhOptions() []huh.Option[int] {
+	ratings := repo.RatingOptions()
+	opts := make([]huh.Option[int], len(ratings))
+	for i, r := range ratings {
+		opts[i] = huh.NewOption(r.Label, r.Value)
+	}
+	return opts
+}
+
 func LogRead(input *repo.ReadInput, books []repo.BookSummary, fetchCopies func(int) ([]repo.Copy, error)) error {
 	bookOptions := make([]huh.Option[int], len(books))
 	for i, b := range books {
@@ -69,18 +78,7 @@ func LogRead(input *repo.ReadInput, books []repo.BookSummary, fetchCopies func(i
 		huh.NewGroup(
 			huh.NewSelect[int]().
 				Title("Rating").
-				Options(
-					huh.NewOption("5", 10),
-					huh.NewOption("4.5", 9),
-					huh.NewOption("4", 8),
-					huh.NewOption("3.5", 7),
-					huh.NewOption("3", 6),
-					huh.NewOption("2.5", 5),
-					huh.NewOption("2", 4),
-					huh.NewOption("1.5", 3),
-					huh.NewOption("1", 2),
-					huh.NewOption("0.5", 1),
-				).
+				Options(ratingHuhOptions()...).
 				Value(&input.Rating),
 		).WithHideFunc(func() bool {
 			return input.Status == "abandoned"
@@ -126,11 +124,7 @@ func LogRead(input *repo.ReadInput, books []repo.BookSummary, fetchCopies func(i
 					fmt.Fprintf(&sb, "Status:     %s\n", input.Status)
 
 					if input.Status != "abandoned" && input.Rating > 0 {
-						ratings := map[int]string{
-							10: "5", 9: "4.5", 8: "4", 7: "3.5", 6: "3",
-							5: "2.5", 4: "2", 3: "1.5", 2: "1", 1: "0.5",
-						}
-						fmt.Fprintf(&sb, "Rating:     %s/5\n", ratings[input.Rating])
+						fmt.Fprintf(&sb, "Rating:     %s/5\n", repo.RatingDisplay(input.Rating))
 					}
 
 					if input.DateStarted != "" {
@@ -313,18 +307,7 @@ func FinishRead(input *repo.FinishReadInput, reads []repo.ActiveRead) error {
 		huh.NewGroup(
 			huh.NewSelect[int]().
 				Title("Rating").
-				Options(
-					huh.NewOption("5", 10),
-					huh.NewOption("4.5", 9),
-					huh.NewOption("4", 8),
-					huh.NewOption("3.5", 7),
-					huh.NewOption("3", 6),
-					huh.NewOption("2.5", 5),
-					huh.NewOption("2", 4),
-					huh.NewOption("1.5", 3),
-					huh.NewOption("1", 2),
-					huh.NewOption("0.5", 1),
-				).
+				Options(ratingHuhOptions()...).
 				Value(&input.Rating),
 		).WithHideFunc(func() bool {
 			return input.Status == "abandoned"
@@ -357,11 +340,7 @@ func FinishRead(input *repo.FinishReadInput, reads []repo.ActiveRead) error {
 					fmt.Fprintf(&sb, "Status:     %s\n", input.Status)
 
 					if input.Status != "abandoned" && input.Rating > 0 {
-						ratings := map[int]string{
-							10: "5", 9: "4.5", 8: "4", 7: "3.5", 6: "3",
-							5: "2.5", 4: "2", 3: "1.5", 2: "1", 1: "0.5",
-						}
-						fmt.Fprintf(&sb, "Rating:     %s/5\n", ratings[input.Rating])
+						fmt.Fprintf(&sb, "Rating:     %s/5\n", repo.RatingDisplay(input.Rating))
 					}
 
 					finished := input.DateFinished

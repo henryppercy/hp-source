@@ -172,12 +172,5 @@ func (e *ExportRead) Slug() string {
 }
 
 func (e *ExportRead) RatingDisplay() string {
-	ratings := map[int]string{
-		10: "5", 9: "4.5", 8: "4", 7: "3.5", 6: "3",
-		5: "2.5", 4: "2", 3: "1.5", 2: "1", 1: "0.5",
-	}
-	if v, ok := ratings[e.Rating]; ok {
-		return v
-	}
-	return ""
+	return RatingDisplay(e.Rating)
 }
