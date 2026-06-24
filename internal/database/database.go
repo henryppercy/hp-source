@@ -7,10 +7,8 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const DB_PATH = "db/hp.db"
-
-func NewDB() (*sql.DB, error) {
-	db, err := sql.Open("sqlite", DB_PATH)
+func NewDB(path string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite", path)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
