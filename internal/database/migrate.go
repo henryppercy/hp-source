@@ -4,34 +4,100 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
+	"io/fs"
 )
 
 //go:embed migrations/*.sql
 var migrationFiles embed.FS
 
+const schemaMigrationsDDL = `CREATE TABLE IF NOT EXISTS schema_migrations (
+    version    TEXT PRIMARY KEY,
+    applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+)`
+
+// Applies every migration in the embedded migrations directory that
+// has not already been recorded in schema_migrations.
 func Migrate(db *sql.DB) error {
-	entries, err := migrationFiles.ReadDir("migrations")
+	migrations, err := fs.Sub(migrationFiles, "migrations")
+	if err != nil {
+		return fmt.Errorf("failed to open migrations: %w", err)
+	}
+	return migrateFS(db, migrations)
+}
+
+// Runs the migrations found in fsys (a flat directory of *.sql files).
+// Split out so tests can supply synthetic migrations.
+func migrateFS(db *sql.DB, fsys fs.FS) error {
+	if _, err := db.Exec(schemaMigrationsDDL); err != nil {
+		return fmt.Errorf("failed to create schema_migrations: %w", err)
+	}
+
+	applied, err := appliedVersions(db)
+	if err != nil {
+		return err
+	}
+
+	entries, err := fs.ReadDir(fsys, ".")
 	if err != nil {
 		return fmt.Errorf("failed to read migrations: %w", err)
 	}
 
 	for _, entry := range entries {
-		content, err := migrationFiles.ReadFile("migrations/" + entry.Name())
-		if err != nil {
-			return fmt.Errorf("failed to read %s: %w", entry.Name(), err)
+		name := entry.Name()
+		if entry.IsDir() || applied[name] {
+			continue
 		}
 
-		// TODO: add clause to check if migration has run
-
-		_, err = db.Exec(string(content))
+		content, err := fs.ReadFile(fsys, name)
 		if err != nil {
-			return fmt.Errorf("failed to execute %s: %w", entry.Name(), err)
+			return fmt.Errorf("failed to read %s: %w", name, err)
 		}
 
-		fmt.Printf("applied: %s\n", entry.Name())
+		if err := applyMigration(db, name, string(content)); err != nil {
+			return err
+		}
+
+		fmt.Printf("applied: %s\n", name)
 	}
 
 	return nil
+}
+
+func appliedVersions(db *sql.DB) (map[string]bool, error) {
+	rows, err := db.Query("SELECT version FROM schema_migrations")
+	if err != nil {
+		return nil, fmt.Errorf("failed to read schema_migrations: %w", err)
+	}
+	defer rows.Close()
+
+	applied := make(map[string]bool)
+	for rows.Next() {
+		var version string
+		if err := rows.Scan(&version); err != nil {
+			return nil, err
+		}
+		applied[version] = true
+	}
+	return applied, rows.Err()
+}
+
+// applyMigration runs a single migration and records it, atomically.
+func applyMigration(db *sql.DB, name, content string) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction for %s: %w", name, err)
+	}
+	defer tx.Rollback()
+
+	if _, err := tx.Exec(content); err != nil {
+		return fmt.Errorf("failed to execute %s: %w", name, err)
+	}
+
+	if _, err := tx.Exec("INSERT INTO schema_migrations (version) VALUES (?)", name); err != nil {
+		return fmt.Errorf("failed to record %s: %w", name, err)
+	}
+
+	return tx.Commit()
 }
 
 func Fresh(db *sql.DB) error {
