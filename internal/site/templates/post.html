@@ -1,0 +1,9 @@
+{{define "title"}}{{.Title}} · hp{{end}}
+{{define "content"}}
+<article>
+<h1>{{.Title}}</h1>
+{{if .Headline}}<p class="headline">{{.Headline}}</p>{{end}}
+<p class="meta">Posted {{fmtDate .PostedAt}}{{if not .UpdatedAt.IsZero}} · Updated {{fmtDate .UpdatedAt}}{{end}}</p>
+<div class="prose">{{.BodyHTML}}</div>
+</article>
+{{end}}

@@ -87,6 +87,7 @@ func newRootCmd() *cobra.Command {
 		newBookCmd(a),
 		newReadCmd(a),
 		newExportCmd(a),
+		newSiteCmd(a),
 	)
 
 	return root

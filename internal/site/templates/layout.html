@@ -1,0 +1,21 @@
+{{define "layout"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{block "title" .}}hp{{end}}</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="nav">
+<a href="/">home</a>
+<a href="/posts">posts</a>
+<a href="/spanish">spanish</a>
+<a href="/slices">slices</a>
+<a href="/reading">reading</a>
+</header>
+<main>
+{{template "content" .}}
+</main>
+</body>
+</html>{{end}}
