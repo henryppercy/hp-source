@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/yuin/goldmark"
 )
 
 func Build(out string) error {
@@ -18,6 +20,7 @@ type builder struct {
 	assets fs.FS
 	out    string
 	funcs  template.FuncMap
+	md     goldmark.Markdown
 }
 
 func newBuilder(assets fs.FS, out string) *builder {
@@ -25,6 +28,7 @@ func newBuilder(assets fs.FS, out string) *builder {
 		assets: assets,
 		out:    out,
 		funcs:  template.FuncMap{"fmtDate": fmtDate},
+		md:     newMarkdown(),
 	}
 }
 
@@ -64,7 +68,11 @@ func (b *builder) Build() error {
 	}
 
 	for _, p := range posts {
-		if err := b.render("/posts/"+p.Slug, "post.html", p); err != nil {
+		view, err := b.postView(p)
+		if err != nil {
+			return err
+		}
+		if err := b.render("/posts/"+p.Slug, "post.html", view); err != nil {
 			return err
 		}
 	}
@@ -81,7 +89,42 @@ func (b *builder) Build() error {
 		return err
 	}
 
-	return b.copyStatic()
+	if err := b.copyStatic(); err != nil {
+		return err
+	}
+	return b.writeChromaCSS()
+}
+
+func (b *builder) postView(p postSource) (PostView, error) {
+	body, toc, err := render(b.md, p.Markdown)
+	if err != nil {
+		return PostView{}, fmt.Errorf("post %s: %w", p.Slug, err)
+	}
+	return PostView{
+		Title:     p.Title,
+		Slug:      p.Slug,
+		Type:      p.Type,
+		PostedAt:  p.PostedAt,
+		UpdatedAt: p.UpdatedAt,
+		Headline:  p.Headline,
+		BodyHTML:  body,
+		TOC:       toc,
+	}, nil
+}
+
+func (b *builder) writeChromaCSS() error {
+	css, err := chromaCSS()
+	if err != nil {
+		return err
+	}
+	dest := filepath.Join(b.out, "static", "chroma.css")
+	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
+		return fmt.Errorf("failed to create directory for %s: %w", dest, err)
+	}
+	if err := os.WriteFile(dest, css, 0644); err != nil {
+		return fmt.Errorf("failed to write %s: %w", dest, err)
+	}
+	return nil
 }
 
 func (b *builder) render(urlPath, page string, data any) error {

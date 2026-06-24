@@ -5,13 +5,25 @@ import "time"
 // Renders from hardcoded mock view-models. These are replaced by repo
 // data in a later stage; the view-model shapes stay the same.
 
+// postSource is mock stand-in for a stored post: metadata plus the raw
+// markdown body. The builder renders the body into a PostView.
+type postSource struct {
+	Title     string
+	Slug      string
+	Type      string
+	PostedAt  time.Time
+	UpdatedAt time.Time
+	Headline  string
+	Markdown  string
+}
+
 func date(s string) time.Time {
 	t, _ := time.Parse("2006-01-02", s)
 	return t
 }
 
-func mockPosts() []PostView {
-	return []PostView{
+func mockPosts() []postSource {
+	return []postSource{
 		{
 			Title:     "Hello World",
 			Slug:      "hello-world",
@@ -19,7 +31,7 @@ func mockPosts() []PostView {
 			PostedAt:  date("2026-01-10"),
 			UpdatedAt: date("2026-02-01"),
 			Headline:  "The first post on the new generator.",
-			BodyHTML:  "<p>This is a placeholder body. Markdown rendering arrives in stage 2.</p>",
+			Markdown:  fatPostMarkdown,
 		},
 		{
 			Title:    "A Short Note",
@@ -27,7 +39,7 @@ func mockPosts() []PostView {
 			Type:     "slice",
 			PostedAt: date("2026-03-04"),
 			Headline: "A quick timestamped thought.",
-			BodyHTML: "<p>Slices are short, timestamped notes.</p>",
+			Markdown: "Slices are short, timestamped notes. Nothing fancy here.",
 		},
 		{
 			Title:    "Reached B1",
@@ -35,7 +47,7 @@ func mockPosts() []PostView {
 			Type:     "spanish",
 			PostedAt: date("2026-05-20"),
 			Headline: "A Spanish-learning milestone.",
-			BodyHTML: "<p>Level B1 reached. Details live in the body.</p>",
+			Markdown: "**Level:** B1\n\n**Date achieved:** 2026-05-20\n\nReached B1. Details live in the body.",
 		},
 	}
 }
@@ -61,7 +73,7 @@ func mockBooks() []BookView {
 	}
 }
 
-func toListItem(p PostView) PostListItem {
+func toListItem(p postSource) PostListItem {
 	return PostListItem{
 		Title:    p.Title,
 		Slug:     p.Slug,
@@ -71,7 +83,7 @@ func toListItem(p PostView) PostListItem {
 	}
 }
 
-func toListItems(posts []PostView) []PostListItem {
+func toListItems(posts []postSource) []PostListItem {
 	var items []PostListItem
 	for _, p := range posts {
 		items = append(items, toListItem(p))
@@ -79,7 +91,7 @@ func toListItems(posts []PostView) []PostListItem {
 	return items
 }
 
-func postListItems(posts []PostView, typ string) []PostListItem {
+func postListItems(posts []postSource, typ string) []PostListItem {
 	var items []PostListItem
 	for _, p := range posts {
 		if p.Type == typ {
@@ -98,3 +110,26 @@ func booksByStatus(books []BookView, status string) []BookView {
 	}
 	return out
 }
+
+// fatPostMarkdown deliberately exercises many heading levels, code blocks in
+// several languages, and assorted inline markdown to stress the renderer/TOC.
+const fatPostMarkdown = "" +
+	"This intro paragraph sits before any heading. It has **bold**, *italic*, " +
+	"`inline code` and a [link](https://example.com).\n\n" +
+	"## Getting started\n\n" +
+	"Some prose under the first section.\n\n" +
+	"### Installation\n\n" +
+	"A nested subsection with a shell block:\n\n" +
+	"```sh\ngo install github.com/henryppercy/hp@latest\nhp site build\n```\n\n" +
+	"### Configuration\n\n" +
+	"Another subsection, this time with Go:\n\n" +
+	"```go\nfunc main() {\n\tfmt.Println(\"hello, site\")\n}\n```\n\n" +
+	"## Usage\n\n" +
+	"A second top-level section.\n\n" +
+	"- first item\n- second item\n- third item\n\n" +
+	"### Examples\n\n" +
+	"Some JSON:\n\n" +
+	"```json\n{\n  \"name\": \"hp\",\n  \"stage\": 2\n}\n```\n\n" +
+	"> A blockquote to round things out.\n\n" +
+	"## Wrapping up\n\n" +
+	"The final section, no subsections.\n"
