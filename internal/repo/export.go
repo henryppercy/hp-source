@@ -1,6 +1,6 @@
 package repo
 
-import "strings"
+import "github.com/henryppercy/hp-source/internal/text"
 
 type ExportRead struct {
 	// Book
@@ -168,15 +168,7 @@ func (r *Repo) ListExportReads() ([]ExportRead, error) {
 }
 
 func (e *ExportRead) Slug() string {
-	name := strings.ToLower(e.Title)
-	name = strings.Map(func(r rune) rune {
-		if r >= 'a' && r <= 'z' || r >= '0' && r <= '9' {
-			return r
-		}
-		return ' '
-	}, name)
-	parts := strings.Fields(name)
-	return strings.Join(parts, "-")
+	return text.Slug(e.Title)
 }
 
 func (e *ExportRead) RatingDisplay() string {

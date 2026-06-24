@@ -7,6 +7,7 @@ import (
 
 	huh "charm.land/huh/v2"
 	"github.com/henryppercy/hp-source/internal/repo"
+	"github.com/henryppercy/hp-source/internal/text"
 )
 
 func AddBook(
@@ -445,13 +446,5 @@ func coverImageName(title string) string {
 	if title == "" {
 		return ""
 	}
-	name := strings.ToLower(title)
-	name = strings.Map(func(r rune) rune {
-		if r >= 'a' && r <= 'z' || r >= '0' && r <= '9' {
-			return r
-		}
-		return ' '
-	}, name)
-	parts := strings.Fields(name)
-	return strings.Join(parts, "-") + ".jpg"
+	return text.Slug(title) + ".jpg"
 }
