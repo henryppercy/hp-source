@@ -49,5 +49,16 @@ func runMigrate(a *app, fresh bool) error {
 		}
 	}
 
-	return database.Migrate(a.db)
+	applied, err := database.Migrate(a.db)
+	if err != nil {
+		return err
+	}
+
+	for _, name := range applied {
+		fmt.Printf("applied: %s\n", name)
+	}
+	if len(applied) == 0 {
+		fmt.Println("database up to date")
+	}
+	return nil
 }

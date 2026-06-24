@@ -82,7 +82,7 @@ func AddBook(
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Date Published").
-				Placeholder("required — e.g. 1963 or 1963-11-22").
+				Placeholder("required, e.g. 1963 or 1963-11-22").
 				Validate(validateDateOrYear).
 				Value(&input.DatePublished),
 			huh.NewInput().
@@ -285,7 +285,7 @@ func AddBook(
 						if sort == "" {
 							sort = sortName(authorName)
 						}
-						fmt.Fprintf(&sb, "Author:     %s (%s) — new\n", authorName, sort)
+						fmt.Fprintf(&sb, "Author:     %s (%s) (new)\n", authorName, sort)
 					}
 
 					if addSeries {
@@ -298,7 +298,7 @@ func AddBook(
 								}
 							}
 						} else {
-							fmt.Fprintf(&sb, "Series:     %s (#%s) — new\n", newSeriesName, seriesPosition)
+							fmt.Fprintf(&sb, "Series:     %s (#%s) (new)\n", newSeriesName, seriesPosition)
 						}
 					}
 

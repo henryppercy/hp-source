@@ -3,13 +3,15 @@ package database
 import (
 	"database/sql"
 	"path/filepath"
+	"slices"
 	"testing"
 	"testing/fstest"
 
 	_ "modernc.org/sqlite"
 )
 
-// Opens an isolated, file-backed sqlite db in a temp dir.
+// openTempDB opens an isolated, file-backed sqlite db in a temp dir. Tests never
+// touch the real database or real migrations; everything here is mock data.
 func openTempDB(t *testing.T) *sql.DB {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "test.db")
@@ -51,10 +53,14 @@ func TestMigrateAppliesAndRecords(t *testing.T) {
 	db := openTempDB(t)
 
 	fsys := fstest.MapFS{"001_init.sql": mockInit}
-	if err := migrateFS(db, fsys); err != nil {
+	applied, err := migrateFS(db, fsys)
+	if err != nil {
 		t.Fatalf("migrateFS: %v", err)
 	}
 
+	if !slices.Equal(applied, []string{"001_init.sql"}) {
+		t.Errorf("applied = %v, want [001_init.sql]", applied)
+	}
 	if !tableExists(t, db, "item") {
 		t.Error("expected item table to exist after migrate")
 	}
@@ -68,15 +74,18 @@ func TestMigrateIdempotent(t *testing.T) {
 	db := openTempDB(t)
 	fsys := fstest.MapFS{"001_init.sql": mockInit}
 
-	if err := migrateFS(db, fsys); err != nil {
+	if _, err := migrateFS(db, fsys); err != nil {
 		t.Fatalf("first migrateFS: %v", err)
 	}
 	items := countRows(t, db, "SELECT count(*) FROM item")
 
-	if err := migrateFS(db, fsys); err != nil {
+	applied, err := migrateFS(db, fsys)
+	if err != nil {
 		t.Fatalf("second migrateFS: %v", err)
 	}
-
+	if len(applied) != 0 {
+		t.Errorf("second run applied %v, want none", applied)
+	}
 	if n := countRows(t, db, "SELECT count(*) FROM schema_migrations"); n != 1 {
 		t.Errorf("expected 1 migration recorded, got %d", n)
 	}
@@ -92,31 +101,32 @@ func TestMigrateIncremental(t *testing.T) {
 		"001_init.sql": mockInit,
 		"002_note.sql": mockNote,
 	}
-	if err := migrateFS(db, fsys); err != nil {
+	applied, err := migrateFS(db, fsys)
+	if err != nil {
 		t.Fatalf("migrateFS 001+002: %v", err)
 	}
-	if !tableExists(t, db, "item") || !tableExists(t, db, "note") {
-		t.Fatal("expected item and note tables to exist")
-	}
-	if n := countRows(t, db, "SELECT count(*) FROM schema_migrations"); n != 2 {
-		t.Fatalf("expected 2 recorded, got %d", n)
+	if !slices.Equal(applied, []string{"001_init.sql", "002_note.sql"}) {
+		t.Fatalf("applied = %v, want [001_init.sql 002_note.sql]", applied)
 	}
 
 	// Add a third migration; only it should apply. If 001/002 re-ran, their
 	// CREATE TABLE statements would fail on the already-existing tables.
 	fsys["003_extra.sql"] = &fstest.MapFile{Data: []byte("CREATE TABLE extra (id INTEGER PRIMARY KEY);")}
-	if err := migrateFS(db, fsys); err != nil {
+	applied, err = migrateFS(db, fsys)
+	if err != nil {
 		t.Fatalf("migrateFS 003: %v", err)
+	}
+	if !slices.Equal(applied, []string{"003_extra.sql"}) {
+		t.Errorf("applied = %v, want [003_extra.sql]", applied)
 	}
 	if !tableExists(t, db, "extra") {
 		t.Error("expected extra table to exist")
 	}
-	if n := countRows(t, db, "SELECT count(*) FROM schema_migrations"); n != 3 {
-		t.Errorf("expected 3 recorded, got %d", n)
-	}
 }
 
-// Models adopting a db that already has a migration's schema but no schema_migrations
+// TestMigrateAdoptPreexistingSchema models adopting a db that already has a
+// migration's schema but no schema_migrations record (the real-world situation
+// the documented one-time baseline statement is for), entirely with mock data.
 func TestMigrateAdoptPreexistingSchema(t *testing.T) {
 	fsys := fstest.MapFS{
 		"001_init.sql": mockInit,
@@ -129,7 +139,7 @@ func TestMigrateAdoptPreexistingSchema(t *testing.T) {
 	if _, err := raw.Exec(string(mockInit.Data)); err != nil {
 		t.Fatalf("seed preexisting schema: %v", err)
 	}
-	if err := migrateFS(raw, fsys); err == nil {
+	if _, err := migrateFS(raw, fsys); err == nil {
 		t.Fatal("expected migrateFS to fail on un-baselined preexisting schema")
 	}
 
@@ -148,11 +158,12 @@ func TestMigrateAdoptPreexistingSchema(t *testing.T) {
 		t.Fatalf("baseline statement: %v", err)
 	}
 
-	if err := migrateFS(db, fsys); err != nil {
+	applied, err := migrateFS(db, fsys)
+	if err != nil {
 		t.Fatalf("migrateFS after baseline: %v", err)
 	}
-	if !tableExists(t, db, "note") {
-		t.Error("expected 002 to have applied (note table)")
+	if !slices.Equal(applied, []string{"002_note.sql"}) {
+		t.Errorf("applied = %v, want [002_note.sql]", applied)
 	}
 	if n := countRows(t, db, "SELECT count(*) FROM item"); n != items {
 		t.Errorf("existing data changed: was %d, now %d", items, n)
