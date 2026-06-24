@@ -1,6 +1,6 @@
 package repo
 
-import "github.com/henryppercy/hp-source/internal/text"
+import "fmt"
 
 type ExportRead struct {
 	// Book
@@ -51,7 +51,7 @@ func (r *Repo) ListExportReads() ([]ExportRead, error) {
          ORDER BY rd.date_finished DESC`,
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to list export reads: %w", err)
 	}
 	defer rows.Close()
 
@@ -77,7 +77,7 @@ func (r *Repo) ListExportReads() ([]ExportRead, error) {
 			&rr.ExportRead.Genre,
 			&format, &copyLanguage, &pageCount, &coverImage,
 		); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to scan export read: %w", err)
 		}
 
 		if headline != nil {
@@ -165,12 +165,4 @@ func (r *Repo) ListExportReads() ([]ExportRead, error) {
 	}
 
 	return reads, nil
-}
-
-func (e *ExportRead) Slug() string {
-	return text.Slug(e.Title)
-}
-
-func (e *ExportRead) RatingDisplay() string {
-	return RatingDisplay(e.Rating)
 }

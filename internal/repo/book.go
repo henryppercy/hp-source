@@ -63,7 +63,10 @@ func (r *Repo) AddBook(input *BookInput) error {
 	if err != nil {
 		return fmt.Errorf("failed to create book: %w", err)
 	}
-	bookID, _ := result.LastInsertId()
+	bookID, err := result.LastInsertId()
+	if err != nil {
+		return fmt.Errorf("failed to get book id: %w", err)
+	}
 
 	for _, author := range input.Authors {
 		authorID := author.ID

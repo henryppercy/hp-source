@@ -28,7 +28,7 @@ func MDX(e repo.ExportRead) string {
 	fmt.Fprintf(&sb, "date_finished: %s\n", e.DateFinished)
 
 	if e.Rating > 0 {
-		fmt.Fprintf(&sb, "rating: %s\n", e.RatingDisplay())
+		fmt.Fprintf(&sb, "rating: %s\n", repo.RatingDisplay(e.Rating))
 	} else {
 		fmt.Fprintf(&sb, "rating:\n")
 	}

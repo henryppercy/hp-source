@@ -1,5 +1,7 @@
 package repo
 
+import "fmt"
+
 type ReadInput struct {
 	BookID       int
 	CopyID       int
@@ -40,7 +42,10 @@ func (r *Repo) AddRead(input *ReadInput) error {
 		nullable(input.DateStarted),
 		nullable(input.DateFinished),
 	)
-	return err
+	if err != nil {
+		return fmt.Errorf("failed to add read: %w", err)
+	}
+	return nil
 }
 
 func (r *Repo) ListBooksAvailableToRead() ([]BookSummary, error) {
@@ -54,7 +59,7 @@ func (r *Repo) ListBooksAvailableToRead() ([]BookSummary, error) {
          ORDER BY b.title`,
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to list books available to read: %w", err)
 	}
 	defer rows.Close()
 
@@ -63,7 +68,7 @@ func (r *Repo) ListBooksAvailableToRead() ([]BookSummary, error) {
 		var b BookSummary
 		var author *string
 		if err := rows.Scan(&b.ID, &b.Title, &author); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to scan book: %w", err)
 		}
 		if author != nil {
 			b.Author = *author
@@ -85,7 +90,7 @@ func (r *Repo) ListActiveReads() ([]ActiveRead, error) {
          ORDER BY rd.date_started DESC`,
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to list active reads: %w", err)
 	}
 	defer rows.Close()
 
@@ -94,7 +99,7 @@ func (r *Repo) ListActiveReads() ([]ActiveRead, error) {
 		var r ActiveRead
 		var author, format *string
 		if err := rows.Scan(&r.ReadID, &r.BookTitle, &author, &format); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to scan read: %w", err)
 		}
 		if author != nil {
 			r.Author = *author
@@ -113,7 +118,10 @@ func (r *Repo) StartRead(bookID, copyID int, dateStarted string) error {
          VALUES (?, ?, 'reading', ?)`,
 		bookID, copyID, dateStarted,
 	)
-	return err
+	if err != nil {
+		return fmt.Errorf("failed to start read: %w", err)
+	}
+	return nil
 }
 
 func (r *Repo) FinishRead(readID int, status string, rating int, dateFinished string) error {
@@ -122,5 +130,8 @@ func (r *Repo) FinishRead(readID int, status string, rating int, dateFinished st
          WHERE id = ?`,
 		status, nullableInt(rating), nullable(dateFinished), readID,
 	)
-	return err
+	if err != nil {
+		return fmt.Errorf("failed to finish read: %w", err)
+	}
+	return nil
 }

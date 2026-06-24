@@ -7,6 +7,7 @@ import (
 
 	"github.com/henryppercy/hp-source/internal/export"
 	"github.com/henryppercy/hp-source/internal/repo"
+	"github.com/henryppercy/hp-source/internal/text"
 	"github.com/spf13/cobra"
 )
 
@@ -35,7 +36,7 @@ func runExport(r *repo.Repo, outputDir string) error {
 	}
 
 	for _, read := range reads {
-		filename := filepath.Join(outputDir, read.Slug()+".mdx")
+		filename := filepath.Join(outputDir, text.Slug(read.Title)+".mdx")
 		content := export.MDX(read)
 
 		if err := os.WriteFile(filename, []byte(content), 0644); err != nil {

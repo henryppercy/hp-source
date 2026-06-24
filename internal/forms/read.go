@@ -152,10 +152,6 @@ func LogRead(input *repo.ReadInput, books []repo.BookSummary, fetchCopies func(i
 		input.DateFinished = today
 	}
 
-	if input.Rating == 0 {
-		input.Rating = 0
-	}
-
 	return nil
 }
 
