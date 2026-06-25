@@ -3,6 +3,9 @@ package repo
 import (
 	"database/sql"
 	"fmt"
+	"time"
+
+	"github.com/henryppercy/hp-source/internal/text"
 )
 
 type Post struct {
@@ -106,8 +109,19 @@ func (r *Repo) GetPost(id int) (Post, error) {
 }
 
 // CreatePost inserts a post with an empty body and returns its new id. The body
-// is written separately via UpdatePostBody.
+// is written separately via UpdatePostBody. The slug is derived (override, else
+// title, else a unique date slug for titleless slices); in.Slug is updated to
+// the slug actually used.
 func (r *Repo) CreatePost(in *PostInput) (int, error) {
+	in.Slug = slugFor(in)
+	if in.Slug == "" {
+		slug, err := r.uniqueDateSlug(time.Now().Format("2006-01-02"))
+		if err != nil {
+			return 0, err
+		}
+		in.Slug = slug
+	}
+
 	result, err := r.db.Exec(
 		`INSERT INTO post (slug, title, type, headline, published_at)
          VALUES (?, ?, ?, ?, ?)`,
@@ -123,7 +137,32 @@ func (r *Repo) CreatePost(in *PostInput) (int, error) {
 	return int(id), nil
 }
 
+// slugFor normalises the chosen slug: an explicit override wins, else it is
+// derived from the title, else empty (the signal to use a date slug).
+func slugFor(in *PostInput) string {
+	if s := text.Slug(in.Slug); s != "" {
+		return s
+	}
+	return text.Slug(in.Title)
+}
+
+// uniqueDateSlug returns date, or date-2, date-3, ... for the first one not
+// already taken, so multiple slices on the same day get distinct slugs.
+func (r *Repo) uniqueDateSlug(date string) (string, error) {
+	for slug, n := date, 2; ; slug, n = fmt.Sprintf("%s-%d", date, n), n+1 {
+		var one int
+		err := r.db.QueryRow("SELECT 1 FROM post WHERE slug = ?", slug).Scan(&one)
+		if err == sql.ErrNoRows {
+			return slug, nil
+		}
+		if err != nil {
+			return "", fmt.Errorf("failed to check slug: %w", err)
+		}
+	}
+}
+
 func (r *Repo) UpdatePost(in *PostInput) error {
+	in.Slug = slugFor(in)
 	_, err := r.db.Exec(
 		`UPDATE post SET slug = ?, title = ?, type = ?, headline = ?, published_at = ?
          WHERE id = ?`,

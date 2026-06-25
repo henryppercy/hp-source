@@ -23,17 +23,6 @@ func postForm(in *repo.PostInput, heading, saveLabel string) error {
 		),
 
 		huh.NewGroup(
-			huh.NewInput().
-				Title("Title").
-				Placeholder("required").
-				Validate(huh.ValidateNotEmpty()).
-				Value(&in.Title),
-			huh.NewInput().
-				Title("Slug").
-				PlaceholderFunc(func() string {
-					return text.Slug(in.Title)
-				}, &in.Title).
-				Value(&in.Slug),
 			huh.NewSelect[string]().
 				Title("Type").
 				Options(
@@ -42,13 +31,34 @@ func postForm(in *repo.PostInput, heading, saveLabel string) error {
 					huh.NewOption("Spanish", "spanish"),
 				).
 				Value(&in.Type),
+		),
+
+		// Slices are titleless micro-posts, so Title and Headline are hidden for
+		// them (which also skips Title's required validation).
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Title").
+				Placeholder("required").
+				Validate(huh.ValidateNotEmpty()).
+				Value(&in.Title),
 			huh.NewInput().
 				Title("Headline").
 				Placeholder("optional").
 				Value(&in.Headline),
-		),
+		).WithHideFunc(func() bool {
+			return in.Type == "slice"
+		}),
 
 		huh.NewGroup(
+			huh.NewInput().
+				Title("Slug").
+				PlaceholderFunc(func() string {
+					if in.Type == "slice" {
+						return "auto from date"
+					}
+					return text.Slug(in.Title)
+				}, &in.Title).
+				Value(&in.Slug),
 			huh.NewInput().
 				Title("Published At").
 				Placeholder("blank = draft, e.g. 2026-06-20").
@@ -67,18 +77,9 @@ func postForm(in *repo.PostInput, heading, saveLabel string) error {
 		),
 	)
 
-	if err := form.Run(); err != nil {
-		return err
-	}
-
-	// Slug is always derived/normalised so it stays URL-safe and unique-friendly,
-	// falling back to the title when left blank.
-	slug := in.Slug
-	if slug == "" {
-		slug = in.Title
-	}
-	in.Slug = text.Slug(slug)
-	return nil
+	// The slug is finalised by the repo (override, else title, else date), so the
+	// form just collects the raw optional override.
+	return form.Run()
 }
 
 // SelectPost asks which post to act on, returning its id. Drafts are marked.
@@ -139,14 +140,6 @@ func validateDateOptional(s string) error {
 func postSummary(in *repo.PostInput) string {
 	var sb strings.Builder
 
-	fmt.Fprintf(&sb, "Title:      %s\n", in.Title)
-
-	slug := in.Slug
-	if slug == "" {
-		slug = text.Slug(in.Title)
-	}
-	fmt.Fprintf(&sb, "Slug:       %s\n", slug)
-
 	typeLabel := "Post"
 	switch in.Type {
 	case "slice":
@@ -155,6 +148,19 @@ func postSummary(in *repo.PostInput) string {
 		typeLabel = "Spanish"
 	}
 	fmt.Fprintf(&sb, "Type:       %s\n", typeLabel)
+
+	if in.Title != "" {
+		fmt.Fprintf(&sb, "Title:      %s\n", in.Title)
+	}
+
+	slug := text.Slug(in.Slug)
+	if slug == "" {
+		slug = text.Slug(in.Title)
+	}
+	if slug == "" {
+		slug = "auto (date)"
+	}
+	fmt.Fprintf(&sb, "Slug:       %s\n", slug)
 
 	if in.Headline != "" {
 		fmt.Fprintf(&sb, "Headline:   %s\n", in.Headline)

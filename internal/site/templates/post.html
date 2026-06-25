@@ -1,7 +1,7 @@
-{{define "title"}}{{.Title}} · hp{{end}}
+{{define "title"}}{{if .Title}}{{.Title}}{{else}}Slice{{end}} · hp{{end}}
 {{define "content"}}
 <article>
-<h1>{{.Title}}</h1>
+{{if .Title}}<h1>{{.Title}}</h1>{{end}}
 {{if .Headline}}<p class="headline">{{.Headline}}</p>{{end}}
 <p class="meta">Posted {{fmtDate .PublishedAt}}{{if not .UpdatedAt.IsZero}} · Updated {{fmtDate .UpdatedAt}}{{end}}</p>
 {{if .TOC}}<nav class="toc">

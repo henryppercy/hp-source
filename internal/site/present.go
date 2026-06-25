@@ -24,9 +24,19 @@ func toListItem(p repo.Post) PostListItem {
 		Title:       p.Title,
 		Slug:        p.Slug,
 		Type:        p.Type,
+		URL:         postURL(p),
 		PublishedAt: parseDate(p.PublishedAt),
 		Headline:    p.Headline,
 	}
+}
+
+// postURL is a post's canonical page path. Slices live under /slices; posts and
+// spanish entries both render under /posts.
+func postURL(p repo.Post) string {
+	if p.Type == "slice" {
+		return "/slices/" + p.Slug
+	}
+	return "/posts/" + p.Slug
 }
 
 func listItemsByType(posts []repo.Post, typ string) []PostListItem {
@@ -39,15 +49,13 @@ func listItemsByType(posts []repo.Post, typ string) []PostListItem {
 	return items
 }
 
-// recentPosts returns the first n posts as list items, assuming the repo's
-// newest-first order; it slices, never sorts.
+// recentPosts returns the n most recent real posts (type "") for the home page,
+// excluding slices and spanish. Input is assumed newest-first; it slices, never
+// sorts.
 func recentPosts(posts []repo.Post, n int) []PostListItem {
-	if len(posts) > n {
-		posts = posts[:n]
-	}
-	var items []PostListItem
-	for _, p := range posts {
-		items = append(items, toListItem(p))
+	items := listItemsByType(posts, "")
+	if len(items) > n {
+		items = items[:n]
 	}
 	return items
 }

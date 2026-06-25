@@ -91,7 +91,7 @@ func (b *builder) Build() error {
 		if err != nil {
 			return err
 		}
-		if err := b.render("/posts/"+p.Slug, "post.html", view); err != nil {
+		if err := b.render(postURL(p), "post.html", view); err != nil {
 			return err
 		}
 	}

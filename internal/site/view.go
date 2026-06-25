@@ -29,6 +29,7 @@ type PostListItem struct {
 	Title       string
 	Slug        string
 	Type        string
+	URL         string
 	PublishedAt time.Time
 	Headline    string
 }
