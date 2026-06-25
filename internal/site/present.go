@@ -39,6 +39,8 @@ func listItemsByType(posts []repo.Post, typ string) []PostListItem {
 	return items
 }
 
+// recentPosts returns the first n posts as list items, assuming the repo's
+// newest-first order; it slices, never sorts.
 func recentPosts(posts []repo.Post, n int) []PostListItem {
 	if len(posts) > n {
 		posts = posts[:n]
@@ -79,6 +81,8 @@ func booksByStatus(books []BookView, status string) []BookView {
 	return out
 }
 
+// recentBooks returns up to n finished books, keeping the repo's
+// newest-finished-first order; it filters then slices, never sorts.
 func recentBooks(books []BookView, n int) []BookView {
 	finished := booksByStatus(books, "finished")
 	if len(finished) > n {

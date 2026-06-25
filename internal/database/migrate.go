@@ -15,8 +15,8 @@ const schemaMigrationsDDL = `CREATE TABLE IF NOT EXISTS schema_migrations (
     applied_at TEXT NOT NULL DEFAULT (datetime('now'))
 )`
 
-// Applies every migration in the embedded migrations directory not already
-// recorded in schema_migrations. Returns the filenames it applied, in order.
+// Migrate applies every migration in the embedded migrations directory not
+// already recorded in schema_migrations, returning the filenames it ran in order.
 func Migrate(db *sql.DB) ([]string, error) {
 	migrations, err := fs.Sub(migrationFiles, "migrations")
 	if err != nil {
@@ -25,8 +25,8 @@ func Migrate(db *sql.DB) ([]string, error) {
 	return migrateFS(db, migrations)
 }
 
-// Runs the migrations found in fsys (a flat directory of *.sql files) and
-// returns the filenames it applied. Split out so tests can supply synthetic ones.
+// migrateFS runs the migrations in fsys (a flat directory of *.sql files) and
+// returns the filenames it ran. Split out so tests can supply synthetic ones.
 func migrateFS(db *sql.DB, fsys fs.FS) ([]string, error) {
 	if _, err := db.Exec(schemaMigrationsDDL); err != nil {
 		return nil, fmt.Errorf("failed to create schema_migrations: %w", err)

@@ -17,7 +17,7 @@ type PostView struct {
 	TOC       []TOCEntry
 }
 
-// TOCEntry is a table-of-contents node. Populated in a later stage.
+// TOCEntry is a table-of-contents node; Children holds nested sub-headings.
 type TOCEntry struct {
 	Title    string
 	Anchor   string

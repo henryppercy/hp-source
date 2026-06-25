@@ -36,6 +36,8 @@ func newBuilder(r *repo.Repo, assets fs.FS, out string) *builder {
 	}
 }
 
+// fmtDate formats a date for display, rendering the zero time as "" so missing
+// dates show blank rather than a year-one placeholder.
 func fmtDate(t time.Time) string {
 	if t.IsZero() {
 		return ""
@@ -43,6 +45,8 @@ func fmtDate(t time.Time) string {
 	return t.Format("2 Jan 2006")
 }
 
+// Build wipes the output directory, then renders every page and copies the
+// static assets and generated chroma stylesheet into it.
 func (b *builder) Build() error {
 	if err := os.RemoveAll(b.out); err != nil {
 		return fmt.Errorf("failed to clear output directory: %w", err)
@@ -70,14 +74,16 @@ func (b *builder) Build() error {
 		return err
 	}
 
-	if err := b.render("/posts", "post_list.html", PostListView{Heading: "Posts", Posts: listItemsByType(posts, "")}); err != nil {
-		return err
+	feeds := []struct{ path, heading, typ string }{
+		{"/posts", "Posts", ""},
+		{"/spanish", "Spanish", "spanish"},
+		{"/slices", "Slices", "slice"},
 	}
-	if err := b.render("/spanish", "post_list.html", PostListView{Heading: "Spanish", Posts: listItemsByType(posts, "spanish")}); err != nil {
-		return err
-	}
-	if err := b.render("/slices", "post_list.html", PostListView{Heading: "Slices", Posts: listItemsByType(posts, "slice")}); err != nil {
-		return err
+	for _, f := range feeds {
+		view := PostListView{Heading: f.heading, Posts: listItemsByType(posts, f.typ)}
+		if err := b.render(f.path, "post_list.html", view); err != nil {
+			return err
+		}
 	}
 
 	for _, p := range posts {
@@ -141,7 +147,9 @@ func (b *builder) writeChromaCSS() error {
 }
 
 func (b *builder) render(urlPath, page string, data any) error {
-	tmpl, err := template.New("layout").Funcs(b.funcs).ParseFS(b.assets, "templates/layout.html", "templates/"+page)
+	tmpl, err := template.New("layout").Funcs(b.funcs).ParseFS(
+		b.assets, "templates/layout.html", "templates/"+page,
+	)
 	if err != nil {
 		return fmt.Errorf("failed to parse template %s: %w", page, err)
 	}

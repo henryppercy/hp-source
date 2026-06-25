@@ -45,6 +45,8 @@ func fileServer(out string) http.Handler {
 	})
 }
 
+// notFoundWriter intercepts a 404 from the file server and substitutes the
+// generated 404.html, swallowing the default plain-text body.
 type notFoundWriter struct {
 	http.ResponseWriter
 	out     string

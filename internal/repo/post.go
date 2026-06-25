@@ -14,8 +14,8 @@ type Post struct {
 	UpdatedAt string
 }
 
-// returns every post with a posted_at date (i.e. not a draft),
-// newest first. The site filters by type and slices for its feeds.
+// ListPublishedPosts returns every post with a posted_at date (i.e. not a
+// draft), newest first. The site filters by type and slices for its feeds.
 func (r *Repo) ListPublishedPosts() ([]Post, error) {
 	rows, err := r.db.Query(
 		`SELECT id, slug, title, type, headline, body, posted_at, created_at, updated_at
