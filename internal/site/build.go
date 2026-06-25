@@ -202,7 +202,7 @@ func (b *builder) writeChromaCSS() error {
 	if err != nil {
 		return err
 	}
-	dest := filepath.Join(b.out, "static", "chroma.css")
+	dest := filepath.Join(b.out, "static", "styles", "chroma.css")
 	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
 		return fmt.Errorf("failed to create directory for %s: %w", dest, err)
 	}

@@ -140,11 +140,20 @@ func titleCase(s string) string {
 	return strings.ToUpper(s[:1]) + s[1:]
 }
 
+// coverURL maps a stored cover filename to its served path, leaving an empty
+// value empty so a missing cover renders no image.
+func coverURL(file string) string {
+	if file == "" {
+		return ""
+	}
+	return imageBase + "/" + file
+}
+
 func bookView(e repo.ReadEntry) BookView {
 	return BookView{
 		Title:        e.Title,
 		Author:       e.Author,
-		ImageURL:     e.CoverImage,
+		ImageURL:     coverURL(e.CoverImage),
 		Status:       e.Status,
 		Rating:       repo.RatingDisplay(e.Rating),
 		DateFinished: parseDate(e.DateFinished),

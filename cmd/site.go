@@ -26,7 +26,7 @@ func newSiteBuildCmd(a *app) *cobra.Command {
 			return site.Build(a.repo, out)
 		},
 	}
-	cmd.Flags().String("out", "./public", "Output directory for the built site")
+	cmd.Flags().String("out", "./dist", "Output directory for the built site")
 	return cmd
 }
 
@@ -41,7 +41,7 @@ func newSiteServeCmd(a *app) *cobra.Command {
 			return site.Serve(a.repo, out, addr, watch)
 		},
 	}
-	cmd.Flags().String("out", "./public", "Output directory for the built site")
+	cmd.Flags().String("out", "./dist", "Output directory for the built site")
 	cmd.Flags().String("addr", ":8080", "Address to serve on")
 	cmd.Flags().Bool("watch", false, "Rebuild on template/asset changes (reads from internal/site on disk)")
 	return cmd

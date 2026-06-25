@@ -1,6 +1,7 @@
 package site
 
 import (
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -81,13 +82,22 @@ func watchAndRebuild(b *builder) {
 	}
 	defer w.Close()
 
-	for _, dir := range []string{
+	// fsnotify is not recursive, so add every directory under the asset roots
+	// (templates/, static/ and its styles/ and images/ subdirs).
+	for _, root := range []string{
 		filepath.Join(devAssetDir, "templates"),
 		filepath.Join(devAssetDir, "static"),
 	} {
-		if err := w.Add(dir); err != nil {
-			log.Printf("watch %s: %v", dir, err)
-		}
+		fs.WalkDir(os.DirFS(root), ".", func(path string, d fs.DirEntry, err error) error {
+			if err != nil || !d.IsDir() {
+				return nil
+			}
+			dir := filepath.Join(root, path)
+			if err := w.Add(dir); err != nil {
+				log.Printf("watch %s: %v", dir, err)
+			}
+			return nil
+		})
 	}
 
 	var timer *time.Timer

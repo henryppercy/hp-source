@@ -5,7 +5,7 @@ import (
 	"io/fs"
 )
 
-//go:embed templates/*.html static/*
+//go:embed templates/*.html static
 var embeddedFS embed.FS
 
 func embeddedAssets() fs.FS { return embeddedFS }
