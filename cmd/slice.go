@@ -76,8 +76,13 @@ func newSliceDeleteCmd(a *app) *cobra.Command {
 }
 
 func runSliceAdd(r *repo.Repo) error {
-	input := &repo.PostInput{Type: "slice"}
-	if err := forms.AddSlice(input); err != nil {
+	topics, err := r.ListTopics()
+	if err != nil {
+		return err
+	}
+
+	input := &repo.PostInput{Kind: "slice"}
+	if err := forms.AddSlice(input, topics); err != nil {
 		return err
 	}
 
@@ -99,13 +104,19 @@ func runSliceEdit(r *repo.Repo) error {
 		return nil
 	}
 
+	topics, err := r.ListTopics()
+	if err != nil {
+		return err
+	}
+
 	input := &repo.PostInput{
 		ID:          slice.ID,
 		Slug:        slice.Slug,
-		Type:        slice.Type,
+		Kind:        slice.Kind,
 		PublishedAt: slice.PublishedAt,
+		TopicIDs:    topicIDs(slice.Topics),
 	}
-	if err := forms.EditSlice(input); err != nil {
+	if err := forms.EditSlice(input, topics); err != nil {
 		return err
 	}
 

@@ -1,0 +1,17 @@
+{{define "title"}}{{.Heading}} · hp{{end}}
+{{define "content"}}
+<h1>{{.Heading}}</h1>
+{{if .Intro}}<p class="intro">{{.Intro}}</p>{{end}}
+{{if .Articles}}
+<h2>Articles</h2>
+<ul>
+{{range .Articles}}<li><a href="{{.URL}}/">{{.Title}}</a> · {{fmtDate .PublishedAt}}{{if .Headline}} · {{.Headline}}{{end}}</li>
+{{end}}</ul>
+{{end}}
+{{if .Slices}}
+<h2>Slices</h2>
+{{range .Slices}}{{template "sliceCard" .}}
+{{end}}
+{{end}}
+{{if and (not .Articles) (not .Slices)}}<p>Nothing here yet.</p>{{end}}
+{{end}}

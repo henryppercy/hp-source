@@ -79,8 +79,13 @@ func newPostDeleteCmd(a *app) *cobra.Command {
 }
 
 func runPostAdd(r *repo.Repo) error {
-	input := &repo.PostInput{}
-	if err := forms.AddPost(input); err != nil {
+	topics, err := r.ListTopics()
+	if err != nil {
+		return err
+	}
+
+	input := &repo.PostInput{Kind: "article"}
+	if err := forms.AddPost(input, topics); err != nil {
 		return err
 	}
 
@@ -106,15 +111,21 @@ func runPostEdit(r *repo.Repo) error {
 		return nil
 	}
 
+	topics, err := r.ListTopics()
+	if err != nil {
+		return err
+	}
+
 	input := &repo.PostInput{
 		ID:          post.ID,
 		Slug:        post.Slug,
 		Title:       post.Title,
-		Type:        post.Type,
+		Kind:        post.Kind,
 		Headline:    post.Headline,
 		PublishedAt: post.PublishedAt,
+		TopicIDs:    topicIDs(post.Topics),
 	}
-	if err := forms.EditPost(input); err != nil {
+	if err := forms.EditPost(input, topics); err != nil {
 		return err
 	}
 
@@ -208,6 +219,14 @@ func runPostDelete(r *repo.Repo) error {
 
 	fmt.Printf("deleted '%s'.\n", post.Slug)
 	return nil
+}
+
+func topicIDs(topics []repo.Topic) []int {
+	ids := make([]int, len(topics))
+	for i, t := range topics {
+		ids[i] = t.ID
+	}
+	return ids
 }
 
 // pickPost lists posts via list and asks the user to choose one with pick,

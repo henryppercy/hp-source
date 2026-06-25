@@ -10,13 +10,17 @@ import (
 	"github.com/henryppercy/hp-source/internal/text"
 )
 
-func AddPost(in *repo.PostInput) error  { return postForm(in, "Add Post", "Create") }
-func EditPost(in *repo.PostInput) error { return postForm(in, "Edit Post", "Save") }
+func AddPost(in *repo.PostInput, topics []repo.Topic) error {
+	return postForm(in, topics, "Add Post", "Create")
+}
+func EditPost(in *repo.PostInput, topics []repo.Topic) error {
+	return postForm(in, topics, "Edit Post", "Save")
+}
 
-// postForm collects an article's metadata (post or spanish). Slices use
-// sliceForm. The slug is finalised by the repo (override, else title), so the
-// form just collects the raw optional override.
-func postForm(in *repo.PostInput, heading, saveLabel string) error {
+// postForm collects an article's metadata and topics. Slices use sliceForm. The
+// slug is finalised by the repo (override, else title), so the form just
+// collects the raw optional override.
+func postForm(in *repo.PostInput, topics []repo.Topic, heading, saveLabel string) error {
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewNote().
@@ -35,13 +39,6 @@ func postForm(in *repo.PostInput, heading, saveLabel string) error {
 				Title("Headline").
 				Placeholder("optional").
 				Value(&in.Headline),
-			huh.NewSelect[string]().
-				Title("Type").
-				Options(
-					huh.NewOption("Post", ""),
-					huh.NewOption("Spanish", "spanish"),
-				).
-				Value(&in.Type),
 		),
 
 		huh.NewGroup(
@@ -58,11 +55,13 @@ func postForm(in *repo.PostInput, heading, saveLabel string) error {
 				Value(&in.PublishedAt),
 		),
 
+		topicsGroup(in, topics),
+
 		huh.NewGroup(
 			huh.NewNote().
 				Title("Confirm").
 				DescriptionFunc(func() string {
-					return postSummary(in)
+					return postSummary(in, topics)
 				}, &in.PublishedAt).
 				Next(true).
 				NextLabel(saveLabel),
@@ -72,12 +71,16 @@ func postForm(in *repo.PostInput, heading, saveLabel string) error {
 	return form.Run()
 }
 
-func AddSlice(in *repo.PostInput) error  { return sliceForm(in, "Add Slice") }
-func EditSlice(in *repo.PostInput) error { return sliceForm(in, "Edit Slice") }
+func AddSlice(in *repo.PostInput, topics []repo.Topic) error {
+	return sliceForm(in, topics, "Add Slice")
+}
+func EditSlice(in *repo.PostInput, topics []repo.Topic) error {
+	return sliceForm(in, topics, "Edit Slice")
+}
 
 // sliceForm collects a slice's thin metadata: an optional slug override (else a
-// date slug is assigned by the repo) and the publish date.
-func sliceForm(in *repo.PostInput, heading string) error {
+// date slug is assigned by the repo), the publish date, and topics.
+func sliceForm(in *repo.PostInput, topics []repo.Topic, heading string) error {
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
@@ -91,8 +94,24 @@ func sliceForm(in *repo.PostInput, heading string) error {
 				Validate(validateDateOptional).
 				Value(&in.PublishedAt),
 		),
+
+		topicsGroup(in, topics),
 	)
 	return form.Run()
+}
+
+// topicsGroup is the shared topics multiselect, preselected from in.TopicIDs.
+func topicsGroup(in *repo.PostInput, topics []repo.Topic) *huh.Group {
+	options := make([]huh.Option[int], len(topics))
+	for i, t := range topics {
+		options[i] = huh.NewOption(t.Name, t.ID)
+	}
+	return huh.NewGroup(
+		huh.NewMultiSelect[int]().
+			Title("Topics").
+			Options(options...).
+			Value(&in.TopicIDs),
+	)
 }
 
 // SelectArticle asks which article to act on, labelled by title. Drafts marked.
@@ -195,28 +214,14 @@ func validateDateOptional(s string) error {
 	return validateDate(s)
 }
 
-func postSummary(in *repo.PostInput) string {
+func postSummary(in *repo.PostInput, topics []repo.Topic) string {
 	var sb strings.Builder
 
-	typeLabel := "Post"
-	switch in.Type {
-	case "slice":
-		typeLabel = "Slice"
-	case "spanish":
-		typeLabel = "Spanish"
-	}
-	fmt.Fprintf(&sb, "Type:       %s\n", typeLabel)
-
-	if in.Title != "" {
-		fmt.Fprintf(&sb, "Title:      %s\n", in.Title)
-	}
+	fmt.Fprintf(&sb, "Title:      %s\n", in.Title)
 
 	slug := text.Slug(in.Slug)
 	if slug == "" {
 		slug = text.Slug(in.Title)
-	}
-	if slug == "" {
-		slug = "auto (date)"
 	}
 	fmt.Fprintf(&sb, "Slug:       %s\n", slug)
 
@@ -230,5 +235,22 @@ func postSummary(in *repo.PostInput) string {
 	}
 	fmt.Fprintf(&sb, "Published:  %s\n", published)
 
+	if names := topicNames(in.TopicIDs, topics); len(names) > 0 {
+		fmt.Fprintf(&sb, "Topics:     %s\n", strings.Join(names, ", "))
+	}
+
 	return sb.String()
+}
+
+func topicNames(ids []int, topics []repo.Topic) []string {
+	var names []string
+	for _, id := range ids {
+		for _, t := range topics {
+			if t.ID == id {
+				names = append(names, t.Name)
+				break
+			}
+		}
+	}
+	return names
 }

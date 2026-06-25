@@ -5,16 +5,22 @@ import (
 	"time"
 )
 
+// TopicLink is a topic shown on a page, linking to its feed.
+type TopicLink struct {
+	Name string
+	URL  string
+}
+
 // PostView is a single article rendered at /posts/{slug}.
 type PostView struct {
 	Title       string
 	Slug        string
-	Type        string // "" | "slice" | "spanish"
 	PublishedAt time.Time
 	UpdatedAt   time.Time
 	Headline    string
 	BodyHTML    template.HTML
 	TOC         []TOCEntry
+	Topics      []TopicLink
 }
 
 // TOCEntry is a table-of-contents node; Children holds nested sub-headings.
@@ -24,11 +30,10 @@ type TOCEntry struct {
 	Children []TOCEntry
 }
 
-// PostListItem is a row in the /posts, /spanish and /slices listings.
+// PostListItem is a row in the /posts, /spanish and topic listings.
 type PostListItem struct {
 	Title       string
 	Slug        string
-	Type        string
 	URL         string
 	PublishedAt time.Time
 	Headline    string
@@ -52,11 +57,19 @@ type HomeView struct {
 	Year            int
 }
 
-// PostListView is the top-level data for a post listing page. Reused by
-// /posts, /spanish and /slices.
+// PostListView is the top-level data for a post listing page (e.g. /posts).
 type PostListView struct {
 	Heading string
 	Posts   []PostListItem
+}
+
+// TopicFeedView is a topic page (/topics/{topic} and /spanish): a list of
+// articles and a timeline of slices, each rendered only when non-empty.
+type TopicFeedView struct {
+	Heading  string
+	Intro    string
+	Articles []PostListItem
+	Slices   []SliceItem
 }
 
 // SliceItem is one note in the /slices timeline, body rendered inline.
@@ -64,6 +77,7 @@ type SliceItem struct {
 	URL         string
 	PublishedAt time.Time
 	BodyHTML    template.HTML
+	Topics      []TopicLink
 }
 
 // SliceFeedView is the top-level data for the /slices timeline.

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/henryppercy/hp-source/internal/repo"
+	"github.com/henryppercy/hp-source/internal/text"
 	"github.com/yuin/goldmark"
 )
 
@@ -74,22 +75,26 @@ func (b *builder) Build() error {
 		return err
 	}
 
-	feeds := []struct{ path, heading, typ string }{
-		{"/posts", "Posts", ""},
-		{"/spanish", "Spanish", "spanish"},
-	}
-	for _, f := range feeds {
-		view := PostListView{Heading: f.heading, Posts: listItemsByType(posts, f.typ)}
-		if err := b.render(f.path, "post_list.html", view); err != nil {
-			return err
-		}
+	if err := b.render("/posts", "post_list.html", PostListView{
+		Heading: "Posts",
+		Posts:   mainArticles(posts),
+	}); err != nil {
+		return err
 	}
 
-	sliceFeed, err := b.sliceFeed(posts)
+	timeline, err := b.sliceItems(allSlices(posts))
 	if err != nil {
 		return err
 	}
-	if err := b.render("/slices", "slices.html", sliceFeed); err != nil {
+	if err := b.render("/slices", "slices.html", SliceFeedView{
+		Heading: "Slices",
+		Intro:   "Get a slice of my life. A personal feed of my thoughts, notes, and updates.",
+		Slices:  timeline,
+	}); err != nil {
+		return err
+	}
+
+	if err := b.renderTopics(posts); err != nil {
 		return err
 	}
 
@@ -121,28 +126,57 @@ func (b *builder) Build() error {
 	return b.writeChromaCSS()
 }
 
-// sliceFeed builds the /slices timeline from the published posts (already
-// newest-first), rendering each slice body inline.
-func (b *builder) sliceFeed(posts []repo.Post) (SliceFeedView, error) {
+// sliceItems renders already-filtered slice posts (newest-first) into timeline
+// items, reused by /slices and topic pages.
+func (b *builder) sliceItems(slices []repo.Post) ([]SliceItem, error) {
 	var items []SliceItem
-	for _, p := range posts {
-		if p.Type != "slice" {
-			continue
-		}
+	for _, p := range slices {
 		body, _, err := render(b.md, p.Body)
 		if err != nil {
-			return SliceFeedView{}, fmt.Errorf("slice %s: %w", p.Slug, err)
+			return nil, fmt.Errorf("slice %s: %w", p.Slug, err)
 		}
 		items = append(items, SliceItem{
 			URL:         postURL(p),
 			PublishedAt: parseDate(p.PublishedAt),
 			BodyHTML:    body,
+			Topics:      topicLinks(p.Topics),
 		})
 	}
-	return SliceFeedView{
-		Heading: "Slices",
-		Intro:   "Get a slice of my life. A personal feed of my thoughts, notes, and updates.",
-		Slices:  items,
+	return items, nil
+}
+
+// renderTopics renders /spanish (kept as a special top-level route) plus a
+// /topics/{topic} page for every topic present on a published post.
+func (b *builder) renderTopics(posts []repo.Post) error {
+	spanish, err := b.topicFeed("spanish", posts)
+	if err != nil {
+		return err
+	}
+	if err := b.render("/spanish", "spanish.html", spanish); err != nil {
+		return err
+	}
+
+	for _, name := range usedTopics(posts) {
+		view, err := b.topicFeed(name, posts)
+		if err != nil {
+			return err
+		}
+		if err := b.render("/topics/"+text.Slug(name), "topic.html", view); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (b *builder) topicFeed(name string, posts []repo.Post) (TopicFeedView, error) {
+	slices, err := b.sliceItems(slicesWithTopic(posts, name))
+	if err != nil {
+		return TopicFeedView{}, err
+	}
+	return TopicFeedView{
+		Heading:  titleCase(name),
+		Articles: articlesWithTopic(posts, name),
+		Slices:   slices,
 	}, nil
 }
 
@@ -154,12 +188,12 @@ func (b *builder) postView(p repo.Post) (PostView, error) {
 	return PostView{
 		Title:       p.Title,
 		Slug:        p.Slug,
-		Type:        p.Type,
 		PublishedAt: parseDate(p.PublishedAt),
 		UpdatedAt:   parseDate(p.UpdatedAt),
 		Headline:    p.Headline,
 		BodyHTML:    body,
 		TOC:         toc,
+		Topics:      topicLinks(p.Topics),
 	}, nil
 }
 
@@ -180,7 +214,7 @@ func (b *builder) writeChromaCSS() error {
 
 func (b *builder) render(urlPath, page string, data any) error {
 	tmpl, err := template.New("layout").Funcs(b.funcs).ParseFS(
-		b.assets, "templates/layout.html", "templates/"+page,
+		b.assets, "templates/layout.html", "templates/partials.html", "templates/"+page,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to parse template %s: %w", page, err)

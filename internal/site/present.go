@@ -1,9 +1,12 @@
 package site
 
 import (
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/henryppercy/hp-source/internal/repo"
+	"github.com/henryppercy/hp-source/internal/text"
 )
 
 const recentLimit = 5
@@ -23,41 +26,118 @@ func toListItem(p repo.Post) PostListItem {
 	return PostListItem{
 		Title:       p.Title,
 		Slug:        p.Slug,
-		Type:        p.Type,
 		URL:         postURL(p),
 		PublishedAt: parseDate(p.PublishedAt),
 		Headline:    p.Headline,
 	}
 }
 
-// postURL is a post's canonical page path. Slices live under /slices; posts and
-// spanish entries both render under /posts.
+// postURL is a post's canonical page path. Slices live under /slices, articles
+// under /posts.
 func postURL(p repo.Post) string {
-	if p.Type == "slice" {
+	if p.Kind == "slice" {
 		return "/slices/" + p.Slug
 	}
 	return "/posts/" + p.Slug
 }
 
-func listItemsByType(posts []repo.Post, typ string) []PostListItem {
+// topicLinks maps a post's topics to display links to their feeds.
+func topicLinks(topics []repo.Topic) []TopicLink {
+	links := make([]TopicLink, len(topics))
+	for i, t := range topics {
+		links[i] = TopicLink{Name: t.Name, URL: "/topics/" + text.Slug(t.Name)}
+	}
+	return links
+}
+
+func hasTopic(p repo.Post, name string) bool {
+	for _, t := range p.Topics {
+		if t.Name == name {
+			return true
+		}
+	}
+	return false
+}
+
+// articleItems maps the articles matching keep to list items.
+func articleItems(posts []repo.Post, keep func(repo.Post) bool) []PostListItem {
 	var items []PostListItem
 	for _, p := range posts {
-		if p.Type == typ {
+		if p.Kind == "article" && keep(p) {
 			items = append(items, toListItem(p))
 		}
 	}
 	return items
 }
 
-// recentPosts returns the n most recent real posts (type "") for the home page,
-// excluding slices and spanish. Input is assumed newest-first; it slices, never
-// sorts.
+// mainArticles are the articles for /posts and home recents: every article
+// except those tagged spanish (which live on /spanish and /topics/spanish).
+func mainArticles(posts []repo.Post) []PostListItem {
+	return articleItems(posts, func(p repo.Post) bool {
+		return !hasTopic(p, "spanish")
+	})
+}
+
+// recentPosts returns the n most recent main articles for the home page. Input
+// is assumed newest-first; it slices, never sorts.
 func recentPosts(posts []repo.Post, n int) []PostListItem {
-	items := listItemsByType(posts, "")
+	items := mainArticles(posts)
 	if len(items) > n {
 		items = items[:n]
 	}
 	return items
+}
+
+// articlesWithTopic maps the articles carrying the named topic to list items.
+func articlesWithTopic(posts []repo.Post, name string) []PostListItem {
+	return articleItems(posts, func(p repo.Post) bool {
+		return hasTopic(p, name)
+	})
+}
+
+// slicesWithTopic returns the slice posts carrying the named topic.
+func slicesWithTopic(posts []repo.Post, name string) []repo.Post {
+	var out []repo.Post
+	for _, p := range posts {
+		if p.Kind == "slice" && hasTopic(p, name) {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+// allSlices returns the slice posts, preserving order.
+func allSlices(posts []repo.Post) []repo.Post {
+	var out []repo.Post
+	for _, p := range posts {
+		if p.Kind == "slice" {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+// usedTopics returns the distinct topic names present on the posts, sorted.
+func usedTopics(posts []repo.Post) []string {
+	seen := map[string]bool{}
+	var names []string
+	for _, p := range posts {
+		for _, t := range p.Topics {
+			if !seen[t.Name] {
+				seen[t.Name] = true
+				names = append(names, t.Name)
+			}
+		}
+	}
+	sort.Strings(names)
+	return names
+}
+
+func titleCase(s string) string {
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
 }
 
 func bookView(e repo.ReadEntry) BookView {
