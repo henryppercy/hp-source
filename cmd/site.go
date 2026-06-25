@@ -23,7 +23,7 @@ func newSiteBuildCmd(a *app) *cobra.Command {
 		Short: "Build the static site",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			out, _ := cmd.Flags().GetString("out")
-			return site.Build(out)
+			return site.Build(a.repo, out)
 		},
 	}
 	cmd.Flags().String("out", "./public", "Output directory for the built site")
@@ -38,7 +38,7 @@ func newSiteServeCmd(a *app) *cobra.Command {
 			out, _ := cmd.Flags().GetString("out")
 			addr, _ := cmd.Flags().GetString("addr")
 			watch, _ := cmd.Flags().GetBool("watch")
-			return site.Serve(out, addr, watch)
+			return site.Serve(a.repo, out, addr, watch)
 		},
 	}
 	cmd.Flags().String("out", "./public", "Output directory for the built site")

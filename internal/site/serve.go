@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/henryppercy/hp-source/internal/repo"
 )
 
 // devAssetDir is where templates and static assets live on disk, read by
@@ -16,13 +17,13 @@ const devAssetDir = "internal/site"
 
 // Serve builds the site and serves it over HTTP. With watch enabled it reads
 // templates and assets from disk and rebuilds when they change.
-func Serve(out, addr string, watch bool) error {
+func Serve(r *repo.Repo, out, addr string, watch bool) error {
 	assets := embeddedAssets()
 	if watch {
 		assets = os.DirFS(devAssetDir)
 	}
 
-	b := newBuilder(assets, out)
+	b := newBuilder(r, assets, out)
 	if err := b.Build(); err != nil {
 		return err
 	}

@@ -9,22 +9,26 @@ import (
 	"strings"
 	"time"
 
+	"github.com/henryppercy/hp-source/internal/repo"
 	"github.com/yuin/goldmark"
 )
 
-func Build(out string) error {
-	return newBuilder(embeddedAssets(), out).Build()
+// Build renders the site into out from the repo using the embedded assets.
+func Build(r *repo.Repo, out string) error {
+	return newBuilder(r, embeddedAssets(), out).Build()
 }
 
 type builder struct {
+	repo   *repo.Repo
 	assets fs.FS
 	out    string
 	funcs  template.FuncMap
 	md     goldmark.Markdown
 }
 
-func newBuilder(assets fs.FS, out string) *builder {
+func newBuilder(r *repo.Repo, assets fs.FS, out string) *builder {
 	return &builder{
+		repo:   r,
 		assets: assets,
 		out:    out,
 		funcs:  template.FuncMap{"fmtDate": fmtDate},
@@ -44,26 +48,35 @@ func (b *builder) Build() error {
 		return fmt.Errorf("failed to clear output directory: %w", err)
 	}
 
-	posts := mockPosts()
-	books := mockBooks()
+	posts, err := b.repo.ListPublishedPosts()
+	if err != nil {
+		return err
+	}
+	reads, err := b.repo.ListReads()
+	if err != nil {
+		return err
+	}
+
+	books := bookViews(reads)
+	year := time.Now().Year()
 
 	home := HomeView{
-		RecentBooks:     books,
-		RecentPosts:     toListItems(posts),
-		BooksReadInYear: len(booksByStatus(books, "finished")),
-		Year:            time.Now().Year(),
+		RecentBooks:     recentBooks(books, recentLimit),
+		RecentPosts:     recentPosts(posts, recentLimit),
+		BooksReadInYear: booksReadInYear(reads, year),
+		Year:            year,
 	}
 	if err := b.render("/", "home.html", home); err != nil {
 		return err
 	}
 
-	if err := b.render("/posts", "post_list.html", PostListView{Heading: "Posts", Posts: postListItems(posts, "")}); err != nil {
+	if err := b.render("/posts", "post_list.html", PostListView{Heading: "Posts", Posts: listItemsByType(posts, "")}); err != nil {
 		return err
 	}
-	if err := b.render("/spanish", "post_list.html", PostListView{Heading: "Spanish", Posts: postListItems(posts, "spanish")}); err != nil {
+	if err := b.render("/spanish", "post_list.html", PostListView{Heading: "Spanish", Posts: listItemsByType(posts, "spanish")}); err != nil {
 		return err
 	}
-	if err := b.render("/slices", "post_list.html", PostListView{Heading: "Slices", Posts: postListItems(posts, "slice")}); err != nil {
+	if err := b.render("/slices", "post_list.html", PostListView{Heading: "Slices", Posts: listItemsByType(posts, "slice")}); err != nil {
 		return err
 	}
 
@@ -95,8 +108,8 @@ func (b *builder) Build() error {
 	return b.writeChromaCSS()
 }
 
-func (b *builder) postView(p postSource) (PostView, error) {
-	body, toc, err := render(b.md, p.Markdown)
+func (b *builder) postView(p repo.Post) (PostView, error) {
+	body, toc, err := render(b.md, p.Body)
 	if err != nil {
 		return PostView{}, fmt.Errorf("post %s: %w", p.Slug, err)
 	}
@@ -104,8 +117,8 @@ func (b *builder) postView(p postSource) (PostView, error) {
 		Title:     p.Title,
 		Slug:      p.Slug,
 		Type:      p.Type,
-		PostedAt:  p.PostedAt,
-		UpdatedAt: p.UpdatedAt,
+		PostedAt:  parseDate(p.PostedAt),
+		UpdatedAt: parseDate(p.UpdatedAt),
 		Headline:  p.Headline,
 		BodyHTML:  body,
 		TOC:       toc,
