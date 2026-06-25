@@ -88,6 +88,7 @@ func newRootCmd() *cobra.Command {
 		newReadCmd(a),
 		newExportCmd(a),
 		newSiteCmd(a),
+		newPostCmd(a),
 	)
 
 	return root

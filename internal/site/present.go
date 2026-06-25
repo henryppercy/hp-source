@@ -21,11 +21,11 @@ func parseDate(s string) time.Time {
 
 func toListItem(p repo.Post) PostListItem {
 	return PostListItem{
-		Title:    p.Title,
-		Slug:     p.Slug,
-		Type:     p.Type,
-		PostedAt: parseDate(p.PostedAt),
-		Headline: p.Headline,
+		Title:       p.Title,
+		Slug:        p.Slug,
+		Type:        p.Type,
+		PublishedAt: parseDate(p.PublishedAt),
+		Headline:    p.Headline,
 	}
 }
 

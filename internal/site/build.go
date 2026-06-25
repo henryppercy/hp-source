@@ -120,14 +120,14 @@ func (b *builder) postView(p repo.Post) (PostView, error) {
 		return PostView{}, fmt.Errorf("post %s: %w", p.Slug, err)
 	}
 	return PostView{
-		Title:     p.Title,
-		Slug:      p.Slug,
-		Type:      p.Type,
-		PostedAt:  parseDate(p.PostedAt),
-		UpdatedAt: parseDate(p.UpdatedAt),
-		Headline:  p.Headline,
-		BodyHTML:  body,
-		TOC:       toc,
+		Title:       p.Title,
+		Slug:        p.Slug,
+		Type:        p.Type,
+		PublishedAt: parseDate(p.PublishedAt),
+		UpdatedAt:   parseDate(p.UpdatedAt),
+		Headline:    p.Headline,
+		BodyHTML:    body,
+		TOC:         toc,
 	}, nil
 }
 

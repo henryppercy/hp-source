@@ -7,14 +7,14 @@ import (
 
 // PostView is a single article rendered at /posts/{slug}.
 type PostView struct {
-	Title     string
-	Slug      string
-	Type      string // "" | "slice" | "spanish"
-	PostedAt  time.Time
-	UpdatedAt time.Time
-	Headline  string
-	BodyHTML  template.HTML
-	TOC       []TOCEntry
+	Title       string
+	Slug        string
+	Type        string // "" | "slice" | "spanish"
+	PublishedAt time.Time
+	UpdatedAt   time.Time
+	Headline    string
+	BodyHTML    template.HTML
+	TOC         []TOCEntry
 }
 
 // TOCEntry is a table-of-contents node; Children holds nested sub-headings.
@@ -26,11 +26,11 @@ type TOCEntry struct {
 
 // PostListItem is a row in the /posts, /spanish and /slices listings.
 type PostListItem struct {
-	Title    string
-	Slug     string
-	Type     string
-	PostedAt time.Time
-	Headline string
+	Title       string
+	Slug        string
+	Type        string
+	PublishedAt time.Time
+	Headline    string
 }
 
 // BookView is a book on /reading and in the home recent-books pull.
