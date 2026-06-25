@@ -77,13 +77,20 @@ func (b *builder) Build() error {
 	feeds := []struct{ path, heading, typ string }{
 		{"/posts", "Posts", ""},
 		{"/spanish", "Spanish", "spanish"},
-		{"/slices", "Slices", "slice"},
 	}
 	for _, f := range feeds {
 		view := PostListView{Heading: f.heading, Posts: listItemsByType(posts, f.typ)}
 		if err := b.render(f.path, "post_list.html", view); err != nil {
 			return err
 		}
+	}
+
+	sliceFeed, err := b.sliceFeed(posts)
+	if err != nil {
+		return err
+	}
+	if err := b.render("/slices", "slices.html", sliceFeed); err != nil {
+		return err
 	}
 
 	for _, p := range posts {
@@ -112,6 +119,31 @@ func (b *builder) Build() error {
 		return err
 	}
 	return b.writeChromaCSS()
+}
+
+// sliceFeed builds the /slices timeline from the published posts (already
+// newest-first), rendering each slice body inline.
+func (b *builder) sliceFeed(posts []repo.Post) (SliceFeedView, error) {
+	var items []SliceItem
+	for _, p := range posts {
+		if p.Type != "slice" {
+			continue
+		}
+		body, _, err := render(b.md, p.Body)
+		if err != nil {
+			return SliceFeedView{}, fmt.Errorf("slice %s: %w", p.Slug, err)
+		}
+		items = append(items, SliceItem{
+			URL:         postURL(p),
+			PublishedAt: parseDate(p.PublishedAt),
+			BodyHTML:    body,
+		})
+	}
+	return SliceFeedView{
+		Heading: "Slices",
+		Intro:   "Get a slice of my life. A personal feed of my thoughts, notes, and updates.",
+		Slices:  items,
+	}, nil
 }
 
 func (b *builder) postView(p repo.Post) (PostView, error) {

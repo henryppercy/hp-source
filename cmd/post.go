@@ -97,7 +97,7 @@ func runPostAdd(r *repo.Repo) error {
 }
 
 func runPostEdit(r *repo.Repo) error {
-	post, err := selectPost(r.ListPosts)
+	post, err := pickPost(r.ListArticles, forms.SelectArticle)
 	if err != nil {
 		return err
 	}
@@ -127,7 +127,7 @@ func runPostEdit(r *repo.Repo) error {
 }
 
 func runPostWrite(r *repo.Repo) error {
-	post, err := selectPost(r.ListPosts)
+	post, err := pickPost(r.ListArticles, forms.SelectArticle)
 	if err != nil {
 		return err
 	}
@@ -154,7 +154,7 @@ func runPostWrite(r *repo.Repo) error {
 }
 
 func runPostPublish(r *repo.Repo) error {
-	post, err := selectPost(r.ListDrafts)
+	post, err := pickPost(r.ListArticleDrafts, forms.SelectArticle)
 	if err != nil {
 		return err
 	}
@@ -177,7 +177,7 @@ func runPostPublish(r *repo.Repo) error {
 }
 
 func runPostDelete(r *repo.Repo) error {
-	post, err := selectPost(r.ListPosts)
+	post, err := pickPost(r.ListArticles, forms.SelectArticle)
 	if err != nil {
 		return err
 	}
@@ -210,9 +210,9 @@ func runPostDelete(r *repo.Repo) error {
 	return nil
 }
 
-// selectPost lists posts via list, returns the chosen one, or nil when there
-// are none to act on.
-func selectPost(list func() ([]repo.Post, error)) (*repo.Post, error) {
+// pickPost lists posts via list and asks the user to choose one with pick,
+// returning the chosen post or nil when there are none to act on.
+func pickPost(list func() ([]repo.Post, error), pick func([]repo.Post) (int, error)) (*repo.Post, error) {
 	posts, err := list()
 	if err != nil {
 		return nil, err
@@ -221,7 +221,7 @@ func selectPost(list func() ([]repo.Post, error)) (*repo.Post, error) {
 		return nil, nil
 	}
 
-	id, err := forms.SelectPost(posts)
+	id, err := pick(posts)
 	if err != nil {
 		return nil, err
 	}

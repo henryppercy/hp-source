@@ -59,6 +59,20 @@ type PostListView struct {
 	Posts   []PostListItem
 }
 
+// SliceItem is one note in the /slices timeline, body rendered inline.
+type SliceItem struct {
+	URL         string
+	PublishedAt time.Time
+	BodyHTML    template.HTML
+}
+
+// SliceFeedView is the top-level data for the /slices timeline.
+type SliceFeedView struct {
+	Heading string
+	Intro   string
+	Slices  []SliceItem
+}
+
 // ReadingView is the top-level data for the /reading page.
 type ReadingView struct {
 	CurrentlyReading []BookView

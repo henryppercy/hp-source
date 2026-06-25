@@ -59,17 +59,39 @@ func (r *Repo) ListPublishedPosts() ([]Post, error) {
 	)
 }
 
-// ListPosts returns every post, drafts included, most recently changed first,
-// for the authoring selection menus.
-func (r *Repo) ListPosts() ([]Post, error) {
-	return r.queryPosts(`SELECT ` + postColumns + ` FROM post ORDER BY updated_at DESC`)
-}
-
-// ListDrafts returns posts without a published_at date, for the publish menu.
-func (r *Repo) ListDrafts() ([]Post, error) {
+// ListArticles returns titled posts (type "" and spanish, not slices), most
+// recently changed first, for the hp post selection menus.
+func (r *Repo) ListArticles() ([]Post, error) {
 	return r.queryPosts(
 		`SELECT ` + postColumns + ` FROM post
-         WHERE published_at IS NULL
+         WHERE type != 'slice'
+         ORDER BY updated_at DESC`,
+	)
+}
+
+// ListArticleDrafts returns unpublished articles, for hp post publish.
+func (r *Repo) ListArticleDrafts() ([]Post, error) {
+	return r.queryPosts(
+		`SELECT ` + postColumns + ` FROM post
+         WHERE type != 'slice' AND published_at IS NULL
+         ORDER BY updated_at DESC`,
+	)
+}
+
+// ListSlices returns slices, most recently changed first, for the hp slice menus.
+func (r *Repo) ListSlices() ([]Post, error) {
+	return r.queryPosts(
+		`SELECT ` + postColumns + ` FROM post
+         WHERE type = 'slice'
+         ORDER BY updated_at DESC`,
+	)
+}
+
+// ListSliceDrafts returns unpublished slices, for hp slice publish.
+func (r *Repo) ListSliceDrafts() ([]Post, error) {
+	return r.queryPosts(
+		`SELECT ` + postColumns + ` FROM post
+         WHERE type = 'slice' AND published_at IS NULL
          ORDER BY updated_at DESC`,
 	)
 }

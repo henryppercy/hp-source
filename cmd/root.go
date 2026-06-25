@@ -89,6 +89,7 @@ func newRootCmd() *cobra.Command {
 		newExportCmd(a),
 		newSiteCmd(a),
 		newPostCmd(a),
+		newSliceCmd(a),
 	)
 
 	return root

@@ -1,0 +1,13 @@
+{{define "title"}}{{.Heading}} · hp{{end}}
+{{define "content"}}
+<h1>{{.Heading}}</h1>
+<p class="intro">{{.Intro}}</p>
+{{if .Slices}}
+{{range .Slices}}
+<article class="slice">
+<p class="meta"><a href="{{.URL}}/">{{fmtDate .PublishedAt}}</a></p>
+<div class="prose">{{.BodyHTML}}</div>
+</article>
+{{end}}
+{{else}}<p>Nothing here yet.</p>{{end}}
+{{end}}
