@@ -1,15 +1,21 @@
-{{define "title"}}home · hp{{end}}
-{{define "content"}}
-<h1>Home</h1>
-<p>{{.BooksReadInYear}} books read in {{.Year}}.</p>
+{{ define "title" }}home · hp{{ end }}
+{{ define "content" }}
+  <h1>Home</h1>
+  <p>{{ .BooksReadInYear }} books read in {{ .Year }}.</p>
 
-<h2>Recent posts</h2>
-<ul>
-{{range .RecentPosts}}<li><a href="{{.URL}}/">{{.Title}}</a> — {{fmtDate .PublishedAt}}</li>
-{{end}}</ul>
+  <h2>Recent posts</h2>
+  <ul>
+    {{ range .RecentPosts }}
+      <li>
+        <a href="{{ .URL }}/">{{ .Title }}</a> —
+        {{ fmtDate .PublishedAt }}
+      </li>
+    {{ end }}
 
-<h2>Recent books</h2>
-<ul>
-{{range .RecentBooks}}<li>{{.Title}} — {{.Author}}</li>
-{{end}}</ul>
-{{end}}
+  </ul>
+
+  <h2>Recent books</h2>
+  <ul>
+    {{ range .RecentBooks }}<li>{{ .Title }} — {{ .Author }}</li>{{ end }}
+  </ul>
+{{ end }}

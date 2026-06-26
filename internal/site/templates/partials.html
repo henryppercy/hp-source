@@ -1,6 +1,14 @@
-{{define "topics"}}{{if .}}<p class="topics">{{range .}}<a href="{{.URL}}">{{.Name}}</a> {{end}}</p>{{end}}{{end}}
-{{define "sliceCard"}}<article class="slice">
-<p class="meta"><a href="{{.URL}}/">{{fmtDate .PublishedAt}}</a></p>
-<div class="prose prose-pre:bg-transparent">{{.BodyHTML}}</div>
-{{template "topics" .Topics}}
-</article>{{end}}
+{{ define "topics" }}
+  {{ if . }}
+    <p class="topics">
+      {{ range . }}<a href="{{ .URL }}">{{ .Name }}</a>{{ end }}
+    </p>
+  {{ end }}
+{{ end }}
+{{ define "sliceCard" }}
+  <article class="slice">
+    <p class="meta"><a href="{{ .URL }}/">{{ fmtDate .PublishedAt }}</a></p>
+    <div class="prose">{{ .BodyHTML }}</div>
+    {{ template "topics" .Topics }}
+  </article>
+{{ end }}

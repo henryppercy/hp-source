@@ -1,22 +1,30 @@
-{{define "title"}}Spanish · hp{{end}}
-{{define "content"}}
-<h1>Spanish</h1>
+{{ define "title" }}Spanish · hp{{ end }}
+{{ define "content" }}
+  <h1>Spanish</h1>
 
-<section class="dashboard">
-<!-- TODO: Spanish learning dashboard (streak, stats, goals) goes here. -->
-<p>Dashboard coming soon.</p>
-</section>
+  <section class="dashboard">
+    <!-- TODO: Spanish learning dashboard (streak, stats, goals) goes here. -->
+    <p>Dashboard coming soon.</p>
+  </section>
 
-{{if .Articles}}
-<h2>Articles</h2>
-<ul>
-{{range .Articles}}<li><a href="{{.URL}}/">{{.Title}}</a> · {{fmtDate .PublishedAt}}{{if .Headline}} · {{.Headline}}{{end}}</li>
-{{end}}</ul>
-{{end}}
-{{if .Slices}}
-<h2>Slices</h2>
-{{range .Slices}}{{template "sliceCard" .}}
-{{end}}
-{{end}}
-{{if and (not .Articles) (not .Slices)}}<p>No Spanish posts yet.</p>{{end}}
-{{end}}
+  {{ if .Articles }}
+    <h2>Articles</h2>
+    <ul>
+      {{ range .Articles }}
+        <li>
+          <a href="{{ .URL }}/">{{ .Title }}</a> ·
+          {{ fmtDate .PublishedAt }}{{ if .Headline }}· {{ .Headline }}{{ end }}
+        </li>
+      {{ end }}
+    </ul>
+  {{ end }}
+  {{ if .Slices }}
+    <h2>Slices</h2>
+    {{ range .Slices }}
+      {{ template "sliceCard" . }}
+    {{ end }}
+  {{ end }}
+  {{ if and (not .Articles) (not .Slices) }}
+    <p>No Spanish posts yet.</p>
+  {{ end }}
+{{ end }}

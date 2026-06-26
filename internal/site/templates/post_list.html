@@ -1,7 +1,16 @@
-{{define "title"}}{{.Heading}} · hp{{end}}
-{{define "content"}}
-<h1>{{.Heading}}</h1>
-{{if .Posts}}<ul>
-{{range .Posts}}<li><a href="{{.URL}}/">{{.Title}}</a> — {{fmtDate .PublishedAt}}{{if .Headline}} — {{.Headline}}{{end}}</li>
-{{end}}</ul>{{else}}<p>Nothing here yet.</p>{{end}}
-{{end}}
+{{ define "title" }}{{ .Heading }} · hp{{ end }}
+{{ define "content" }}
+  <h1>{{ .Heading }}</h1>
+  {{ if .Posts }}
+    <ul>
+      {{ range .Posts }}
+        <li>
+          <a href="{{ .URL }}/">{{ .Title }}</a> —
+          {{ fmtDate .PublishedAt }}{{ if .Headline }}— {{ .Headline }}{{ end }}
+        </li>
+      {{ end }}
+    </ul>
+  {{ else }}
+    <p>Nothing here yet.</p>
+  {{ end }}
+{{ end }}
