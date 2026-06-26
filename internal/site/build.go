@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/frostybee/kazari"
 	"github.com/henryppercy/hp-source/internal/repo"
 	"github.com/henryppercy/hp-source/internal/text"
 	"github.com/yuin/goldmark"
@@ -24,16 +25,19 @@ type builder struct {
 	assets fs.FS
 	out    string
 	funcs  template.FuncMap
+	engine *kazari.Engine
 	md     goldmark.Markdown
 }
 
 func newBuilder(r *repo.Repo, assets fs.FS, out string) *builder {
+	engine := newCodeEngine()
 	return &builder{
 		repo:   r,
 		assets: assets,
 		out:    out,
 		funcs:  template.FuncMap{"fmtDate": fmtDate},
-		md:     newMarkdown(),
+		engine: engine,
+		md:     newMarkdown(engine),
 	}
 }
 
@@ -47,7 +51,7 @@ func fmtDate(t time.Time) string {
 }
 
 // Build wipes the output directory, then renders every page and copies the
-// static assets and generated chroma stylesheet into it.
+// static assets and generated code-block assets into it.
 func (b *builder) Build() error {
 	if err := os.RemoveAll(b.out); err != nil {
 		return fmt.Errorf("failed to clear output directory: %w", err)
@@ -123,7 +127,7 @@ func (b *builder) Build() error {
 	if err := b.copyStatic(); err != nil {
 		return err
 	}
-	return b.writeChromaCSS()
+	return b.writeCodeAssets()
 }
 
 // sliceItems renders already-filtered slice posts (newest-first) into timeline
@@ -197,17 +201,21 @@ func (b *builder) postView(p repo.Post) (PostView, error) {
 	}, nil
 }
 
-func (b *builder) writeChromaCSS() error {
-	css, err := chromaCSS()
-	if err != nil {
-		return err
+// writeCodeAssets emits the kazari stylesheet and progressive-enhancement script
+// that style and drive the rendered code blocks.
+func (b *builder) writeCodeAssets() error {
+	assets := map[string]string{
+		filepath.Join("static", "styles", "code.css"): b.engine.CSS(),
+		filepath.Join("static", "scripts", "code.js"): b.engine.JS(),
 	}
-	dest := filepath.Join(b.out, "static", "styles", "chroma.css")
-	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
-		return fmt.Errorf("failed to create directory for %s: %w", dest, err)
-	}
-	if err := os.WriteFile(dest, css, 0644); err != nil {
-		return fmt.Errorf("failed to write %s: %w", dest, err)
+	for rel, content := range assets {
+		dest := filepath.Join(b.out, rel)
+		if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
+			return fmt.Errorf("failed to create directory for %s: %w", dest, err)
+		}
+		if err := os.WriteFile(dest, []byte(content), 0644); err != nil {
+			return fmt.Errorf("failed to write %s: %w", dest, err)
+		}
 	}
 	return nil
 }

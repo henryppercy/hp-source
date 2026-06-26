@@ -1,3 +1,33 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @source "../templates";
+
+/* kazari renders its own framed code blocks; keep Typography out of their
+   internals (it still styles inline code and everything else). */
+.prose :where(.kazari-block) {
+  margin: 1.5em 0;
+}
+.prose :where(.kazari-block pre) {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+.prose :where(.kazari-block code) {
+  background: transparent;
+  padding: 0;
+  font-weight: inherit;
+}
+.prose :where(.kazari-block code)::before,
+.prose :where(.kazari-block code)::after {
+  content: none;
+}
+
+/* Progressive enhancement: the code-block controls and collapse affordance need
+   JS, so hide them until enhanced and reveal any collapsed code when JS is off. */
+.no-js .kz-toolbar-right,
+.no-js .kz-collapse-bar {
+  display: none;
+}
+.no-js .kazari-block.kz-collapsed .kz-hidden {
+  display: grid;
+}

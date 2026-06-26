@@ -1,23 +1,29 @@
-{{define "layout"}}<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{block "title" .}}hp{{end}}</title>
-<link rel="icon" href="/static/images/favicon.svg">
-<link rel="stylesheet" href="/static/styles/app.css">
-<link rel="stylesheet" href="/static/styles/chroma.css">
-</head>
-<body>
-<header class="nav">
-<a href="/">home</a>
-<a href="/posts">posts</a>
-<a href="/spanish">spanish</a>
-<a href="/slices">slices</a>
-<a href="/reading">reading</a>
-</header>
-<main>
-{{template "content" .}}
-</main>
-</body>
-</html>{{end}}
+{{ define "layout" }}
+  <!doctype html>
+  <html lang="en" class="no-js">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>{{ block "title" . }}hp{{ end }}</title>
+      <script>
+        document.documentElement.classList.remove("no-js");
+      </script>
+      <link rel="icon" href="/static/images/favicon.svg" />
+      <link rel="stylesheet" href="/static/styles/app.css" />
+      <link rel="stylesheet" href="/static/styles/code.css" />
+    </head>
+    <body>
+      <header class="nav">
+        <div class="flex items-center gap-x-4 bg-blue-200">
+          <a href="/">home</a>
+          <a href="/posts">posts</a>
+          <a href="/spanish">spanish</a>
+          <a href="/slices">slices</a>
+          <a href="/reading">reading</a>
+        </div>
+      </header>
+      <main>{{ template "content" . }}</main>
+      <script defer src="/static/scripts/code.js"></script>
+    </body>
+  </html>
+{{ end }}
