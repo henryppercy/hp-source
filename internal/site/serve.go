@@ -12,12 +12,13 @@ import (
 	"github.com/henryppercy/hp-source/internal/repo"
 )
 
-// devAssetDir is where templates and static assets live on disk, read by
-// serve --watch so live edits are reflected without recompiling the binary.
+// devAssetDir is where static assets live on disk, read by serve --watch so CSS
+// and image edits are reflected without recompiling. Templates are compiled into
+// the binary by templ, so template edits need a rebuild (air handles that in dev).
 const devAssetDir = "internal/site"
 
 // Serve builds the site and serves it over HTTP. With watch enabled it reads
-// templates and assets from disk and rebuilds when they change.
+// static assets from disk and rebuilds when they change.
 func Serve(r *repo.Repo, out, addr string, watch bool) error {
 	assets := embeddedAssets()
 	if watch {
@@ -82,10 +83,9 @@ func watchAndRebuild(b *builder) {
 	}
 	defer w.Close()
 
-	// fsnotify is not recursive, so add every directory under the asset roots
-	// (templates/, static/ and its styles/ and images/ subdirs).
+	// fsnotify is not recursive, so add every directory under the static root
+	// (static/ and its styles/ and images/ subdirs).
 	for _, root := range []string{
-		filepath.Join(devAssetDir, "templates"),
 		filepath.Join(devAssetDir, "static"),
 	} {
 		fs.WalkDir(os.DirFS(root), ".", func(path string, d fs.DirEntry, err error) error {

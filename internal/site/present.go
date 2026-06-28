@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/henryppercy/hp-source/internal/repo"
+	"github.com/henryppercy/hp-source/internal/site/templates"
 	"github.com/henryppercy/hp-source/internal/text"
 )
 
@@ -22,8 +23,8 @@ func parseDate(s string) time.Time {
 	return time.Time{}
 }
 
-func toListItem(p repo.Post) PostListItem {
-	return PostListItem{
+func toListItem(p repo.Post) templates.PostListItem {
+	return templates.PostListItem{
 		Title:       p.Title,
 		Slug:        p.Slug,
 		URL:         postURL(p),
@@ -42,10 +43,10 @@ func postURL(p repo.Post) string {
 }
 
 // topicLinks maps a post's topics to display links to their feeds.
-func topicLinks(topics []repo.Topic) []TopicLink {
-	links := make([]TopicLink, len(topics))
+func topicLinks(topics []repo.Topic) []templates.TopicLink {
+	links := make([]templates.TopicLink, len(topics))
 	for i, t := range topics {
-		links[i] = TopicLink{Name: t.Name, URL: "/topics/" + text.Slug(t.Name)}
+		links[i] = templates.TopicLink{Name: t.Name, URL: "/topics/" + text.Slug(t.Name)}
 	}
 	return links
 }
@@ -60,8 +61,8 @@ func hasTopic(p repo.Post, name string) bool {
 }
 
 // articleItems maps the articles matching keep to list items.
-func articleItems(posts []repo.Post, keep func(repo.Post) bool) []PostListItem {
-	var items []PostListItem
+func articleItems(posts []repo.Post, keep func(repo.Post) bool) []templates.PostListItem {
+	var items []templates.PostListItem
 	for _, p := range posts {
 		if p.Kind == "article" && keep(p) {
 			items = append(items, toListItem(p))
@@ -72,7 +73,7 @@ func articleItems(posts []repo.Post, keep func(repo.Post) bool) []PostListItem {
 
 // mainArticles are the articles for /posts and home recents: every article
 // except those tagged spanish (which live on /spanish and /topics/spanish).
-func mainArticles(posts []repo.Post) []PostListItem {
+func mainArticles(posts []repo.Post) []templates.PostListItem {
 	return articleItems(posts, func(p repo.Post) bool {
 		return !hasTopic(p, "spanish")
 	})
@@ -80,7 +81,7 @@ func mainArticles(posts []repo.Post) []PostListItem {
 
 // recentPosts returns the n most recent main articles for the home page. Input
 // is assumed newest-first; it slices, never sorts.
-func recentPosts(posts []repo.Post, n int) []PostListItem {
+func recentPosts(posts []repo.Post, n int) []templates.PostListItem {
 	items := mainArticles(posts)
 	if len(items) > n {
 		items = items[:n]
@@ -89,7 +90,7 @@ func recentPosts(posts []repo.Post, n int) []PostListItem {
 }
 
 // articlesWithTopic maps the articles carrying the named topic to list items.
-func articlesWithTopic(posts []repo.Post, name string) []PostListItem {
+func articlesWithTopic(posts []repo.Post, name string) []templates.PostListItem {
 	return articleItems(posts, func(p repo.Post) bool {
 		return hasTopic(p, name)
 	})
@@ -149,8 +150,8 @@ func coverURL(file string) string {
 	return imageBase + "/" + file
 }
 
-func bookView(e repo.ReadEntry) BookView {
-	return BookView{
+func bookView(e repo.ReadEntry) templates.BookView {
+	return templates.BookView{
 		Title:        e.Title,
 		Author:       e.Author,
 		ImageURL:     coverURL(e.CoverImage),
@@ -160,16 +161,16 @@ func bookView(e repo.ReadEntry) BookView {
 	}
 }
 
-func bookViews(reads []repo.ReadEntry) []BookView {
-	var books []BookView
+func bookViews(reads []repo.ReadEntry) []templates.BookView {
+	var books []templates.BookView
 	for _, e := range reads {
 		books = append(books, bookView(e))
 	}
 	return books
 }
 
-func booksByStatus(books []BookView, status string) []BookView {
-	var out []BookView
+func booksByStatus(books []templates.BookView, status string) []templates.BookView {
+	var out []templates.BookView
 	for _, b := range books {
 		if b.Status == status {
 			out = append(out, b)
@@ -180,7 +181,7 @@ func booksByStatus(books []BookView, status string) []BookView {
 
 // recentBooks returns up to n finished books, keeping the repo's
 // newest-finished-first order; it filters then slices, never sorts.
-func recentBooks(books []BookView, n int) []BookView {
+func recentBooks(books []templates.BookView, n int) []templates.BookView {
 	finished := booksByStatus(books, "finished")
 	if len(finished) > n {
 		finished = finished[:n]

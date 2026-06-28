@@ -1,0 +1,53 @@
+package templates
+
+templ Post(v PostView) {
+	@Layout(postTitle(v.Title)) {
+		<article>
+			if v.Title != "" {
+				<h1>{ v.Title }</h1>
+			}
+			if v.Headline != "" {
+				<p class="headline">{ v.Headline }</p>
+			}
+			<p class="meta">
+				Posted { fmtDate(v.PublishedAt) }
+				if !v.UpdatedAt.IsZero() {
+					· Updated { fmtDate(v.UpdatedAt) }
+				}
+			</p>
+			if len(v.TOC) > 0 {
+				<nav class="toc">
+					<strong>Contents</strong>
+					@tocList(v.TOC)
+				</nav>
+			}
+			<div class="prose">
+				@templ.Raw(string(v.BodyHTML))
+			</div>
+			@topics(v.Topics)
+		</article>
+	}
+}
+
+// tocList renders a table of contents; entries may carry one level of children.
+templ tocList(entries []TOCEntry) {
+	<ul>
+		for _, e := range entries {
+			<li>
+				<a href={ "#" + e.Anchor }>{ e.Title }</a>
+				if len(e.Children) > 0 {
+					@tocList(e.Children)
+				}
+			</li>
+		}
+	</ul>
+}
+
+// postTitle is the document title for a post, falling back to "Slice · hp" for
+// title-less slices.
+func postTitle(title string) string {
+	if title == "" {
+		title = "Slice"
+	}
+	return title + " · hp"
+}

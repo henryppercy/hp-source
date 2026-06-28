@@ -1,0 +1,35 @@
+package templates
+
+// Layout is the HTML shell shared by every page. The page title is passed in
+// and the page body is supplied as templ children.
+templ Layout(title string) {
+	<!doctype html>
+	<html lang="en" class="no-js">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>{ title }</title>
+			<script>
+				document.documentElement.classList.remove("no-js");
+			</script>
+			<link rel="icon" href="/static/images/favicon.svg"/>
+			<link rel="stylesheet" href="/static/styles/app.css"/>
+			<link rel="stylesheet" href="/static/styles/code.css"/>
+		</head>
+		<body>
+			<header class="nav">
+				<div>
+					<a href="/">home</a>
+					<a href="/posts">posts</a>
+					<a href="/spanish">spanish</a>
+					<a href="/slices">slices</a>
+					<a href="/reading">reading</a>
+				</div>
+			</header>
+			<main>
+				{ children... }
+			</main>
+			<script defer src="/static/scripts/code.js"></script>
+		</body>
+	</html>
+}

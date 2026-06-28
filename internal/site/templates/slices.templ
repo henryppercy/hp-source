@@ -1,0 +1,15 @@
+package templates
+
+templ Slices(v SliceFeedView) {
+	@Layout(v.Heading + " · hp") {
+		<h1>{ v.Heading }</h1>
+		<p class="intro">{ v.Intro }</p>
+		if len(v.Slices) > 0 {
+			for _, s := range v.Slices {
+				@sliceCard(s)
+			}
+		} else {
+			<p>Nothing here yet.</p>
+		}
+	}
+}

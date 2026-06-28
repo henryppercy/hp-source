@@ -1,0 +1,25 @@
+package templates
+
+// TODO: Spanish learning dashboard (streak, stats, goals) goes in the dashboard
+// section below, replacing the placeholder.
+templ Spanish(v TopicFeedView) {
+	@Layout("Spanish · hp") {
+		<h1>Spanish</h1>
+		<section class="dashboard">
+			<p>Dashboard coming soon.</p>
+		</section>
+		if len(v.Articles) > 0 {
+			<h2>Articles</h2>
+			@topicArticles(v.Articles)
+		}
+		if len(v.Slices) > 0 {
+			<h2>Slices</h2>
+			for _, s := range v.Slices {
+				@sliceCard(s)
+			}
+		}
+		if len(v.Articles) == 0 && len(v.Slices) == 0 {
+			<p>No Spanish posts yet.</p>
+		}
+	}
+}

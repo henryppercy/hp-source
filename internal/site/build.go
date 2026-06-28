@@ -1,16 +1,18 @@
 package site
 
 import (
+	"context"
 	"fmt"
-	"html/template"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/a-h/templ"
 	"github.com/frostybee/kazari"
 	"github.com/henryppercy/hp-source/internal/repo"
+	"github.com/henryppercy/hp-source/internal/site/templates"
 	"github.com/henryppercy/hp-source/internal/text"
 	"github.com/yuin/goldmark"
 )
@@ -24,7 +26,6 @@ type builder struct {
 	repo   *repo.Repo
 	assets fs.FS
 	out    string
-	funcs  template.FuncMap
 	engine *kazari.Engine
 	md     goldmark.Markdown
 }
@@ -35,19 +36,9 @@ func newBuilder(r *repo.Repo, assets fs.FS, out string) *builder {
 		repo:   r,
 		assets: assets,
 		out:    out,
-		funcs:  template.FuncMap{"fmtDate": fmtDate},
 		engine: engine,
 		md:     newMarkdown(engine),
 	}
-}
-
-// fmtDate formats a date for display, rendering the zero time as "" so missing
-// dates show blank rather than a year-one placeholder.
-func fmtDate(t time.Time) string {
-	if t.IsZero() {
-		return ""
-	}
-	return t.Format("2 Jan 2006")
 }
 
 // Build wipes the output directory, then renders every page and copies the
@@ -69,20 +60,20 @@ func (b *builder) Build() error {
 	books := bookViews(reads)
 	year := time.Now().Year()
 
-	home := HomeView{
+	home := templates.HomeView{
 		RecentBooks:     recentBooks(books, recentLimit),
 		RecentPosts:     recentPosts(posts, recentLimit),
 		BooksReadInYear: booksReadInYear(reads, year),
 		Year:            year,
 	}
-	if err := b.render("/", "home.html", home); err != nil {
+	if err := b.render("/", templates.Home(home)); err != nil {
 		return err
 	}
 
-	if err := b.render("/posts", "post_list.html", PostListView{
+	if err := b.render("/posts", templates.PostList(templates.PostListView{
 		Heading: "Posts",
 		Posts:   mainArticles(posts),
-	}); err != nil {
+	})); err != nil {
 		return err
 	}
 
@@ -90,11 +81,11 @@ func (b *builder) Build() error {
 	if err != nil {
 		return err
 	}
-	if err := b.render("/slices", "slices.html", SliceFeedView{
+	if err := b.render("/slices", templates.Slices(templates.SliceFeedView{
 		Heading: "Slices",
 		Intro:   "Get a slice of my life. A personal feed of my thoughts, notes, and updates.",
 		Slices:  timeline,
-	}); err != nil {
+	})); err != nil {
 		return err
 	}
 
@@ -107,20 +98,20 @@ func (b *builder) Build() error {
 		if err != nil {
 			return err
 		}
-		if err := b.render(postURL(p), "post.html", view); err != nil {
+		if err := b.render(postURL(p), templates.Post(view)); err != nil {
 			return err
 		}
 	}
 
-	reading := ReadingView{
+	reading := templates.ReadingView{
 		CurrentlyReading: booksByStatus(books, "reading"),
 		Finished:         booksByStatus(books, "finished"),
 	}
-	if err := b.render("/reading", "reading.html", reading); err != nil {
+	if err := b.render("/reading", templates.Reading(reading)); err != nil {
 		return err
 	}
 
-	if err := b.render("/404", "404.html", nil); err != nil {
+	if err := b.render("/404", templates.NotFound()); err != nil {
 		return err
 	}
 
@@ -132,14 +123,14 @@ func (b *builder) Build() error {
 
 // sliceItems renders already-filtered slice posts (newest-first) into timeline
 // items, reused by /slices and topic pages.
-func (b *builder) sliceItems(slices []repo.Post) ([]SliceItem, error) {
-	var items []SliceItem
+func (b *builder) sliceItems(slices []repo.Post) ([]templates.SliceItem, error) {
+	var items []templates.SliceItem
 	for _, p := range slices {
 		body, _, err := render(b.md, p.Body)
 		if err != nil {
 			return nil, fmt.Errorf("slice %s: %w", p.Slug, err)
 		}
-		items = append(items, SliceItem{
+		items = append(items, templates.SliceItem{
 			URL:         postURL(p),
 			PublishedAt: parseDate(p.PublishedAt),
 			BodyHTML:    body,
@@ -156,7 +147,7 @@ func (b *builder) renderTopics(posts []repo.Post) error {
 	if err != nil {
 		return err
 	}
-	if err := b.render("/spanish", "spanish.html", spanish); err != nil {
+	if err := b.render("/spanish", templates.Spanish(spanish)); err != nil {
 		return err
 	}
 
@@ -165,31 +156,31 @@ func (b *builder) renderTopics(posts []repo.Post) error {
 		if err != nil {
 			return err
 		}
-		if err := b.render("/topics/"+text.Slug(name), "topic.html", view); err != nil {
+		if err := b.render("/topics/"+text.Slug(name), templates.Topic(view)); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (b *builder) topicFeed(name string, posts []repo.Post) (TopicFeedView, error) {
+func (b *builder) topicFeed(name string, posts []repo.Post) (templates.TopicFeedView, error) {
 	slices, err := b.sliceItems(slicesWithTopic(posts, name))
 	if err != nil {
-		return TopicFeedView{}, err
+		return templates.TopicFeedView{}, err
 	}
-	return TopicFeedView{
+	return templates.TopicFeedView{
 		Heading:  titleCase(name),
 		Articles: articlesWithTopic(posts, name),
 		Slices:   slices,
 	}, nil
 }
 
-func (b *builder) postView(p repo.Post) (PostView, error) {
+func (b *builder) postView(p repo.Post) (templates.PostView, error) {
 	body, toc, err := render(b.md, p.Body)
 	if err != nil {
-		return PostView{}, fmt.Errorf("post %s: %w", p.Slug, err)
+		return templates.PostView{}, fmt.Errorf("post %s: %w", p.Slug, err)
 	}
-	return PostView{
+	return templates.PostView{
 		Title:       p.Title,
 		Slug:        p.Slug,
 		PublishedAt: parseDate(p.PublishedAt),
@@ -220,14 +211,7 @@ func (b *builder) writeCodeAssets() error {
 	return nil
 }
 
-func (b *builder) render(urlPath, page string, data any) error {
-	tmpl, err := template.New("layout").Funcs(b.funcs).ParseFS(
-		b.assets, "templates/layout.html", "templates/partials.html", "templates/"+page,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to parse template %s: %w", page, err)
-	}
-
+func (b *builder) render(urlPath string, c templ.Component) error {
 	dest := outputPath(b.out, urlPath)
 	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
 		return fmt.Errorf("failed to create directory for %s: %w", dest, err)
@@ -239,7 +223,7 @@ func (b *builder) render(urlPath, page string, data any) error {
 	}
 	defer f.Close()
 
-	if err := tmpl.ExecuteTemplate(f, "layout", data); err != nil {
+	if err := c.Render(context.Background(), f); err != nil {
 		return fmt.Errorf("failed to render %s: %w", urlPath, err)
 	}
 	return nil

@@ -1,0 +1,32 @@
+package templates
+
+templ Reading(v ReadingView) {
+	@Layout("reading · hp") {
+		<h1>Reading</h1>
+		<h2>Currently reading</h2>
+		if len(v.CurrentlyReading) > 0 {
+			<ul>
+				for _, b := range v.CurrentlyReading {
+					<li>{ b.Title } — { b.Author }</li>
+				}
+			</ul>
+		} else {
+			<p>Nothing right now.</p>
+		}
+		<h2>Finished</h2>
+		if len(v.Finished) > 0 {
+			<ul>
+				for _, b := range v.Finished {
+					<li>
+						{ b.Title } — { b.Author }
+						if b.Rating != "" {
+							({ b.Rating })
+						}
+					</li>
+				}
+			</ul>
+		} else {
+			<p>Nothing yet.</p>
+		}
+	}
+}

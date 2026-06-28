@@ -9,6 +9,7 @@ import (
 	"github.com/frostybee/kazari"
 	kazarichroma "github.com/frostybee/kazari/chroma"
 	kazarimd "github.com/frostybee/kazari/goldmark"
+	"github.com/henryppercy/hp-source/internal/site/templates"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/extension"
@@ -57,7 +58,7 @@ func newMarkdown(engine *kazari.Engine) goldmark.Markdown {
 
 // render turns markdown into sanitised-by-construction HTML plus a table of
 // contents built from the heading IDs goldmark assigns.
-func render(md goldmark.Markdown, source string) (template.HTML, []TOCEntry, error) {
+func render(md goldmark.Markdown, source string) (template.HTML, []templates.TOCEntry, error) {
 	src := []byte(source)
 	doc := md.Parser().Parse(text.NewReader(src))
 	resolveImages(doc)
@@ -99,8 +100,8 @@ func hasScheme(dest string) bool {
 
 // extractTOC collects depth-2 headings, nesting depth-3 headings under the
 // preceding depth-2 entry.
-func extractTOC(doc ast.Node, source []byte) []TOCEntry {
-	var toc []TOCEntry
+func extractTOC(doc ast.Node, source []byte) []templates.TOCEntry {
+	var toc []templates.TOCEntry
 	ast.Walk(doc, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
 		if !entering {
 			return ast.WalkContinue, nil
@@ -110,7 +111,7 @@ func extractTOC(doc ast.Node, source []byte) []TOCEntry {
 			return ast.WalkContinue, nil
 		}
 
-		entry := TOCEntry{Title: nodeText(h, source), Anchor: headingID(h)}
+		entry := templates.TOCEntry{Title: nodeText(h, source), Anchor: headingID(h)}
 		if h.Level == 3 && len(toc) > 0 {
 			parent := &toc[len(toc)-1]
 			parent.Children = append(parent.Children, entry)

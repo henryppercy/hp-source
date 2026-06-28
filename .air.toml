@@ -1,0 +1,17 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  # Regenerate templ components, then build, before each run.
+  cmd = "go tool templ generate && go build -o ./tmp/main ."
+  bin = "./tmp/main"
+  full_bin = "./tmp/main site serve --watch --addr :8080"
+  include_ext = ["go", "templ"]
+  # Generated *_templ.go would otherwise retrigger the build that wrote them.
+  exclude_regex = ["_templ.go$", "_test.go$"]
+  exclude_dir = ["tmp", "dist", "bin", "internal/site/static"]
+  delay = 200
+  stop_on_error = true
+
+[misc]
+  clean_on_exit = true

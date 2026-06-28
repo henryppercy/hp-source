@@ -1,0 +1,38 @@
+package templates
+
+// topics renders a post's topic links, nothing when there are none.
+templ topics(links []TopicLink) {
+	if len(links) > 0 {
+		<p class="topics">
+			for _, t := range links {
+				<a href={ t.URL }>{ t.Name }</a>
+			}
+		</p>
+	}
+}
+
+// topicArticles is the article list shared by the topic and Spanish feeds.
+templ topicArticles(items []PostListItem) {
+	<ul>
+		for _, p := range items {
+			<li>
+				<a href={ p.URL + "/" }>{ p.Title }</a> ·
+				{ fmtDate(p.PublishedAt) }
+				if p.Headline != "" {
+					· { p.Headline }
+				}
+			</li>
+		}
+	</ul>
+}
+
+// sliceCard is one note in a slice timeline: dateline, inline body, topics.
+templ sliceCard(s SliceItem) {
+	<article class="slice">
+		<p class="meta"><a href={ s.URL + "/" }>{ fmtDate(s.PublishedAt) }</a></p>
+		<div class="prose">
+			@templ.Raw(string(s.BodyHTML))
+		</div>
+		@topics(s.Topics)
+	</article>
+}

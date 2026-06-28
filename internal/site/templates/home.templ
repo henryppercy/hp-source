@@ -1,0 +1,25 @@
+package templates
+
+import "fmt"
+
+templ Home(v HomeView) {
+	@Layout("home · hp") {
+		<h1>Home</h1>
+		<p>{ fmt.Sprintf("%d books read in %d.", v.BooksReadInYear, v.Year) }</p>
+		<h2>Recent posts</h2>
+		<ul>
+			for _, p := range v.RecentPosts {
+				<li>
+					<a href={ p.URL + "/" }>{ p.Title }</a> —
+					{ fmtDate(p.PublishedAt) }
+				</li>
+			}
+		</ul>
+		<h2>Recent books</h2>
+		<ul>
+			for _, b := range v.RecentBooks {
+				<li>{ b.Title } — { b.Author }</li>
+			}
+		</ul>
+	}
+}

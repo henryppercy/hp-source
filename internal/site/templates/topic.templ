@@ -1,0 +1,23 @@
+package templates
+
+templ Topic(v TopicFeedView) {
+	@Layout(v.Heading + " · hp") {
+		<h1>{ v.Heading }</h1>
+		if v.Intro != "" {
+			<p class="intro">{ v.Intro }</p>
+		}
+		if len(v.Articles) > 0 {
+			<h2>Articles</h2>
+			@topicArticles(v.Articles)
+		}
+		if len(v.Slices) > 0 {
+			<h2>Slices</h2>
+			for _, s := range v.Slices {
+				@sliceCard(s)
+			}
+		}
+		if len(v.Articles) == 0 && len(v.Slices) == 0 {
+			<p>Nothing here yet.</p>
+		}
+	}
+}

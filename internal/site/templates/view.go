@@ -1,9 +1,18 @@
-package site
+package templates
 
 import (
 	"html/template"
 	"time"
 )
+
+// fmtDate formats a date for display, rendering the zero time as "" so missing
+// dates show blank rather than a year-one placeholder.
+func fmtDate(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.Format("2 Jan 2006")
+}
 
 // TopicLink is a topic shown on a page, linking to its feed.
 type TopicLink struct {

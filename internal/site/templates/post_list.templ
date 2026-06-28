@@ -1,0 +1,22 @@
+package templates
+
+templ PostList(v PostListView) {
+	@Layout(v.Heading + " · hp") {
+		<h1>{ v.Heading }</h1>
+		if len(v.Posts) > 0 {
+			<ul>
+				for _, p := range v.Posts {
+					<li>
+						<a href={ p.URL + "/" }>{ p.Title }</a> —
+						{ fmtDate(p.PublishedAt) }
+						if p.Headline != "" {
+							— { p.Headline }
+						}
+					</li>
+				}
+			</ul>
+		} else {
+			<p>Nothing here yet.</p>
+		}
+	}
+}
