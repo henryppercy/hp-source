@@ -1,5 +1,7 @@
 package templates
 
+import "fmt"
+
 templ Post(v PostView) {
 	@Layout(postTitle(v.Title), "/posts") {
 		<article>
@@ -17,8 +19,24 @@ templ Post(v PostView) {
 			</p>
 			if len(v.TOC) > 0 {
 				<nav class="toc">
-					<strong>Contents</strong>
-					@tocList(v.TOC)
+					<div class="toc-head">
+						<span class="toc-title">Contents</span>
+						<span class="toc-count">{ sectionLabel(len(v.TOC)) }</span>
+					</div>
+					<ol class="toc-list">
+						for _, e := range v.TOC {
+							<li>
+								<a href={ "#" + e.Anchor }>{ e.Title }</a>
+								if len(e.Children) > 0 {
+									<ul class="toc-sub">
+										for _, c := range e.Children {
+											<li><a href={ "#" + c.Anchor }>{ c.Title }</a></li>
+										}
+									</ul>
+								}
+							</li>
+						}
+					</ol>
 				</nav>
 			}
 			<div class="prose">
@@ -29,18 +47,12 @@ templ Post(v PostView) {
 	}
 }
 
-// tocList renders a table of contents; entries may carry one level of children.
-templ tocList(entries []TOCEntry) {
-	<ul>
-		for _, e := range entries {
-			<li>
-				<a href={ "#" + e.Anchor }>{ e.Title }</a>
-				if len(e.Children) > 0 {
-					@tocList(e.Children)
-				}
-			</li>
-		}
-	</ul>
+// sectionLabel is the TOC header count, e.g. "5 sections".
+func sectionLabel(n int) string {
+	if n == 1 {
+		return "1 section"
+	}
+	return fmt.Sprintf("%d sections", n)
 }
 
 // postTitle is the document title for a post, falling back to "Slice" for
