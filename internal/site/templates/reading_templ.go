@@ -168,7 +168,7 @@ func Reading(v ReadingView) templ.Component {
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = Layout("reading · hp").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Layout(docTitle("Reading"), "/reading").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

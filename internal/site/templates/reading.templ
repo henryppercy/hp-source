@@ -1,7 +1,7 @@
 package templates
 
 templ Reading(v ReadingView) {
-	@Layout("reading · hp") {
+	@Layout(docTitle("Reading"), "/reading") {
 		<h1>Reading</h1>
 		<h2>Currently reading</h2>
 		if len(v.CurrentlyReading) > 0 {

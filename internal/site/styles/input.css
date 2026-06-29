@@ -2,6 +2,84 @@
 @plugin "@tailwindcss/typography";
 @source "../templates";
 
+@theme {
+  /* Fonts */
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Newsreader", ui-serif, Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+  /* Foreground (text) */
+  --color-fg: #16181a; /* primary text, strong rules */
+  --color-fg-body: #1d2023; /* long-form body copy */
+  --color-muted: #54585b; /* secondary text, captions */
+  --color-faint: #8a8e91; /* tertiary / timestamps */
+  --color-fainter: #9c9f9d; /* mono labels, kickers */
+  --color-ghost: #c4c7c4; /* inactive nav numbers, dividers */
+
+  /* Accent (red) */
+  --color-accent: #b42318; /* the one accent, markers only */
+  --color-accent-tint: #fbe4e1; /* highlight behind text */
+
+  /* Surfaces */
+  --color-surface: #ffffff; /* page background */
+  --color-code: #fafafa; /* code block background */
+  --color-code-inline: #f3f3f1; /* inline code background */
+
+  /* Rules / borders */
+  --color-rule: #e6e6e4; /* standard hairline between entries */
+  --color-rule-soft: #d6d7d5; /* boxed-off module border */
+
+  /* Type scale (display) */
+  --text-kicker: 0.625rem; /* 10px mono uppercase */
+  --text-meta: 0.6875rem; /* 11px mono */
+  --text-label: 0.8125rem; /* 13px nav / UI */
+  --text-body: 1.125rem; /* 18px serif body */
+  --text-lead: 1.25rem; /* 20px lead paragraph */
+  /* Display sizes are fluid: clamp(mobile-min, rem + vw, desktop-max). Reading
+     and UI sizes above stay fixed. Set line-height/tracking. */
+  --text-h3: clamp(
+    1.375rem,
+    1.25rem + 0.55vw,
+    1.6875rem
+  ); /* 22px -> 27px section head */
+  --text-h2: clamp(1.625rem, 1.4rem + 0.9vw, 2.125rem); /* 26px -> 34px */
+  --text-h1: clamp(2rem, 1.5rem + 2.2vw, 3.25rem); /* 32px -> 52px page title */
+  --text-display: clamp(
+    2.125rem,
+    1.6rem + 2.3vw,
+    3.4375rem
+  ); /* 34px -> 55px post title */
+  --text-mega: clamp(3.5rem, 1.9rem + 7vw, 7.5rem); /* 56px -> 120px 404 */
+
+  /* Tracking */
+  --tracking-tightest: -0.038em; /* big display titles */
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.06em;
+  --tracking-kicker: 0.12em; /* mono uppercase labels */
+  --tracking-dateline: 0.16em; /* widest, datelines */
+
+  /* Layout rhythm */
+  --spacing-gutter: 56px; /* page left/right padding */
+  --spacing-measure: 720px; /* prose column max-width */
+  --spacing-wide: 980px; /* feature image / map max-width */
+}
+
+/* Base resets that can't live in @theme */
+@layer base {
+  body {
+    background: var(--color-surface);
+    color: var(--color-fg);
+    font-family: var(--font-serif);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--color-accent);
+    color: #fff;
+  }
+}
+
 /* kazari renders its own framed code blocks; keep Typography out of their
    internals (it still styles inline code and everything else). */
 .prose :where(.kazari-block) {

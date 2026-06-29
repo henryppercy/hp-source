@@ -155,7 +155,7 @@ func Post(v PostView) templ.Component {
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = Layout(postTitle(v.Title)).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Layout(postTitle(v.Title), "/posts").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -239,13 +239,13 @@ func tocList(entries []TOCEntry) templ.Component {
 	})
 }
 
-// postTitle is the document title for a post, falling back to "Slice · hp" for
+// postTitle is the document title for a post, falling back to "Slice" for
 // title-less slices.
 func postTitle(title string) string {
 	if title == "" {
 		title = "Slice"
 	}
-	return title + " · hp"
+	return docTitle(title)
 }
 
 var _ = templruntime.GeneratedTemplate

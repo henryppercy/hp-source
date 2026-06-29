@@ -1,7 +1,7 @@
 package templates
 
 templ PostList(v PostListView) {
-	@Layout(v.Heading + " · hp") {
+	@Layout(docTitle(v.Heading), "/posts") {
 		<h1>{ v.Heading }</h1>
 		if len(v.Posts) > 0 {
 			<ul>

@@ -3,7 +3,7 @@ package templates
 import "fmt"
 
 templ Home(v HomeView) {
-	@Layout("home · hp") {
+	@Layout(docTitle(""), "/") {
 		<h1>Home</h1>
 		<p>{ fmt.Sprintf("%d books read in %d.", v.BooksReadInYear, v.Year) }</p>
 		<h2>Recent posts</h2>

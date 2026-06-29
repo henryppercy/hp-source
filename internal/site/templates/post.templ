@@ -1,7 +1,7 @@
 package templates
 
 templ Post(v PostView) {
-	@Layout(postTitle(v.Title)) {
+	@Layout(postTitle(v.Title), "/posts") {
 		<article>
 			if v.Title != "" {
 				<h1>{ v.Title }</h1>
@@ -43,11 +43,11 @@ templ tocList(entries []TOCEntry) {
 	</ul>
 }
 
-// postTitle is the document title for a post, falling back to "Slice · hp" for
+// postTitle is the document title for a post, falling back to "Slice" for
 // title-less slices.
 func postTitle(title string) string {
 	if title == "" {
 		title = "Slice"
 	}
-	return title + " · hp"
+	return docTitle(title)
 }
