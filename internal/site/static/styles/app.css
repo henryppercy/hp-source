@@ -14,6 +14,7 @@
     --font-weight-bold: 700;
     --tracking-tighter: -0.03em;
     --tracking-tight: -0.02em;
+    --tracking-wide: 0.06em;
     --leading-snug: 1.375;
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
@@ -662,6 +663,12 @@
   .max-w-\[60ch\] {
     max-width: 60ch;
   }
+  .border-collapse {
+    border-collapse: collapse;
+  }
+  .resize {
+    resize: both;
+  }
   .grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -688,6 +695,9 @@
   }
   .justify-between {
     justify-content: space-between;
+  }
+  .gap-1 {
+    gap: var(--spacing);
   }
   .gap-1\.5 {
     gap: calc(var(--spacing) * 1.5);
@@ -974,6 +984,13 @@
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
   }
+  .underline {
+    text-decoration-line: underline;
+  }
+  .outline {
+    outline-style: var(--tw-outline-style);
+    outline-width: 1px;
+  }
   .hover\:bg-code-inline {
     &:hover {
       @media (hover: hover) {
@@ -1078,20 +1095,87 @@
   margin: 0;
   padding: 0;
   background: transparent;
+  overflow-x: auto;
 }
 .prose :where(.kazari-block code) {
   background: transparent;
-  padding: 0;
   font-weight: inherit;
 }
 .prose :where(.kazari-block code)::before, .prose :where(.kazari-block code)::after {
   content: none;
 }
-.no-js .kz-toolbar-right, .no-js .kz-collapse-bar {
+.prose .kazari-block {
+  --kz-radius: 0;
+  --kz-shadow: none;
+  --kz-border: 1px solid var(--color-fg);
+  --kz-editor-bg: var(--color-code);
+  --kz-editor-fg: var(--color-fg);
+  --kz-font-family: var(--font-mono);
+  --kz-ui-font-family: var(--font-mono);
+  --kz-line-height: 1.7;
+  --kz-code-padding-block: 1.35rem;
+  --kz-code-padding-inline: 1.35rem;
+  --kz-toolbar-padding: 0.5rem 1.35rem;
+  --kz-toolbar-bg: var(--color-code);
+  --kz-toolbar-border: var(--color-rule);
+  --kz-lang-fg: var(--color-fainter);
+  --kz-gutter-border-color: var(--color-rule);
+  --kz-ln-fg: var(--color-faint);
+  --kz-ln-highlight-fg: var(--color-fg);
+  --kz-mark-bg: var(--color-accent-tint);
+  --kz-mark-border: var(--color-accent);
+}
+.prose .kazari-block .kz-toolbar-left {
+  display: contents;
+}
+.prose .kazari-block .kz-file-icon, .prose .kazari-block .kz-toolbar-right {
   display: none;
 }
-.no-js .kazari-block.kz-collapsed .kz-hidden {
-  display: grid;
+.prose .kazari-block .kz-toolbar .kz-title {
+  order: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  color: var(--color-fg);
+}
+.prose .kazari-block .kz-toolbar .kz-lang {
+  order: 1;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-kicker);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-fainter);
+}
+.prose .kazari-block .kz-terminal-dots {
+  display: none;
+}
+.prose :has(+ .caption) {
+  margin-bottom: 0;
+}
+.prose .caption {
+  margin-top: 0.4rem;
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-muted);
+}
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  font-weight: inherit;
+  color: inherit;
+  background: var(--color-code-inline);
+  border: 1px solid var(--color-rule);
+  border-radius: 0;
+  padding: 0.1em 0.3em;
+}
+.prose :not(pre) > code::before, .prose :not(pre) > code::after {
+  content: none;
 }
 @property --tw-space-y-reverse {
   syntax: "*";
@@ -1145,6 +1229,11 @@
   syntax: "*";
   inherits: false;
 }
+@property --tw-outline-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
@@ -1160,6 +1249,7 @@
       --tw-numeric-figure: initial;
       --tw-numeric-spacing: initial;
       --tw-numeric-fraction: initial;
+      --tw-outline-style: solid;
     }
   }
 }

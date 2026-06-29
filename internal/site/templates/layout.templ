@@ -31,14 +31,11 @@ func docTitle(section string) string {
 // active nav section are passed in; the page body is supplied as templ children.
 templ Layout(title, active string) {
 	<!doctype html>
-	<html lang="en" class="no-js">
+	<html lang="en">
 		<head>
 			<meta charset="utf-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<title>{ title }</title>
-			<script>
-				document.documentElement.classList.remove("no-js");
-			</script>
 			<link rel="icon" href="/static/images/favicon.svg"/>
 			<link rel="preconnect" href="https://fonts.googleapis.com"/>
 			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -192,7 +189,6 @@ templ Layout(title, active string) {
                     <p class="font-mono text-meta text-fainter">No trackers; No JavaScript; 28 KB</p>
                 </div>
             </footer>
-			<script defer src="/static/scripts/code.js"></script>
 		</body>
 	</html>
 }

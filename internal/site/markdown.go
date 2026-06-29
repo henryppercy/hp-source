@@ -6,6 +6,8 @@ import (
 	"html/template"
 	"strings"
 
+	"github.com/alecthomas/chroma/v2"
+	"github.com/alecthomas/chroma/v2/styles"
 	"github.com/frostybee/kazari"
 	kazarichroma "github.com/frostybee/kazari/chroma"
 	kazarimd "github.com/frostybee/kazari/goldmark"
@@ -14,7 +16,9 @@ import (
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
+	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/text"
+	"github.com/yuin/goldmark/util"
 )
 
 // imageBase is where local images are served from. Content references bare
@@ -22,27 +26,38 @@ import (
 // a CDN host to relocate every image without touching content.
 const imageBase = "/static/images"
 
-// newCodeEngine builds the kazari engine that renders fenced code into framed,
-// highlighted blocks. It is the single source of truth for the code theme and
-// which controls exist; the matching CSS/JS come from engine.CSS()/JS(). Themes
-// beyond the active light/dark pair are mapped so per-block theme="..." resolves.
-func newCodeEngine() *kazari.Engine {
-	hl := kazarichroma.New(kazarichroma.WithStyleMap(map[string]string{
-		"github":      "github",
-		"github-dark": "github-dark",
-		"dracula":     "dracula",
-		"monokai":     "monokai",
-		"onedark":     "onedark",
-		"nord":        "nord",
+// codeTheme is the restrained syntax palette kazari resolves by name: keywords
+// in the accent, strings and numbers in one warm tone, comments and punctuation
+// greyed, everything else default text. Colours mirror the tokens in input.css.
+const codeTheme = "hp-code"
+
+func registerCodeTheme() {
+	styles.Register(chroma.MustNewStyle(codeTheme, chroma.StyleEntries{
+		chroma.Background:    "#16181a bg:#fafafa",
+		chroma.Text:          "#16181a",
+		chroma.Comment:       "#54585b",
+		chroma.Keyword:       "#b42318",
+		chroma.LiteralString: "#9a6a00",
+		chroma.LiteralNumber: "#9a6a00",
+		chroma.Punctuation:   "#8a8e91",
 	}))
+}
+
+// newCodeEngine builds the kazari engine that renders fenced code into framed,
+// highlighted blocks. It is the single source of truth for the code theme; the
+// matching CSS comes from engine.CSS(). The site ships no JavaScript and no dark
+// theme, so every block uses the plain code frame in one restrained palette.
+func newCodeEngine() *kazari.Engine {
+	registerCodeTheme()
 	return kazari.New(
-		kazari.WithHighlighter(hl),
-		kazari.WithThemes("github", "github-dark"),
-		kazari.WithDarkMode(kazari.MediaQueryMode()),
-		kazari.WithCopyButton(true),
-		kazari.WithWrapButton(true),
-		kazari.WithFullscreenButton(true),
-		kazari.WithCollapsible(kazari.CollapsibleConfig{LineThreshold: 30, PreviewLines: 3}),
+		kazari.WithHighlighter(kazarichroma.New()),
+		kazari.WithThemes(codeTheme, codeTheme),
+		kazari.WithMinContrast(0),
+		kazari.WithFrameDetection(false),
+		kazari.WithDefaults(kazari.BlockDefaults{Frame: kazari.FrameCode, PreserveIndent: true}),
+		kazari.WithCopyButton(false),
+		kazari.WithWrapButton(false),
+		kazari.WithFullscreenButton(false),
 	)
 }
 
@@ -52,8 +67,73 @@ func newMarkdown(engine *kazari.Engine) goldmark.Markdown {
 			extension.GFM,
 			kazarimd.New(engine),
 		),
-		goldmark.WithParserOptions(parser.WithAutoHeadingID()),
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
+			parser.WithASTTransformers(util.Prioritized(captionTransformer{}, 100)),
+		),
+		goldmark.WithRendererOptions(
+			renderer.WithNodeRenderers(util.Prioritized(captionRenderer{}, 100)),
+		),
 	)
+}
+
+// captionMarker leads a paragraph that should render as a caption. It is generic:
+// place such a paragraph under any block (code, image, table) to caption it.
+const captionMarker = "^ "
+
+// caption renders its inline children as a styled caption. It keeps the markdown
+// (emphasis, links) the author wrote after the marker.
+type caption struct {
+	ast.BaseBlock
+}
+
+var kindCaption = ast.NewNodeKind("Caption")
+
+func (n *caption) Kind() ast.NodeKind            { return kindCaption }
+func (n *caption) Dump(source []byte, level int) { ast.DumpHelper(n, source, level, nil, nil) }
+
+// captionTransformer rewrites every paragraph that opens with the marker into a
+// caption node, dropping the marker but keeping the inline content.
+type captionTransformer struct{}
+
+func (captionTransformer) Transform(doc *ast.Document, reader text.Reader, _ parser.Context) {
+	source := reader.Source()
+	var marked []*ast.Paragraph
+	ast.Walk(doc, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
+		if p, ok := n.(*ast.Paragraph); ok && entering && isCaption(p, source) {
+			marked = append(marked, p)
+		}
+		return ast.WalkContinue, nil
+	})
+	for _, p := range marked {
+		lead := p.FirstChild().(*ast.Text)
+		lead.Segment = lead.Segment.WithStart(lead.Segment.Start + len(captionMarker))
+		c := &caption{}
+		for child := p.FirstChild(); child != nil; child = p.FirstChild() {
+			c.AppendChild(c, child)
+		}
+		p.Parent().ReplaceChild(p.Parent(), p, c)
+	}
+}
+
+func isCaption(p *ast.Paragraph, source []byte) bool {
+	t, ok := p.FirstChild().(*ast.Text)
+	return ok && bytes.HasPrefix(t.Segment.Value(source), []byte(captionMarker))
+}
+
+type captionRenderer struct{}
+
+func (captionRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
+	reg.Register(kindCaption, renderCaption)
+}
+
+func renderCaption(w util.BufWriter, _ []byte, _ ast.Node, entering bool) (ast.WalkStatus, error) {
+	if entering {
+		w.WriteString(`<p class="caption">`)
+	} else {
+		w.WriteString("</p>")
+	}
+	return ast.WalkContinue, nil
 }
 
 // render turns markdown into sanitised-by-construction HTML plus a table of

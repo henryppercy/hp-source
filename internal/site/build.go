@@ -122,7 +122,7 @@ func (b *builder) Build() error {
 	if err := b.copyStatic(); err != nil {
 		return err
 	}
-	return b.writeCodeAssets()
+	return b.writeCodeCSS()
 }
 
 // sliceItems renders already-filtered slice posts (newest-first) into timeline
@@ -196,21 +196,14 @@ func (b *builder) postView(p repo.Post) (templates.PostView, error) {
 	}, nil
 }
 
-// writeCodeAssets emits the kazari stylesheet and progressive-enhancement script
-// that style and drive the rendered code blocks.
-func (b *builder) writeCodeAssets() error {
-	assets := map[string]string{
-		filepath.Join("static", "styles", "code.css"): b.engine.CSS(),
-		filepath.Join("static", "scripts", "code.js"): b.engine.JS(),
+// writeCodeCSS emits the kazari stylesheet that styles the rendered code blocks.
+func (b *builder) writeCodeCSS() error {
+	dest := filepath.Join(b.out, "static", "styles", "code.css")
+	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
+		return fmt.Errorf("failed to create directory for %s: %w", dest, err)
 	}
-	for rel, content := range assets {
-		dest := filepath.Join(b.out, rel)
-		if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
-			return fmt.Errorf("failed to create directory for %s: %w", dest, err)
-		}
-		if err := os.WriteFile(dest, []byte(content), 0644); err != nil {
-			return fmt.Errorf("failed to write %s: %w", dest, err)
-		}
+	if err := os.WriteFile(dest, []byte(b.engine.CSS()), 0644); err != nil {
+		return fmt.Errorf("failed to write %s: %w", dest, err)
 	}
 	return nil
 }

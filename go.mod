@@ -6,6 +6,7 @@ require (
 	charm.land/huh/v2 v2.0.3
 	charm.land/lipgloss/v2 v2.0.1
 	github.com/a-h/templ v0.3.1020
+	github.com/alecthomas/chroma/v2 v2.26.1
 	github.com/frostybee/kazari v1.0.1
 	github.com/fsnotify/fsnotify v1.10.1
 	github.com/spf13/cobra v1.10.2
@@ -19,7 +20,6 @@ require (
 	dario.cat/mergo v1.0.2 // indirect
 	github.com/a-h/parse v0.0.0-20250122154542-74294addb73e // indirect
 	github.com/air-verse/air v1.65.3 // indirect
-	github.com/alecthomas/chroma/v2 v2.26.1 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/bep/godartsass/v2 v2.5.0 // indirect
