@@ -43,7 +43,7 @@ func Post(v PostView) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<article class=\"mx-auto max-w-[var(--spacing-measure)]\"><header class=\"mb-12\"><div class=\"space-y-4\"><div class=\"flex flex-wrap items-baseline gap-2\"><span class=\"font-mono text-kicker uppercase tracking-dateline text-fainter\">Posts ;</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<article class=\"mx-auto max-w-measure\"><header class=\"mb-12\"><div class=\"space-y-4\"><div class=\"flex flex-wrap items-baseline gap-2\"><span class=\"font-mono text-kicker uppercase tracking-dateline text-fainter\">Posts ;</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

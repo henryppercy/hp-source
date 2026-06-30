@@ -4,7 +4,7 @@ import "fmt"
 
 templ Post(v PostView) {
 	@Layout(postTitle(v.Title), "/posts") {
-		<article class="mx-auto max-w-[var(--spacing-measure)]">
+		<article class="mx-auto max-w-measure">
 			<header class="mb-12">
 				<div class="space-y-4">
 					<div class="flex flex-wrap items-baseline gap-2">

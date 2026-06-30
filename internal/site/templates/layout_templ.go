@@ -176,7 +176,7 @@ func Layout(title, active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</main><footer class=\"m-4 md:m-gutter space-y-5\"><div class=\"grid grid-cols-1 gap-y-8 lg:grid-cols-[auto_1fr] lg:gap-x-10\"><div class=\"flex flex-col justify-between py-5 px-1\"><h4 class=\"font-serif font-bold text-lead tracking-tightest text-fg leading-none\">Henry Percy</h4><div><p class=\"font-serif text-muted\">Written, photographed and built by hand.</p><p class=\"font-serif text-muted\">Plain text in, static pages out.</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</main><footer class=\"m-4 md:m-gutter space-y-5\"><div class=\"grid grid-cols-1 gap-y-8 lg:grid-cols-[auto_1fr] lg:gap-x-10\"><div class=\"flex flex-col justify-between py-5 px-1 max-lg:gap-3\"><h4 class=\"font-serif font-bold text-lead tracking-tightest text-fg leading-none\">Henry Percy</h4><div><p class=\"font-serif text-muted\">Written, photographed and built by hand.</p><p class=\"font-serif text-muted\">Plain text in, static pages out.</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
