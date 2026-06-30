@@ -16,9 +16,7 @@ import (
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/text"
-	"github.com/yuin/goldmark/util"
 )
 
 // imageBase is where local images are served from. Content references bare
@@ -69,71 +67,8 @@ func newMarkdown(engine *kazari.Engine) goldmark.Markdown {
 		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
-			parser.WithASTTransformers(util.Prioritized(captionTransformer{}, 100)),
-		),
-		goldmark.WithRendererOptions(
-			renderer.WithNodeRenderers(util.Prioritized(captionRenderer{}, 100)),
 		),
 	)
-}
-
-// captionMarker leads a paragraph that should render as a caption. It is generic:
-// place such a paragraph under any block (code, image, table) to caption it.
-const captionMarker = "^ "
-
-// caption renders its inline children as a styled caption. It keeps the markdown
-// (emphasis, links) the author wrote after the marker.
-type caption struct {
-	ast.BaseBlock
-}
-
-var kindCaption = ast.NewNodeKind("Caption")
-
-func (n *caption) Kind() ast.NodeKind            { return kindCaption }
-func (n *caption) Dump(source []byte, level int) { ast.DumpHelper(n, source, level, nil, nil) }
-
-// captionTransformer rewrites every paragraph that opens with the marker into a
-// caption node, dropping the marker but keeping the inline content.
-type captionTransformer struct{}
-
-func (captionTransformer) Transform(doc *ast.Document, reader text.Reader, _ parser.Context) {
-	source := reader.Source()
-	var marked []*ast.Paragraph
-	ast.Walk(doc, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
-		if p, ok := n.(*ast.Paragraph); ok && entering && isCaption(p, source) {
-			marked = append(marked, p)
-		}
-		return ast.WalkContinue, nil
-	})
-	for _, p := range marked {
-		lead := p.FirstChild().(*ast.Text)
-		lead.Segment = lead.Segment.WithStart(lead.Segment.Start + len(captionMarker))
-		c := &caption{}
-		for child := p.FirstChild(); child != nil; child = p.FirstChild() {
-			c.AppendChild(c, child)
-		}
-		p.Parent().ReplaceChild(p.Parent(), p, c)
-	}
-}
-
-func isCaption(p *ast.Paragraph, source []byte) bool {
-	t, ok := p.FirstChild().(*ast.Text)
-	return ok && bytes.HasPrefix(t.Segment.Value(source), []byte(captionMarker))
-}
-
-type captionRenderer struct{}
-
-func (captionRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
-	reg.Register(kindCaption, renderCaption)
-}
-
-func renderCaption(w util.BufWriter, _ []byte, _ ast.Node, entering bool) (ast.WalkStatus, error) {
-	if entering {
-		w.WriteString(`<p class="caption">`)
-	} else {
-		w.WriteString("</p>")
-	}
-	return ast.WalkContinue, nil
 }
 
 // render turns markdown into sanitised-by-construction HTML plus a table of
