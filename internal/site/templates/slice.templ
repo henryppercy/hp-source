@@ -1,29 +1,13 @@
 package templates
 
-// Slice is a single note's permalink page at /slices/{slug}, mirroring the boxed
-// timeline item from the slices feed (minus the permalink, since we are on it).
-// Date and time come from PublishedAt; location is placeholder.
+// Slice is a single note's permalink page at /slices/{slug}.
 templ Slice(s SliceItem) {
 	@Layout(docTitle("Slice"), "/slices") {
 		<div class="mx-auto max-w-measure">
-			<article class="relative">
+			<div class="relative">
 				<span class="block whitespace-nowrap border-l-2 border-accent pl-3 font-serif font-semibold italic text-accent tabular-nums leading-none mb-3 lg:absolute lg:right-full lg:top-6 lg:mr-8 lg:mb-0">{ fmtDate(s.PublishedAt) }</span>
-				<div class="border border-rule-soft p-6">
-					<div class="prose">
-						@templ.Raw(string(s.BodyHTML))
-					</div>
-					<div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-4">
-						<div class="flex flex-wrap gap-2">
-							@tagChips(s.Topics)
-						</div>
-						<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
-							<time>{ s.PublishedAt.Format("15:04") }</time>
-							<span class="text-ghost">;</span>
-							<span>Sheffield</span>
-						</div>
-					</div>
-				</div>
-			</article>
+				@sliceCard(s, false)
+			</div>
 			<div class="mt-12">
 				@indexLink("/slices#"+s.Slug, "See all slices")
 			</div>

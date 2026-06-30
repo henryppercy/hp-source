@@ -15,7 +15,7 @@ templ Spanish(v TopicFeedView) {
 		if len(v.Slices) > 0 {
 			<h2>Slices</h2>
 			for _, s := range v.Slices {
-				@sliceCard(s)
+				@sliceCard(s, true)
 			}
 		}
 		if len(v.Articles) == 0 && len(v.Slices) == 0 {

@@ -16,10 +16,6 @@ templ PostList(v PostListView) {
 							<dt class="font-mono text-meta text-fainter">entries</dt>
 							<dd class="font-mono text-meta text-fg tabular-nums">{ fmt.Sprintf("%d", len(v.Posts)) }</dd>
 						</div>
-						<div class="flex items-baseline gap-2">
-							<dt class="font-mono text-meta text-fainter">since</dt>
-							<dd class="font-mono text-meta text-fg tabular-nums">{ fmt.Sprintf("%d", v.Posts[len(v.Posts)-1].PublishedAt.Year()) }</dd>
-						</div>
 					</dl>
 				}
 			</header>
@@ -30,23 +26,7 @@ templ PostList(v PostListView) {
 							if i == 0 || p.PublishedAt.Year() != v.Posts[i-1].PublishedAt.Year() {
 								<span class="block border-l-2 border-accent pl-3 font-serif font-semibold italic text-accent tabular-nums leading-none mb-3 lg:absolute lg:right-full lg:top-10 lg:mr-8 lg:mb-0">{ fmt.Sprintf("%d", p.PublishedAt.Year()) }</span>
 							}
-							<a href={ p.URL + "/" } class="group block pt-6">
-								<time class="block font-mono text-meta text-faint tabular-nums">{ fmtDate(p.PublishedAt) }</time>
-								<h2 class="mt-1 font-sans font-semibold text-h3 tracking-tight text-fg group-hover:text-accent">{ p.Title }</h2>
-								if p.Headline != "" {
-									<p class="mt-1.5 font-serif text-body text-muted leading-snug max-w-[60ch]">{ p.Headline }</p>
-								}
-							</a>
-							<div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pb-6 pt-3">
-								<div class="flex flex-wrap gap-2">
-									@tagChips(demoTopics)
-								</div>
-								<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
-									<span>6 min read</span>
-									<span class="text-ghost">;</span>
-									<span>Sheffield</span>
-								</div>
-							</div>
+							@postRow(p)
 						</li>
 					}
 				</ol>

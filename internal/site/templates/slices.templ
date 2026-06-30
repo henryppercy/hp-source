@@ -2,12 +2,7 @@ package templates
 
 import "fmt"
 
-// Slices is the /slices timeline. Design mock, kept inline (the shared sliceCard
-// partial is left alone so the topic and spanish feeds keep their old rendering
-// until this settles). Each note is a self-contained boxed unit (design 03.b)
-// with the date hung in the margin in the accent stamp shared with the post
-// index year. Date and time come from PublishedAt; location is placeholder.
-// Newest-first; no grouping yet.
+// Slices is the /slices timeline, each note a shared sliceCard.
 templ Slices(v SliceFeedView) {
 	@Layout(docTitle(v.Heading), "/slices") {
 		<div class="mx-auto max-w-measure">
@@ -30,26 +25,10 @@ templ Slices(v SliceFeedView) {
 			if len(v.Slices) > 0 {
 				<div class="space-y-8">
 					for _, s := range v.Slices {
-						<article id={ s.Slug } class="relative scroll-mt-12">
+						<div id={ s.Slug } class="relative scroll-mt-12">
 							<a href={ "#" + s.Slug } class="block whitespace-nowrap border-l-2 border-accent pl-3 font-serif font-semibold italic text-accent tabular-nums leading-none mb-3 lg:absolute lg:right-full lg:top-6 lg:mr-8 lg:mb-0">{ fmtDate(s.PublishedAt) }</a>
-							<div class="border border-rule-soft p-6">
-								<div class="prose">
-									@templ.Raw(string(s.BodyHTML))
-								</div>
-								<div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-4">
-									<div class="flex flex-wrap gap-2">
-										@tagChips(s.Topics)
-									</div>
-									<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
-										<time>{ s.PublishedAt.Format("15:04") }</time>
-										<span class="text-ghost">;</span>
-										<span>Sheffield</span>
-										<span class="text-ghost">;</span>
-										<a href={ s.URL + "/" } class="hover:text-accent">permalink</a>
-									</div>
-								</div>
-							</div>
-						</article>
+							@sliceCard(s, true)
+						</div>
 					}
 				</div>
 			} else {

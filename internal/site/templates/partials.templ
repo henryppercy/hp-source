@@ -1,6 +1,6 @@
 package templates
 
-// location is the reusable place stamp; code and coords are optional, "" omits.
+// location is the place stamp; code and coords are optional.
 templ location(city, code, coords string) {
 	<span class="inline-flex flex-wrap items-baseline gap-x-2">
 		<span class="font-sans font-bold uppercase tracking-wide text-label text-fg">{ city }</span>
@@ -14,32 +14,19 @@ templ location(city, code, coords string) {
 	</span>
 }
 
-// indexLink is the shared "back to a section index" link used on permalink pages
-// (e.g. a post or a slice back to its listing).
+// indexLink is the shared link back to a section index.
 templ indexLink(href, label string) {
 	<a href={ href } class="font-mono text-meta text-faint hover:text-accent">{ label }</a>
 }
 
-// tagChips renders topic links as the canonical boxed mono chips, shared by the
-// post header kicker and the article footer.
+// tagChips renders a post's topic links.
 templ tagChips(links []TopicLink) {
 	for _, t := range links {
 		<a href={ t.URL } class="font-mono text-meta text-fg border border-rule-soft p-2 leading-none hover:border-fg">{ t.Name }</a>
 	}
 }
 
-// topics renders a post's topic links, nothing when there are none.
-templ topics(links []TopicLink) {
-	if len(links) > 0 {
-		<p class="topics">
-			for _, t := range links {
-				<a href={ t.URL }>{ t.Name }</a>
-			}
-		</p>
-	}
-}
-
-// topicArticles is the article list shared by the topic and Spanish feeds.
+// topicArticles is the plain article list used by the Spanish feed.
 templ topicArticles(items []PostListItem) {
 	<ul>
 		for _, p := range items {
@@ -54,13 +41,49 @@ templ topicArticles(items []PostListItem) {
 	</ul>
 }
 
-// sliceCard is one note in a slice timeline: dateline, inline body, topics.
-templ sliceCard(s SliceItem) {
-	<article class="slice">
-		<p class="meta"><a href={ s.URL + "/" }>{ fmtDate(s.PublishedAt) }</a></p>
+// postRow is one article row, shared by the /posts index and the topic feed.
+// The caller owns the <li> wrapper.
+templ postRow(p PostListItem) {
+	<a href={ p.URL + "/" } class="group block pt-6">
+		<time class="block font-mono text-meta text-faint tabular-nums">{ fmtDate(p.PublishedAt) }</time>
+		<h2 class="mt-1 font-sans font-semibold text-h3 tracking-tight text-fg group-hover:text-accent">{ p.Title }</h2>
+		if p.Headline != "" {
+			<p class="mt-1.5 font-serif text-body text-muted leading-snug max-w-[60ch]">{ p.Headline }</p>
+		}
+	</a>
+	<div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pb-6 pt-3">
+		<div class="flex flex-wrap gap-2">
+			@tagChips(p.Topics)
+		</div>
+		<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
+			<span>6 min read</span>
+			<span class="text-ghost">;</span>
+			<span>Sheffield</span>
+		</div>
+	</div>
+}
+
+// sliceCard is one note, shared by the /slices timeline and the topic feed.
+// The timeline's hung dateline is added by the caller, not here. permalink shows
+// the link to the note's own page, dropped on that page itself.
+templ sliceCard(s SliceItem, permalink bool) {
+	<article class="border border-rule-soft p-6">
 		<div class="prose">
 			@templ.Raw(string(s.BodyHTML))
 		</div>
-		@topics(s.Topics)
+		<div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-4">
+			<div class="flex flex-wrap gap-2">
+				@tagChips(s.Topics)
+			</div>
+			<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
+				<time>{ fmtDateTime(s.PublishedAt) }</time>
+				<span class="text-ghost">;</span>
+				<span>Sheffield</span>
+				if permalink {
+					<span class="text-ghost">;</span>
+					<a href={ s.URL + "/" } class="hover:text-accent">permalink</a>
+				}
+			</div>
+		</div>
 	</article>
 }

@@ -30,6 +30,7 @@ func toListItem(p repo.Post) templates.PostListItem {
 		URL:         postURL(p),
 		PublishedAt: parseDate(p.PublishedAt),
 		Headline:    p.Headline,
+		Topics:      topicLinks(p.Topics),
 	}
 }
 
@@ -72,11 +73,17 @@ func articleItems(posts []repo.Post, keep func(repo.Post) bool) []templates.Post
 }
 
 // mainArticles are the articles for /posts and home recents: every article
-// except those tagged spanish (which live on /spanish and /topics/spanish).
+// except the Spanish learning log (posts whose only topic is spanish, which live
+// on /spanish). Posts that touch spanish among other topics still appear.
 func mainArticles(posts []repo.Post) []templates.PostListItem {
 	return articleItems(posts, func(p repo.Post) bool {
-		return !hasTopic(p, "spanish")
+		return !onlySpanish(p)
 	})
+}
+
+// onlySpanish reports whether spanish is the post's sole topic.
+func onlySpanish(p repo.Post) bool {
+	return len(p.Topics) == 1 && p.Topics[0].Name == "spanish"
 }
 
 // recentPosts returns the n most recent main articles for the home page. Input

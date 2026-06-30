@@ -14,6 +14,14 @@ func fmtDate(t time.Time) string {
 	return t.Format("2 Jan 2006")
 }
 
+// fmtDateTime formats a date with time of day, e.g. "14 Jun 2026, 14:32".
+func fmtDateTime(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.Format("2 Jan 2006, 15:04")
+}
+
 // TopicLink is a topic shown on a page, linking to its feed.
 type TopicLink struct {
 	Name string
@@ -46,6 +54,7 @@ type PostListItem struct {
 	URL         string
 	PublishedAt time.Time
 	Headline    string
+	Topics      []TopicLink
 }
 
 // BookView is a book on /reading and in the home recent-books pull.

@@ -1,23 +1,63 @@
 package templates
 
+import "fmt"
+
+// Topic is the /topics/{topic} page.
 templ Topic(v TopicFeedView) {
 	@Layout(docTitle(v.Heading), "") {
-		<h1>{ v.Heading }</h1>
-		if v.Intro != "" {
-			<p class="intro">{ v.Intro }</p>
-		}
-		if len(v.Articles) > 0 {
-			<h2>Articles</h2>
-			@topicArticles(v.Articles)
-		}
-		if len(v.Slices) > 0 {
-			<h2>Slices</h2>
-			for _, s := range v.Slices {
-				@sliceCard(s)
+		<div class="mx-auto max-w-broad">
+			<header class="mb-12">
+				<div class="space-y-4">
+					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">{ v.Heading }</h1>
+					if v.Intro != "" {
+						<p class="font-serif italic text-lead text-muted max-w-[48ch]">{ v.Intro }</p>
+					}
+				</div>
+			</header>
+			if len(v.Articles) == 0 && len(v.Slices) == 0 {
+				<p class="font-serif text-muted">Nothing here yet.</p>
+			} else {
+				<div class="grid gap-x-16 md:grid-cols-2">
+					<section>
+						<header class="mb-6 flex items-baseline justify-between border-b border-rule pb-3">
+							<h2 class="font-mono text-kicker tracking-kicker uppercase text-fainter">Articles</h2>
+							<span class="font-mono text-meta text-fg tabular-nums">{ fmt.Sprintf("%d", len(v.Articles)) }</span>
+						</header>
+						if len(v.Articles) > 0 {
+							<ol>
+								for _, p := range v.Articles {
+									<li class="border-t border-rule first:border-t-0">
+										@postRow(p)
+									</li>
+								}
+							</ol>
+                            <footer class="pt-8">
+                                @indexLink("/posts", "See all articles")
+                            </footer>
+						} else {
+							<p class="mt-5 font-serif text-muted">No articles yet.</p>
+						}
+					</section>
+					<section class="mt-12 md:mt-0">
+						<header class="mb-6 flex items-baseline justify-between border-b border-rule pb-3">
+							<h2 class="font-mono text-kicker tracking-kicker uppercase text-fainter">Slices</h2>
+							<span class="font-mono text-meta text-fg tabular-nums">{ fmt.Sprintf("%d", len(v.Slices)) }</span>
+						</header>
+						if len(v.Slices) > 0 {
+							<div class="space-y-6">
+								for _, s := range v.Slices {
+									@sliceCard(s, true)
+								}
+							</div>
+                            <footer class="pt-8">
+                                @indexLink("/slices", "See all slices")
+                            </footer>
+						} else {
+							<p class="mt-5 font-serif text-muted">No slices yet.</p>
+						}
+					</section>
+				</div>
 			}
-		}
-		if len(v.Articles) == 0 && len(v.Slices) == 0 {
-			<p>Nothing here yet.</p>
-		}
+		</div>
 	}
 }
