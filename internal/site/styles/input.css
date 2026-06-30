@@ -162,19 +162,6 @@
   display: none;
 }
 
-/* Generic caption: a markdown paragraph led by "^ ", rendered under code blocks,
-   images, or any element it follows. The :has rule drops the captioned element's
-   bottom margin so the caption sits tight beneath it. */
-.prose :has(+ .caption) {
-  margin-bottom: 0;
-}
-.prose .caption {
-  margin-top: 0.4rem;
-  font-family: var(--font-serif);
-  font-style: italic;
-  color: var(--color-muted);
-}
-
 /* Inline code: a flat bordered chip, mono and slightly smaller than the
    surrounding text. Beats Typography's lower-specificity :where() rules. */
 .prose :not(pre) > code {
@@ -204,7 +191,8 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  padding: 0.7rem 1.25rem;
+  padding: 0 0 0.7rem 0;
+  margin: 1rem 1rem 0 1rem;
   border-bottom: 1px solid var(--color-rule);
 }
 .toc-title {
