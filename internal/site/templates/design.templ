@@ -1,5 +1,11 @@
 package templates
 
+var demoTopics = []TopicLink{
+	{Name: "Travel", URL: "#"},
+	{Name: "Spain", URL: "#"},
+	{Name: "Hiking", URL: "#"},
+}
+
 templ Design() {
 	@Layout(docTitle("Design System"), "/design") {
 		<div>
@@ -216,6 +222,193 @@ templ Design() {
 								<span class="font-mono text-meta text-faint">2h</span>
 							</p>
 						</div>
+					</div>
+				</figure>
+			</section>
+			<section class="border-t border-fg mt-12 pt-12 space-y-8">
+				<header class="flex items-baseline gap-4">
+					<span class="font-mono text-meta text-fainter tabular-nums">05</span>
+					<h2 class="font-sans font-semibold text-h3 tracking-tight text-fg">Location</h2>
+				</header>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">05.a; variants</figcaption>
+					<div class="flex flex-col gap-3">
+						<div>@location("Menorca", "", "")</div>
+						<div>@location("Barcelona", "ES", "")</div>
+						<div>@location("Sheffield", "GB", "53.22°N 1.28°W")</div>
+					</div>
+				</figure>
+			</section>
+			<section class="border-t border-fg mt-12 pt-12 space-y-8">
+				<header class="flex items-baseline gap-4">
+					<span class="font-mono text-meta text-fainter tabular-nums">06</span>
+					<h2 class="font-sans font-semibold text-h3 tracking-tight text-fg">Post header</h2>
+				</header>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">06.a; masthead</figcaption>
+					<header>
+						<div class="space-y-4">
+							<div class="flex flex-wrap items-baseline gap-2">
+								<span class="font-mono text-kicker uppercase tracking-dateline text-fainter">Posts ;</span>
+								@tagChips(demoTopics)
+							</div>
+							<h1 class="font-sans font-bold tracking-tightest text-display text-fg">A weekend in the Pyrenees</h1>
+							<p class="font-serif italic text-lead text-muted max-w-[34ch]">Two days, one ridge, and a flask of trail coffee.</p>
+						</div>
+						<dl class="mt-8 grid grid-cols-1 divide-y md:grid-cols-4 md:divide-y-0 md:divide-x divide-fg border border-fg">
+							<div class="flex flex-col gap-1.5 p-5">
+								<dt class="font-mono text-meta text-fainter">filed</dt>
+								<dd class="font-sans text-label text-fg tabular-nums">14 Jun 2026</dd>
+							</div>
+							<div class="flex flex-col gap-1.5 p-5">
+								<dt class="font-mono text-meta text-fainter">location</dt>
+								<dd>@location("Sheffield", "GB", "53.22°N 1.28°W")</dd>
+							</div>
+							<div class="flex flex-col gap-1.5 p-5">
+								<dt class="font-mono text-meta text-fainter">reading</dt>
+								<dd class="font-sans text-label text-fg tabular-nums">6 min</dd>
+							</div>
+							<div class="flex flex-col gap-1.5 p-5">
+								<dt class="font-mono text-meta text-fainter">length</dt>
+								<dd class="font-sans text-label text-fg tabular-nums">1,240 words</dd>
+							</div>
+						</dl>
+					</header>
+				</figure>
+			</section>
+			<section class="border-t border-fg mt-12 pt-12 space-y-8">
+				<header class="flex items-baseline gap-4">
+					<span class="font-mono text-meta text-fainter tabular-nums">07</span>
+					<h2 class="font-sans font-semibold text-h3 tracking-tight text-fg">Post footer</h2>
+				</header>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">07.a; tags &amp; last edited</figcaption>
+					<footer class="flex flex-wrap items-baseline justify-between gap-4 border-t border-fg pt-5">
+						<div class="flex flex-wrap gap-2">
+							@tagChips(demoTopics)
+						</div>
+						<span class="font-mono text-meta text-faint">Last edited 16 Jun 2026</span>
+					</footer>
+				</figure>
+			</section>
+			<section class="border-t border-fg mt-12 pt-12 space-y-8">
+				<header class="flex items-baseline gap-4">
+					<span class="font-mono text-meta text-fainter tabular-nums">08</span>
+					<h2 class="font-sans font-semibold text-h3 tracking-tight text-fg">Contents</h2>
+				</header>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">08.a; table of contents</figcaption>
+					<nav class="toc">
+						<div class="toc-head">
+							<span class="toc-title">Contents</span>
+							<span class="toc-count">3 sections</span>
+						</div>
+						<ol class="toc-list">
+							<li>
+								<a href="#">The approach</a>
+								<ul class="toc-sub">
+									<li><a href="#">First light</a></li>
+									<li><a href="#">The ridge</a></li>
+								</ul>
+							</li>
+							<li><a href="#">Camp for the night</a></li>
+							<li><a href="#">The descent</a></li>
+						</ol>
+					</nav>
+				</figure>
+			</section>
+			<section class="border-t border-fg mt-12 pt-12 space-y-8">
+				<header class="flex items-baseline gap-4">
+					<span class="font-mono text-meta text-fainter tabular-nums">09</span>
+					<h2 class="font-sans font-semibold text-h3 tracking-tight text-fg">Markdown</h2>
+				</header>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">09.a; headings</figcaption>
+					<div class="prose">
+						<h2>Heading level two</h2>
+						<h3>Heading level three</h3>
+						<h4>Heading level four</h4>
+						<h5>Heading level five</h5>
+					</div>
+				</figure>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">09.b; body &amp; inline</figcaption>
+					<div class="prose">
+						<p>A paragraph of serif body text carrying <strong>bold</strong>, <em>italic</em>, <a href="#">a link</a>, <del>strikethrough</del> and <code>inline code</code> so each inline mark reads against the column.</p>
+					</div>
+				</figure>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">09.c; blockquote</figcaption>
+					<div class="prose">
+						<blockquote>
+							<p>The mountains are calling and I must go.</p>
+							<cite>John Muir</cite>
+						</blockquote>
+					</div>
+				</figure>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">09.d; lists</figcaption>
+					<div class="prose">
+						<ul>
+							<li>
+								Unordered item with a dash marker
+								<ul>
+									<li>Nested item, a fainter marker</li>
+								</ul>
+							</li>
+							<li>A second item</li>
+						</ul>
+						<ol>
+							<li>Ordered item with a mono ordinal</li>
+							<li>A second item</li>
+						</ol>
+						<ul>
+							<li><input type="checkbox" checked disabled/> A completed task</li>
+							<li><input type="checkbox" disabled/> A pending task</li>
+						</ul>
+					</div>
+				</figure>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">09.e; table</figcaption>
+					<div class="prose">
+						<table>
+							<thead>
+								<tr><th>Stage</th><th>Distance</th><th>Ascent</th></tr>
+							</thead>
+							<tbody>
+								<tr><td>Approach</td><td>6 km</td><td>320 m</td></tr>
+								<tr><td>Ridge</td><td>4 km</td><td>540 m</td></tr>
+							</tbody>
+						</table>
+					</div>
+				</figure>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">09.f; image</figcaption>
+					<div class="prose">
+						<figure>
+							<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='720'%20height='280'%3E%3Crect%20width='720'%20height='280'%20fill='%23f3f3f1'/%3E%3C/svg%3E" alt="A placeholder"/>
+							<figcaption>A hairline-framed figure with a serif italic caption.</figcaption>
+						</figure>
+					</div>
+				</figure>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">09.g; footnotes</figcaption>
+					<div class="prose">
+						<p>A claim that wants a source.<sup id="fnref:1"><a href="#fn:1" class="footnote-ref">1</a></sup></p>
+						<div class="footnotes" role="doc-endnotes">
+							<hr/>
+							<ol>
+								<li id="fn:1"><p>The supporting note, set a step below body. <a href="#fnref:1" class="footnote-backref">↩</a></p></li>
+							</ol>
+						</div>
+					</div>
+				</figure>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">09.h; rule</figcaption>
+					<div class="prose">
+						<p>Text above the rule.</p>
+						<hr/>
+						<p>Text below the rule.</p>
 					</div>
 				</figure>
 			</section>

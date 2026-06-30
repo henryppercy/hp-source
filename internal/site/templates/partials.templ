@@ -1,5 +1,27 @@
 package templates
 
+// location is the reusable place stamp; code and coords are optional, "" omits.
+templ location(city, code, coords string) {
+	<span class="inline-flex flex-wrap items-baseline gap-x-2">
+		<span class="font-sans font-bold uppercase tracking-wide text-label text-fg">{ city }</span>
+		if code != "" {
+			<span class="font-mono text-meta text-accent">{ code }</span>
+		}
+		if coords != "" {
+			<span class="font-mono text-meta text-ghost">;</span>
+			<span class="font-mono text-kicker text-fainter tabular-nums whitespace-nowrap">{ coords }</span>
+		}
+	</span>
+}
+
+// tagChips renders topic links as the canonical boxed mono chips, shared by the
+// post header kicker and the article footer.
+templ tagChips(links []TopicLink) {
+	for _, t := range links {
+		<a href={ t.URL } class="font-mono text-meta text-fg border border-rule-soft p-2 leading-none hover:border-fg">{ t.Name }</a>
+	}
+}
+
 // topics renders a post's topic links, nothing when there are none.
 templ topics(links []TopicLink) {
 	if len(links) > 0 {

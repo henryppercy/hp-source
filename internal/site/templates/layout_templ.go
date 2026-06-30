@@ -71,7 +71,15 @@ func Layout(title, active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"icon\" href=\"/static/images/favicon.svg\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"/static/styles/app.css\"><link rel=\"stylesheet\" href=\"/static/styles/code.css\"></head><body><header class=\"m-4 md:m-gutter divide-y divide-fg border border-fg\"><div class=\"grid grid-cols-1 divide-y md:grid-cols-3 md:divide-y-0 md:divide-x divide-fg\"><a href=\"/\" class=\"flex items-center font-sans font-bold text-h2 tracking-tightest text-fg leading-none p-5\">Henry Percy</a><div class=\"flex flex-col gap-1.5 p-5\"><span class=\"font-mono text-meta text-fainter\">date</span> <span class=\"font-mono text-label text-fg tabular-nums\">Sat 14 Jun 2026</span></div><div class=\"flex flex-col gap-1.5 p-5\"><span class=\"font-mono text-meta text-fainter\">filed from</span><p class=\"flex items-baseline gap-1.5\"><span class=\"font-mono text-meta text-accent\">▸</span> <span class=\"font-sans text-label font-medium text-fg\">Sheffield, GB</span> <span class=\"font-mono text-meta text-ghost\">;</span> <span class=\"font-mono text-meta text-faint tabular-nums\">53.22°N 1.28°W</span></p></div></div><nav class=\"grid grid-cols-2 md:grid-cols-7 gap-px bg-fg\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"icon\" href=\"/static/images/favicon.svg\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"/static/styles/app.css\"><link rel=\"stylesheet\" href=\"/static/styles/code.css\"></head><body><header class=\"m-4 md:m-gutter divide-y divide-fg border border-fg\"><div class=\"grid grid-cols-1 divide-y md:grid-cols-3 md:divide-y-0 md:divide-x divide-fg\"><a href=\"/\" class=\"flex items-center font-sans font-bold text-h2 tracking-tightest text-fg leading-none p-5\">Henry Percy</a><div class=\"flex flex-col gap-1.5 p-5\"><span class=\"font-mono text-meta text-fainter\">date</span> <span class=\"font-mono text-label text-fg tabular-nums\">Sat 14 Jun 2026</span></div><div class=\"flex flex-col gap-1.5 p-5\"><span class=\"font-mono text-meta text-fainter\">filed from</span>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = location("Sheffield", "GB", "53.22°N 1.28°W").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></div><nav class=\"grid grid-cols-2 md:grid-cols-7 gap-px bg-fg\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -81,20 +89,20 @@ func Layout(title, active string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 templ.SafeURL
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(l.href))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 71, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 66, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -107,7 +115,7 @@ func Layout(title, active string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -116,7 +124,7 @@ func Layout(title, active string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -129,38 +137,38 @@ func Layout(title, active string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(l.num)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 72, Col: 152}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 67, Col: 152}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span> <span class=\"font-sans text-label text-fg\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span> <span class=\"font-sans text-label text-fg\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(l.label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 73, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 68, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</nav></header><main class=\"mx-4 md:mx-gutter\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</nav></header><main class=\"mx-4 md:mx-gutter\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -168,7 +176,15 @@ func Layout(title, active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</main><footer class=\"m-4 md:m-gutter space-y-5\"><div class=\"grid grid-cols-1 gap-y-8 lg:grid-cols-[auto_1fr] lg:gap-x-10\"><div class=\"flex flex-col justify-between py-5 px-1\"><h4 class=\"font-serif font-bold text-lead tracking-tightest text-fg leading-none\">Henry Percy</h4><div><p class=\"font-serif text-muted\">Written, photographed and built by hand.</p><p class=\"font-serif text-muted\">Plain text in, static pages out.</p></div><p class=\"flex items-baseline gap-1.5\"><span class=\"font-mono text-meta text-accent\">▸</span> <span class=\"font-sans text-label font-medium text-fg\">Sheffield, GB</span> <span class=\"font-mono text-meta text-ghost\">;</span> <span class=\"font-mono text-meta text-faint tabular-nums\">53.22°N 1.28°W</span></p></div><div class=\"grid grid-cols-1 divide-y md:grid-cols-7 md:divide-y-0 md:divide-x divide-fg border border-fg\"><div class=\"md:col-span-3 p-5 space-y-3\"><h4 class=\"tracking-kicker text-kicker font-mono text-fainter uppercase\">The Build</h4><dl class=\"grid grid-cols-[auto_1fr] gap-x-4 gap-y-1\"><dt class=\"text-meta font-mono text-fainter\">generator</dt><dd class=\"text-meta font-mono text-fg\">Custom Go SSG</dd><dt class=\"text-meta font-mono text-fainter\">go</dt><dd class=\"text-meta font-mono text-fg\">1.25.8</dd><dt class=\"text-meta font-mono text-fainter\">built on</dt><dd class=\"text-meta font-mono text-fg\">Linux 7.0.12-arch1-1; x86_64</dd><dt class=\"text-meta font-mono text-fainter\">javascript</dt><dd class=\"text-meta font-mono text-fg\">0 KB; none</dd><dt class=\"text-meta font-mono text-fainter\">last build</dt><dd class=\"text-meta font-mono text-fg\">14 June 2026; 09:14</dd></dl></div><div class=\"md:col-span-4 grid grid-cols-2 divide-x divide-fg\"><div class=\"p-5 space-y-3\"><h4 class=\"tracking-kicker text-kicker font-mono text-fainter uppercase\">Site</h4><ul class=\"space-y-1\"><li class=\"text-label font-sans\"><a href=\"/posts\">Posts</a></li><li class=\"text-label font-sans\"><a href=\"/slices\">Slices</a></li><li class=\"text-label font-sans\"><a href=\"/reading\">Reading</a></li><li class=\"text-label font-sans\"><a href=\"/spanish\">Spanish</a></li><li class=\"text-label font-sans\"><a href=\"/photos\">Photos</a></li></ul></div><div class=\"p-5 space-y-3\"><h4 class=\"tracking-kicker text-kicker font-mono text-fainter uppercase\">Links</h4><ul class=\"space-y-1\"><li class=\"text-label font-sans\"><a href=\"https://github.com/henryppercy\">GitHub</a></li><li class=\"text-label font-sans\"><a href=\"https://www.linkedin.com/in/henry-b-percy\">LinkedIn</a></li><li class=\"text-label font-sans\"><a href=\"#\">RSS feed</a></li><li class=\"text-label font-sans\"><a href=\"#\">Email</a></li></ul></div></div></div></div><div class=\"flex flex-col gap-2 sm:flex-row sm:justify-between\"><p class=\"font-mono text-meta text-fainter\">CC BY-NC-SA 4.0; 2023-26 © Henry Percy</p><p class=\"font-mono text-meta text-fainter\">No trackers; No JavaScript; 28 KB</p></div></footer></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</main><footer class=\"m-4 md:m-gutter space-y-5\"><div class=\"grid grid-cols-1 gap-y-8 lg:grid-cols-[auto_1fr] lg:gap-x-10\"><div class=\"flex flex-col justify-between py-5 px-1\"><h4 class=\"font-serif font-bold text-lead tracking-tightest text-fg leading-none\">Henry Percy</h4><div><p class=\"font-serif text-muted\">Written, photographed and built by hand.</p><p class=\"font-serif text-muted\">Plain text in, static pages out.</p></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = location("Sheffield", "GB", "53.22°N 1.28°W").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div><div class=\"grid grid-cols-1 divide-y md:grid-cols-7 md:divide-y-0 md:divide-x divide-fg border border-fg\"><div class=\"md:col-span-3 p-5 space-y-3\"><h4 class=\"tracking-kicker text-kicker font-mono text-fainter uppercase\">The Build</h4><dl class=\"grid grid-cols-[auto_1fr] gap-x-4 gap-y-1\"><dt class=\"text-meta font-mono text-fainter\">generator</dt><dd class=\"text-meta font-mono text-fg\">Custom Go SSG</dd><dt class=\"text-meta font-mono text-fainter\">go</dt><dd class=\"text-meta font-mono text-fg\">1.25.8</dd><dt class=\"text-meta font-mono text-fainter\">built on</dt><dd class=\"text-meta font-mono text-fg\">Linux 7.0.12-arch1-1; x86_64</dd><dt class=\"text-meta font-mono text-fainter\">javascript</dt><dd class=\"text-meta font-mono text-fg\">0 KB; none</dd><dt class=\"text-meta font-mono text-fainter\">last build</dt><dd class=\"text-meta font-mono text-fg\">14 June 2026; 09:14</dd></dl></div><div class=\"md:col-span-4 grid grid-cols-2 divide-x divide-fg\"><div class=\"p-5 space-y-3\"><h4 class=\"tracking-kicker text-kicker font-mono text-fainter uppercase\">Site</h4><ul class=\"space-y-1\"><li class=\"text-label font-sans\"><a href=\"/posts\">Posts</a></li><li class=\"text-label font-sans\"><a href=\"/slices\">Slices</a></li><li class=\"text-label font-sans\"><a href=\"/reading\">Reading</a></li><li class=\"text-label font-sans\"><a href=\"/spanish\">Spanish</a></li><li class=\"text-label font-sans\"><a href=\"/photos\">Photos</a></li></ul></div><div class=\"p-5 space-y-3\"><h4 class=\"tracking-kicker text-kicker font-mono text-fainter uppercase\">Links</h4><ul class=\"space-y-1\"><li class=\"text-label font-sans\"><a href=\"https://github.com/henryppercy\">GitHub</a></li><li class=\"text-label font-sans\"><a href=\"https://www.linkedin.com/in/henry-b-percy\">LinkedIn</a></li><li class=\"text-label font-sans\"><a href=\"#\">RSS feed</a></li><li class=\"text-label font-sans\"><a href=\"#\">Email</a></li></ul></div></div></div></div><div class=\"flex flex-col gap-2 sm:flex-row sm:justify-between\"><p class=\"font-mono text-meta text-fainter\">CC BY-NC-SA 4.0; 2023-26 © Henry Percy</p><p class=\"font-mono text-meta text-fainter\">No trackers; No JavaScript; 28 KB</p></div></footer></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

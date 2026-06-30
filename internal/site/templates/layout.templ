@@ -57,12 +57,7 @@ templ Layout(title, active string) {
 
                 <div class="flex flex-col gap-1.5 p-5">
                   <span class="font-mono text-meta text-fainter">filed from</span>
-                  <p class="flex items-baseline gap-1.5">
-                    <span class="font-mono text-meta text-accent">▸</span>
-                    <span class="font-sans text-label font-medium text-fg">Sheffield, GB</span>
-                    <span class="font-mono text-meta text-ghost">;</span>
-                    <span class="font-mono text-meta text-faint tabular-nums">53.22°N 1.28°W</span>
-                  </p>
+                  @location("Sheffield", "GB", "53.22°N 1.28°W")
                 </div>
               </div>
 
@@ -92,12 +87,7 @@ templ Layout(title, active string) {
                              Plain text in, static pages out.
                             </p>
                         </div>
-                        <p class="flex items-baseline gap-1.5">
-                            <span class="font-mono text-meta text-accent">▸</span>
-                            <span class="font-sans text-label font-medium text-fg">Sheffield, GB</span>
-                            <span class="font-mono text-meta text-ghost">;</span>
-                            <span class="font-mono text-meta text-faint tabular-nums">53.22°N 1.28°W</span>
-                        </p>
+                        @location("Sheffield", "GB", "53.22°N 1.28°W")
                     </div>
                     <div class="grid grid-cols-1 divide-y md:grid-cols-7 md:divide-y-0 md:divide-x divide-fg border border-fg">
                         <div class="md:col-span-3 p-5 space-y-3">

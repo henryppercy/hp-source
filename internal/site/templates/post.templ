@@ -4,19 +4,42 @@ import "fmt"
 
 templ Post(v PostView) {
 	@Layout(postTitle(v.Title), "/posts") {
-		<article>
-			if v.Title != "" {
-				<h1>{ v.Title }</h1>
-			}
-			if v.Headline != "" {
-				<p class="headline">{ v.Headline }</p>
-			}
-			<p class="meta">
-				Posted { fmtDate(v.PublishedAt) }
-				if !v.UpdatedAt.IsZero() {
-					· Updated { fmtDate(v.UpdatedAt) }
-				}
-			</p>
+		<article class="mx-auto max-w-[var(--spacing-measure)]">
+			<header class="mb-12">
+				<div class="space-y-4">
+					<div class="flex flex-wrap items-baseline gap-2">
+						<span class="font-mono text-kicker uppercase tracking-dateline text-fainter">Posts ;</span>
+						@tagChips(v.Topics)
+					</div>
+					if v.Title != "" {
+						<h1 class="font-sans font-bold tracking-tightest text-display text-fg">{ v.Title }</h1>
+					}
+					if v.Headline != "" {
+						<p class="font-serif italic text-lead text-muted max-w-[34ch]">{ v.Headline }</p>
+					}
+				</div>
+				<!-- Location, reading time and length are not in the database yet, so the values below are hardcoded until they are wired up. -->
+				<dl class="mt-8 grid grid-cols-1 divide-y md:grid-cols-4 md:divide-y-0 md:divide-x divide-fg border border-fg">
+					<div class="flex flex-col gap-1.5 p-5">
+						<dt class="font-mono text-meta text-fainter">filed</dt>
+						<dd class="font-sans text-label text-fg tabular-nums">{ fmtDate(v.PublishedAt) }</dd>
+					</div>
+					<div class="flex flex-col gap-1.5 p-5">
+						<dt class="font-mono text-meta text-fainter">location</dt>
+						<dd>
+							@location("Sheffield", "GB", "53.22°N 1.28°W")
+						</dd>
+					</div>
+					<div class="flex flex-col gap-1.5 p-5">
+						<dt class="font-mono text-meta text-fainter">reading</dt>
+						<dd class="font-sans text-label text-fg tabular-nums">6 min</dd>
+					</div>
+					<div class="flex flex-col gap-1.5 p-5">
+						<dt class="font-mono text-meta text-fainter">length</dt>
+						<dd class="font-sans text-label text-fg tabular-nums">1,240 words</dd>
+					</div>
+				</dl>
+			</header>
 			if len(v.TOC) > 0 {
 				<nav class="toc">
 					<div class="toc-head">
@@ -42,7 +65,14 @@ templ Post(v PostView) {
 			<div class="prose">
 				@templ.Raw(string(v.BodyHTML))
 			</div>
-			@topics(v.Topics)
+			<footer class="mt-16 flex flex-wrap items-baseline justify-between gap-4 border-t border-fg pt-5">
+				<div class="flex flex-wrap gap-2">
+					@tagChips(v.Topics)
+				</div>
+				if !v.UpdatedAt.IsZero() {
+					<span class="font-mono text-meta text-faint">Last edited { fmtDate(v.UpdatedAt) }</span>
+				}
+			</footer>
 		</article>
 	}
 }

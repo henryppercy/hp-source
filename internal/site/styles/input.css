@@ -179,6 +179,266 @@
   content: none;
 }
 
+/* ---------------------------------------------------------------------------
+   Prose: native markdown in a post body. A quiet serif column on white, with the
+   accent rationed to markers only (links, list dashes, the quote rule, footnote
+   refs). Element selectors sit at .prose > tag specificity to beat Typography's
+   :where() defaults. Code blocks and inline code are styled above. */
+.prose {
+  max-width: var(--spacing-measure);
+  font-family: var(--font-serif);
+  font-size: var(--text-body);
+  line-height: 1.7;
+  color: var(--color-fg-body);
+}
+
+/* Headings: grotesk ink, never accent. Space opens above a new section, closes
+   tight below it. */
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--color-fg);
+}
+/* h1 is the post title (set on the template), not body flow; this backs it up if
+   a body ever opens with one. */
+.prose h1 {
+  margin-bottom: 0.5em;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--text-display);
+  letter-spacing: var(--tracking-tightest);
+  color: var(--color-fg);
+}
+.prose h2 {
+  margin-top: 2.5em;
+  margin-bottom: 0.6em;
+  font-size: var(--text-h3);
+  letter-spacing: var(--tracking-tight);
+}
+.prose h3 {
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+  font-size: 1.2rem;
+  letter-spacing: var(--tracking-tight);
+}
+.prose h4 {
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
+  font-size: var(--text-label);
+}
+/* Deepest levels drop to a mono uppercase label. */
+.prose h5,
+.prose h6 {
+  margin-top: 1.4em;
+  margin-bottom: 0.4em;
+  font-family: var(--font-mono);
+  font-size: var(--text-kicker);
+  font-weight: 500;
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+  color: var(--color-fg);
+}
+
+/* Body: vertical rhythm only, no first-line indent. */
+.prose p {
+  margin: 0 0 1.15em;
+}
+
+/* Inline formatting. */
+.prose strong {
+  font-weight: 600;
+  color: var(--color-fg);
+}
+.prose em {
+  font-style: italic;
+}
+.prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent-tint);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+.prose a:hover {
+  text-decoration-color: var(--color-accent);
+}
+.prose del {
+  color: var(--color-faint);
+  text-decoration: line-through;
+}
+
+/* Blockquote: an accent rule in the margin, larger serif italic, no glyphs. A
+   nested attribution drops to a mono meta line. */
+.prose blockquote {
+  margin: 1.6em 0;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--color-accent);
+  font-style: italic;
+  font-size: 1.15em;
+  font-weight: 500;
+  color: var(--color-fg);
+}
+.prose blockquote p {
+  margin: 0.4em 0;
+}
+.prose blockquote p:first-of-type::before,
+.prose blockquote p:last-of-type::after {
+  content: none;
+}
+.prose blockquote cite {
+  display: block;
+  margin-top: 0.6em;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  font-style: normal;
+  font-weight: 400;
+  color: var(--color-faint);
+}
+
+/* Lists: custom markers set in a fixed gutter; accent at the top level, fainter
+   as nesting deepens. */
+.prose ul,
+.prose ol {
+  margin: 1.15em 0;
+  padding-left: 0;
+  list-style: none;
+}
+.prose li {
+  position: relative;
+  margin: 0.4em 0;
+  padding-left: 2rem;
+}
+.prose ul > li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  font-family: var(--font-mono);
+  color: var(--color-accent);
+}
+.prose ol {
+  counter-reset: list;
+}
+.prose ol > li {
+  counter-increment: list;
+}
+.prose ol > li::before {
+  content: counter(list, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  color: var(--color-accent);
+}
+.prose li > ul,
+.prose li > ol {
+  margin: 0.4em 0;
+}
+.prose li li::before {
+  font-size: 0.9em;
+  color: var(--color-fainter);
+}
+
+/* Task lists: a square checkbox replaces the dash. */
+.prose li:has(> input[type="checkbox"])::before {
+  content: none;
+}
+.prose input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  top: 0.35em;
+  width: 1em;
+  height: 1em;
+  appearance: none;
+  border: 1px solid var(--color-rule-soft);
+  border-radius: 0;
+}
+.prose input[type="checkbox"]:checked {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* Horizontal rule: a single hairline across the measure, no ornament. */
+.prose hr {
+  margin: 2.5em 0;
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+/* Images: full measure, square, a hairline frame. An optional figcaption sits
+   below in serif italic. */
+.prose img {
+  display: block;
+  max-width: 100%;
+  margin: 1.6em 0;
+  border: 1px solid var(--color-rule-soft);
+  border-radius: 0;
+}
+.prose figure {
+  margin: 1.6em 0;
+}
+.prose figure img {
+  margin: 0;
+}
+.prose figcaption {
+  margin-top: 0.5em;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.9em;
+  color: var(--color-muted);
+}
+
+/* Tables: horizontal rules only. A fg rule under the mono uppercase header, a
+   hairline between body rows. */
+.prose table {
+  width: 100%;
+  margin: 1.6em 0;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+.prose thead {
+  border-bottom: 1px solid var(--color-fg);
+}
+.prose th {
+  padding: 0.5em 0.9em;
+  font-family: var(--font-mono);
+  font-size: var(--text-kicker);
+  font-weight: 500;
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--color-fainter);
+}
+.prose tbody tr {
+  border-bottom: 1px solid var(--color-rule);
+}
+.prose td {
+  padding: 0.6em 0.9em;
+  font-family: var(--font-serif);
+  color: var(--color-fg-body);
+}
+
+/* Footnotes: superscript mono accent refs; the list sits above the footer behind
+   a hairline, a step below body. */
+.prose .footnote-ref,
+.prose .footnote-backref {
+  font-family: var(--font-mono);
+  color: var(--color-accent);
+  text-decoration: none;
+}
+.prose .footnotes {
+  margin-top: 2.5em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--color-rule);
+  font-size: 0.9em;
+  color: var(--color-muted);
+}
+.prose .footnotes hr {
+  display: none;
+}
+
 /* Table of contents: a boxed module at the top of a post. Two levels: numbered
    h2 entries with their h3s nested beneath, aligned past the ordinal gutter. */
 .toc {
