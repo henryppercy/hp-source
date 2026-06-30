@@ -14,6 +14,12 @@ templ location(city, code, coords string) {
 	</span>
 }
 
+// indexLink is the shared "back to a section index" link used on permalink pages
+// (e.g. a post or a slice back to its listing).
+templ indexLink(href, label string) {
+	<a href={ href } class="font-mono text-meta text-faint hover:text-accent">{ label }</a>
+}
+
 // tagChips renders topic links as the canonical boxed mono chips, shared by the
 // post header kicker and the article footer.
 templ tagChips(links []TopicLink) {

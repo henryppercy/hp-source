@@ -81,9 +81,11 @@ type TopicFeedView struct {
 	Slices   []SliceItem
 }
 
-// SliceItem is one note in the /slices timeline, body rendered inline.
+// SliceItem is one note in the /slices timeline, body rendered inline. Slug is
+// the in-page anchor on the feed and the fragment a permalink links back to.
 type SliceItem struct {
 	URL         string
+	Slug        string
 	PublishedAt time.Time
 	BodyHTML    template.HTML
 	Topics      []TopicLink

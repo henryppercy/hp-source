@@ -3,12 +3,11 @@ package templates
 import "fmt"
 
 templ Post(v PostView) {
-	@Layout(postTitle(v.Title), "/posts") {
+	@Layout(docTitle(v.Title), "/posts") {
 		<article class="mx-auto max-w-measure">
 			<header class="mb-12">
 				<div class="space-y-4">
 					<div class="flex flex-wrap items-baseline gap-2">
-						<span class="font-mono text-kicker uppercase tracking-dateline text-fainter">Posts ;</span>
 						@tagChips(v.Topics)
 					</div>
 					if v.Title != "" {
@@ -18,7 +17,6 @@ templ Post(v PostView) {
 						<p class="font-serif italic text-lead text-muted max-w-[34ch]">{ v.Headline }</p>
 					}
 				</div>
-				<!-- Location, reading time and length are not in the database yet, so the values below are hardcoded until they are wired up. -->
 				<dl class="mt-8 grid grid-cols-1 divide-y md:grid-cols-4 md:divide-y-0 md:divide-x divide-fg border border-fg">
 					<div class="flex flex-col gap-1.5 p-5">
 						<dt class="font-mono text-meta text-fainter">filed</dt>
@@ -73,6 +71,9 @@ templ Post(v PostView) {
 					<span class="font-mono text-meta text-faint">Last edited { fmtDate(v.UpdatedAt) }</span>
 				}
 			</footer>
+			<div class="mt-12">
+				@indexLink("/posts", "See all posts")
+			</div>
 		</article>
 	}
 }
@@ -83,13 +84,4 @@ func sectionLabel(n int) string {
 		return "1 section"
 	}
 	return fmt.Sprintf("%d sections", n)
-}
-
-// postTitle is the document title for a post, falling back to "Slice" for
-// title-less slices.
-func postTitle(title string) string {
-	if title == "" {
-		title = "Slice"
-	}
-	return docTitle(title)
 }

@@ -94,6 +94,16 @@ func (b *builder) Build() error {
 	}
 
 	for _, p := range posts {
+		if p.Kind == "slice" {
+			item, err := b.sliceItem(p)
+			if err != nil {
+				return err
+			}
+			if err := b.render(postURL(p), templates.Slice(item)); err != nil {
+				return err
+			}
+			continue
+		}
 		view, err := b.postView(p)
 		if err != nil {
 			return err
@@ -125,21 +135,32 @@ func (b *builder) Build() error {
 	return b.writeCodeCSS()
 }
 
+// sliceItem renders one slice post into a timeline item, shared by the feed and
+// the slice permalink page.
+func (b *builder) sliceItem(p repo.Post) (templates.SliceItem, error) {
+	body, _, err := render(b.md, p.Body)
+	if err != nil {
+		return templates.SliceItem{}, fmt.Errorf("slice %s: %w", p.Slug, err)
+	}
+	return templates.SliceItem{
+		URL:         postURL(p),
+		Slug:        p.Slug,
+		PublishedAt: parseDate(p.PublishedAt),
+		BodyHTML:    body,
+		Topics:      topicLinks(p.Topics),
+	}, nil
+}
+
 // sliceItems renders already-filtered slice posts (newest-first) into timeline
 // items, reused by /slices and topic pages.
 func (b *builder) sliceItems(slices []repo.Post) ([]templates.SliceItem, error) {
 	var items []templates.SliceItem
 	for _, p := range slices {
-		body, _, err := render(b.md, p.Body)
+		item, err := b.sliceItem(p)
 		if err != nil {
-			return nil, fmt.Errorf("slice %s: %w", p.Slug, err)
+			return nil, err
 		}
-		items = append(items, templates.SliceItem{
-			URL:         postURL(p),
-			PublishedAt: parseDate(p.PublishedAt),
-			BodyHTML:    body,
-			Topics:      topicLinks(p.Topics),
-		})
+		items = append(items, item)
 	}
 	return items, nil
 }

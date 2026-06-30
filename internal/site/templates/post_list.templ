@@ -7,7 +7,6 @@ templ PostList(v PostListView) {
 		<div class="mx-auto max-w-measure">
 			<header class="mb-12">
 				<div class="space-y-4">
-					<span class="block font-mono text-kicker uppercase tracking-dateline text-fainter">Index</span>
 					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">{ v.Heading }</h1>
 					<p class="font-serif italic text-lead text-muted max-w-[48ch]">Long-form writing ; field notes, essays and the occasional deep dive, newest first.</p>
 				</div>
@@ -33,7 +32,7 @@ templ PostList(v PostListView) {
 							}
 							<a href={ p.URL + "/" } class="group block pt-6">
 								<time class="block font-mono text-meta text-faint tabular-nums">{ fmtDate(p.PublishedAt) }</time>
-								<h2 class="mt-1 font-sans font-semibold text-h3 tracking-tight text-fg transition-colors group-hover:text-accent">{ p.Title }</h2>
+								<h2 class="mt-1 font-sans font-semibold text-h3 tracking-tight text-fg group-hover:text-accent">{ p.Title }</h2>
 								if p.Headline != "" {
 									<p class="mt-1.5 font-serif text-body text-muted leading-snug max-w-[60ch]">{ p.Headline }</p>
 								}
