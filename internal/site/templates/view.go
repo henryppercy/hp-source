@@ -90,6 +90,94 @@ type TopicFeedView struct {
 	Slices   []SliceItem
 }
 
+// SpanishView is the /spanish page: the input dashboard above the writing feed.
+type SpanishView struct {
+	Total      string // lifetime hours, e.g. "472"
+	Intro      string // the serif interlude framing the daily log
+	Band       BandView
+	StartDate  time.Time
+	DayCount   int
+	Year       int
+	Stats      []Stat  // the six frontispiece figures
+	Months     [12]int // seconds logged per month, January to December
+	PeakMonth  int     // seconds in the busiest month, for scaling the bars
+	PeakLabel  string
+	Goal       GoalView
+	Calendar   CalendarView
+	Milestones []MilestoneRung
+	Records    []Stat
+	Averages   []Stat
+	Note       string // hand-written "where I'm at" line
+	Articles   []PostListItem
+	Slices     []SliceItem
+}
+
+// Stat is a label over or beside a figure, shared across the Spanish cards.
+type Stat struct {
+	Label string
+	Value string
+}
+
+// BandView is progress through the current hours band toward the next mark, the
+// hero's replacement for a named level. AtMax is set past the last mark.
+type BandView struct {
+	PrevLabel string // "300h"
+	NextLabel string // "600h"
+	Pct       int
+	ToNext    string // "128 hours to 600"
+	AtMax     bool
+}
+
+// GoalView is the burn-up toward the year's hour target. ActualPoints and
+// PacePoints are SVG polyline coordinates in a 720x240 box.
+type GoalView struct {
+	Head         string // "800 hours by December 2026"
+	Verdict      string // "14h ahead" | "reached"
+	Delta        string // compact form for the stat cell: "+14h" | "-6h" | "on 800h"
+	Pace         string // "1h 40m a day to finish on time"
+	Reached      bool
+	ActualPoints string
+	PacePoints   string
+	NowX         string
+	NowY         string
+}
+
+// CalendarView is the contribution heatmap, one column per week from the first
+// logged day to today. Years are the labels above it, each spanning its weeks.
+type CalendarView struct {
+	Weeks []CalWeek
+	Years []YearSpan
+}
+
+// YearSpan is a year marker above the heatmap; Weeks is how many columns it
+// covers, used to size its label.
+type YearSpan struct {
+	Label string
+	Weeks int
+}
+
+// CalWeek is a Monday-to-Sunday column in the heatmap.
+type CalWeek struct {
+	Days [7]CalDay
+}
+
+// CalDay is one cell: InRange is false for padding before the first day or after
+// today. Class is the shade for its logged time, Title the hover label.
+type CalDay struct {
+	InRange bool
+	Class   string
+	Title   string
+}
+
+// MilestoneRung is one rung of the roadmap ladder. URL is set only for a reached
+// milestone that has a reflection post.
+type MilestoneRung struct {
+	Label   string
+	Reached bool
+	Date    time.Time
+	URL     string
+}
+
 // SliceItem is one note in the /slices timeline, body rendered inline. Slug is
 // the in-page anchor on the feed and the fragment a permalink links back to.
 type SliceItem struct {

@@ -1,25 +1,239 @@
 package templates
 
-// TODO: Spanish learning dashboard (streak, stats, goals) goes in the dashboard
-// section below, replacing the placeholder.
-templ Spanish(v TopicFeedView) {
+import "fmt"
+
+// Spanish is the /spanish page: the input dashboard (the count, the goal burn-up,
+// the daily heatmap and the roadmap) above the Spanish writing feed.
+templ Spanish(v SpanishView) {
 	@Layout(docTitle("Spanish"), "/spanish") {
-		<h1>Spanish</h1>
-		<section class="dashboard">
-			<p>Dashboard coming soon.</p>
-		</section>
-		if len(v.Articles) > 0 {
-			<h2>Articles</h2>
-			@topicArticles(v.Articles)
-		}
-		if len(v.Slices) > 0 {
-			<h2>Slices</h2>
-			for _, s := range v.Slices {
-				@sliceCard(s, true)
+		<div class="mx-auto max-w-broad">
+			<header class="mb-10">
+				<div class="space-y-4">
+					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">Spanish</h1>
+					<p class="font-serif italic text-lead text-muted max-w-[52ch]">Learning by comprehensible input ; the hours banked, the road ahead, and what I have written along the way.</p>
+				</div>
+			</header>
+			if v.DayCount > 0 {
+				@spanishFrontispiece(v)
+				if v.Intro != "" {
+					<p class="mx-auto mt-14 max-w-measure font-serif text-lead text-muted">{ v.Intro }</p>
+				}
+				@spanishCalendarPlate(v.Calendar)
+				<div class="mt-16 grid gap-x-10 gap-y-12 lg:grid-cols-[2fr_1fr] lg:items-start">
+					<div class="min-w-0">
+						@sectionHead("The roadmap", fmt.Sprintf("%s hours logged", v.Total))
+						<ul>
+							for _, r := range v.Milestones {
+								@milestoneRung(r)
+							}
+						</ul>
+						if len(v.Articles) > 0 || len(v.Slices) > 0 {
+							<div class="mt-16">
+								@sectionHead("Writing", fmt.Sprintf("%d posts", len(v.Articles)+len(v.Slices)))
+								if len(v.Articles) > 0 {
+									<ol>
+										for _, p := range v.Articles {
+											<li class="border-t border-rule first:border-t-0">
+												@postRow(p)
+											</li>
+										}
+									</ol>
+								}
+								if len(v.Slices) > 0 {
+									<div class="mt-8 space-y-6">
+										for _, s := range v.Slices {
+											@sliceCard(s, true)
+										}
+									</div>
+								}
+							</div>
+						}
+					</div>
+					<aside class="space-y-8">
+						@goalCard(v.Goal)
+						@factCard("Records", v.Records)
+						@factCard("Averages", v.Averages)
+						@noteCard(v.Note)
+					</aside>
+				</div>
+			} else {
+				<p class="font-serif text-muted">No input logged yet.</p>
 			}
+		</div>
+	}
+}
+
+// spanishFrontispiece is the hub plate: the lifetime count and level on the left,
+// the headline figures on the right, the year's hours by month across the foot.
+templ spanishFrontispiece(v SpanishView) {
+	<div class="border border-fg">
+		<div class="flex items-baseline justify-between border-b border-fg px-5 py-3">
+			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Comprehensible input</span>
+			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">since { fmtDate(v.StartDate) } ; day { fmt.Sprintf("%d", v.DayCount) }</span>
+		</div>
+		<div class="grid lg:grid-cols-[2fr_3fr]">
+			<div class="flex flex-col border-b border-fg p-6 lg:border-b-0 lg:border-r">
+				<div class="flex items-baseline gap-2">
+					<span class="font-sans font-bold tracking-tightest text-display text-fg tabular-nums leading-none">{ v.Total }</span>
+					<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">hours</span>
+				</div>
+				<div class="mt-auto pt-8">
+					if !v.Band.AtMax {
+						<div class="mb-1.5 flex items-baseline justify-between font-mono text-meta text-faint tabular-nums">
+							<span>{ v.Band.PrevLabel }</span>
+							<span>{ v.Band.NextLabel }</span>
+						</div>
+						<div class="h-1.5 w-full bg-rule">
+							<div class="h-full bg-accent" style={ fmt.Sprintf("width:%d%%", v.Band.Pct) }></div>
+						</div>
+					}
+					<div class="mt-2.5 font-mono text-meta text-fainter">{ v.Band.ToNext }</div>
+				</div>
+			</div>
+			<dl class="grid auto-rows-fr grid-cols-2 gap-px bg-rule-soft sm:grid-cols-3">
+				for _, s := range v.Stats {
+					@stat(s.Label, s.Value)
+				}
+			</dl>
+		</div>
+		if v.PeakMonth > 0 {
+			<div class="border-t border-fg px-5 pb-4 pt-5">
+				<div class="mb-4 flex items-baseline justify-between">
+					<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">by month ; { fmt.Sprintf("%d", v.Year) }</span>
+					<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ v.PeakLabel }</span>
+				</div>
+				<div class="flex items-end gap-1.5 border-b border-rule">
+					for _, sec := range v.Months {
+						<div class="flex-1">
+							<div class="flex h-16 items-end">
+								if sec > 0 {
+									<div class="w-full bg-accent" style={ fmt.Sprintf("height:%d%%", barPct(sec, v.PeakMonth)) }></div>
+								}
+							</div>
+						</div>
+					}
+				</div>
+				<div class="mt-2 flex gap-1.5">
+					for i := range v.Months {
+						<div class="flex-1 text-center font-mono text-kicker text-fainter">{ monthInitials[i] }</div>
+					}
+				</div>
+			</div>
 		}
-		if len(v.Articles) == 0 && len(v.Slices) == 0 {
-			<p>No Spanish posts yet.</p>
+	</div>
+}
+
+// goalCard is the rail's burn-up toward the target: the running total against a
+// dashed pace line, small, with the pace note beneath.
+templ goalCard(g GoalView) {
+	<div class="border border-rule-soft p-5">
+		<header class="mb-4 flex items-baseline justify-between gap-3 border-b border-rule pb-3">
+			<h3 class="font-mono text-kicker tracking-kicker uppercase text-fg">{ g.Head }</h3>
+			<span class="font-mono text-meta tabular-nums text-accent">{ g.Verdict }</span>
+		</header>
+		<svg viewBox="0 0 720 240" class="h-auto w-full" role="img" aria-label="Hours logged over time against the target pace">
+			<polyline points={ g.PacePoints } fill="none" stroke="var(--color-rule-soft)" stroke-width="3" stroke-dasharray="7 7"></polyline>
+			<polyline points={ g.ActualPoints } fill="none" stroke="var(--color-accent)" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"></polyline>
+			<circle cx={ g.NowX } cy={ g.NowY } r="7" fill="var(--color-accent)"></circle>
+		</svg>
+		if g.Pace != "" {
+			<p class="mt-3 font-mono text-meta text-muted leading-snug">{ g.Pace }.</p>
 		}
+	</div>
+}
+
+// spanishCalendarPlate is the daily contribution heatmap, one column per week
+// from the first logged day to today.
+templ spanishCalendarPlate(c CalendarView) {
+	<div class="mt-14 border border-fg">
+		<div class="flex items-baseline justify-between border-b border-fg px-5 py-3">
+			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Daily log</span>
+			<span class="flex items-center gap-1 font-mono text-kicker tracking-kicker uppercase text-fainter">
+				less
+				<span class="h-2.5 w-2.5 bg-rule"></span>
+				<span class="h-2.5 w-2.5 bg-accent-tint"></span>
+				<span class="h-2.5 w-2.5 bg-[#f0a39b]"></span>
+				<span class="h-2.5 w-2.5 bg-[#d0574c]"></span>
+				<span class="h-2.5 w-2.5 bg-accent"></span>
+				more
+			</span>
+		</div>
+		<div class="overflow-x-auto p-6" dir="rtl">
+			<div class="inline-block" dir="ltr">
+				<div class="mb-1.5 flex">
+					for _, ys := range c.Years {
+						<div class="overflow-hidden whitespace-nowrap font-mono text-kicker tracking-kicker text-fainter tabular-nums" style={ fmt.Sprintf("width:%dpx", ys.Weeks*16) }>{ ys.Label }</div>
+					}
+				</div>
+				<div class="flex">
+					for _, w := range c.Weeks {
+						<div class="mr-1 flex flex-col gap-1">
+							for _, d := range w.Days {
+								if d.InRange {
+									<div class={ "h-3 w-3 " + d.Class } title={ d.Title }></div>
+								} else {
+									<div class="h-3 w-3"></div>
+								}
+							}
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+// milestoneRung is one rung of the roadmap: hours on the left, the date crossed
+// on the right. Reached rungs link out to their reflection post; unreached rungs
+// sit ghosted with a TBD date.
+templ milestoneRung(r MilestoneRung) {
+	<li class="border-t border-rule first:border-t-0">
+		if r.Reached && r.URL != "" {
+			<a href={ r.URL } class="group flex items-baseline justify-between gap-4 py-3">
+				<span class="font-sans font-medium tabular-nums text-fg group-hover:text-accent">{ r.Label }</span>
+				<span class="font-mono text-meta tabular-nums text-faint">{ fmtDate(r.Date) }</span>
+			</a>
+		} else if r.Reached {
+			<div class="flex items-baseline justify-between gap-4 py-3">
+				<span class="font-sans font-medium tabular-nums text-fg">{ r.Label }</span>
+				<span class="font-mono text-meta tabular-nums text-faint">{ fmtDate(r.Date) }</span>
+			</div>
+		} else {
+			<div class="flex items-baseline justify-between gap-4 py-3">
+				<span class="font-sans tabular-nums text-ghost">{ r.Label }</span>
+				<span class="font-mono text-meta tabular-nums text-ghost">TBD</span>
+			</div>
+		}
+	</li>
+}
+
+// factCard is a rail card of label/value rows, for the records and averages.
+templ factCard(title string, items []Stat) {
+	if len(items) > 0 {
+		<div class="border border-rule-soft p-5">
+			<header class="mb-4 border-b border-rule pb-3">
+				<h3 class="font-mono text-kicker tracking-kicker uppercase text-fg">{ title }</h3>
+			</header>
+			<ul class="space-y-2.5">
+				for _, s := range items {
+					<li class="flex items-baseline justify-between gap-3">
+						<span class="font-serif text-body text-fg">{ s.Label }</span>
+						<span class="font-mono text-label text-muted tabular-nums">{ s.Value }</span>
+					</li>
+				}
+			</ul>
+		</div>
+	}
+}
+
+// noteCard is the hand-written "where I'm at" aside.
+templ noteCard(note string) {
+	if note != "" {
+		<div class="border border-rule-soft p-5">
+			<header class="mb-4 border-b border-rule pb-3">
+				<h3 class="font-mono text-kicker tracking-kicker uppercase text-fg">Where I'm at</h3>
+			</header>
+			<p class="font-serif italic text-body text-muted leading-snug">{ note }</p>
+		</div>
 	}
 }

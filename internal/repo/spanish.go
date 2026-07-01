@@ -8,6 +8,40 @@ type DreamingSpanishDay struct {
 	Seconds int
 }
 
+// SpanishLogEntry is one logged session of Spanish input.
+type SpanishLogEntry struct {
+	Date     string
+	Seconds  int
+	Activity string
+	Source   string
+	Note     string
+}
+
+// ListSpanishLog returns every logged session, oldest first.
+func (r *Repo) ListSpanishLog() ([]SpanishLogEntry, error) {
+	rows, err := r.db.Query(
+		`SELECT date, seconds, activity, source, note FROM spanish_log ORDER BY date`,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list spanish log: %w", err)
+	}
+	defer rows.Close()
+
+	var entries []SpanishLogEntry
+	for rows.Next() {
+		var e SpanishLogEntry
+		var note *string
+		if err := rows.Scan(&e.Date, &e.Seconds, &e.Activity, &e.Source, &note); err != nil {
+			return nil, fmt.Errorf("failed to scan spanish log entry: %w", err)
+		}
+		if note != nil {
+			e.Note = *note
+		}
+		entries = append(entries, e)
+	}
+	return entries, rows.Err()
+}
+
 // ReplaceDreamingSpanish swaps every synced Dreaming Spanish row for the given
 // days in one transaction. Delete-and-replace keeps sync idempotent and matches
 // DS even when it corrects past days; manually logged rows are left untouched.

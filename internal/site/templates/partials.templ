@@ -26,21 +26,6 @@ templ tagChips(links []TopicLink) {
 	}
 }
 
-// topicArticles is the plain article list used by the Spanish feed.
-templ topicArticles(items []PostListItem) {
-	<ul>
-		for _, p := range items {
-			<li>
-				<a href={ p.URL + "/" }>{ p.Title }</a> ·
-				{ fmtDate(p.PublishedAt) }
-				if p.Headline != "" {
-					· { p.Headline }
-				}
-			</li>
-		}
-	</ul>
-}
-
 // postRow is one article row, shared by the /posts index and the topic feed.
 // The caller owns the <li> wrapper.
 templ postRow(p PostListItem) {
