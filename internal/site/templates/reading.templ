@@ -201,7 +201,6 @@ templ ledgerHead() {
 		<td class="hidden px-4 text-right sm:table-cell">Finished</td>
 		<td class="hidden px-4 text-right xl:table-cell">Days</td>
 		<td class="hidden px-4 text-right md:table-cell lg:hidden xl:table-cell">Pages</td>
-		<td class="hidden pl-4 text-right xl:table-cell">Format</td>
 	</tr>
 }
 
@@ -239,13 +238,6 @@ templ ledgerRow(b FinishedBook) {
 		<td class="hidden px-4 py-4 text-right align-middle font-mono text-meta text-muted tabular-nums md:table-cell lg:hidden xl:table-cell">
 			if b.Pages > 0 {
 				{ fmt.Sprintf("%d", b.Pages) }
-			} else {
-				<span class="text-ghost">·</span>
-			}
-		</td>
-		<td class="hidden py-4 pl-4 text-right align-middle font-mono text-meta text-muted lowercase xl:table-cell">
-			if b.Format != "" {
-				{ b.Format }
 			} else {
 				<span class="text-ghost">·</span>
 			}
