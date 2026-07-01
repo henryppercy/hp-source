@@ -60,16 +60,20 @@ func (b *builder) Build() error {
 	if err != nil {
 		return err
 	}
-
-	books := bookViews(reads)
-	year := time.Now().Year()
-
-	home := templates.HomeView{
-		RecentBooks:     recentBooks(books, recentLimit),
-		RecentPosts:     recentPosts(posts, recentLimit),
-		BooksReadInYear: booksReadInYear(reads, year),
-		Year:            year,
+	spanishLog, err := b.repo.ListSpanishLog()
+	if err != nil {
+		return err
 	}
+
+	now := time.Now()
+	year := now.Year()
+
+	timeline, err := b.sliceItems(allSlices(posts))
+	if err != nil {
+		return err
+	}
+
+	home := homeView(posts, reads, timeline, spanishLog, now)
 	if err := b.render("/", templates.Home(home)); err != nil {
 		return err
 	}
@@ -81,10 +85,6 @@ func (b *builder) Build() error {
 		return err
 	}
 
-	timeline, err := b.sliceItems(allSlices(posts))
-	if err != nil {
-		return err
-	}
 	if err := b.render("/slices", templates.Slices(templates.SliceFeedView{
 		Heading: "Slices",
 		Intro:   "Get a slice of my life. A personal feed of my thoughts, notes, and updates.",
@@ -93,7 +93,7 @@ func (b *builder) Build() error {
 		return err
 	}
 
-	if err := b.renderTopics(posts); err != nil {
+	if err := b.renderTopics(posts, spanishLog); err != nil {
 		return err
 	}
 
@@ -175,11 +175,7 @@ func (b *builder) sliceItems(slices []repo.Post) ([]templates.SliceItem, error) 
 
 // renderTopics renders /spanish (kept as a special top-level route) plus a
 // /topics/{topic} page for every topic present on a published post.
-func (b *builder) renderTopics(posts []repo.Post) error {
-	log, err := b.repo.ListSpanishLog()
-	if err != nil {
-		return err
-	}
+func (b *builder) renderTopics(posts []repo.Post, log []repo.SpanishLogEntry) error {
 	slices, err := b.sliceItems(slicesWithTopic(posts, "spanish"))
 	if err != nil {
 		return err

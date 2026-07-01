@@ -2,24 +2,232 @@ package templates
 
 import "fmt"
 
+// The frontispiece prose. Static, so it lives with the markup rather than the
+// view; edit these lines to reword the introduction. The standfirst says who I
+// am, the bio what the site is, so the two do not repeat each other.
+const homeHero = "I like to keep a record."
+
+const homeStandfirst = "Software developer in Sheffield, and an inveterate note-taker."
+
+const homeBio = "This site is the notebook: a reading log going back years, a running count " +
+	"of my Spanish, short field notes, longer posts, and the photographs in between. Everything " +
+	"here is captured by hand and rendered from one small program."
+
+const homeStreamIntro = "I have never kept separate notebooks for separate things. Reading, " +
+	"writing, the slow work of learning Spanish; it all lands here in the order it happened."
+
+// Home is the frontispiece: a nameplate, the live dispatch strip, then a
+// notebook body with the merged stream in the main column and the figures and
+// index crammed into the margin.
 templ Home(v HomeView) {
 	@Layout(docTitle(""), "/") {
-		<h1>Home</h1>
-		<p>{ fmt.Sprintf("%d books read in %d.", v.BooksReadInYear, v.Year) }</p>
-		<h2>Recent posts</h2>
-		<ul>
-			for _, p := range v.RecentPosts {
+		<div class="mx-auto max-w-broad">
+			@homeNameplate()
+			@homeDispatch(v.Dispatch)
+			<p class="mx-auto mb-16 max-w-measure font-serif text-lead text-muted leading-relaxed">{ homeStreamIntro }</p>
+			<div class="grid gap-x-10 gap-y-12 lg:grid-cols-[2fr_1fr] lg:items-start">
+				<div class="min-w-0">
+					@homeStream(v.Stream)
+				</div>
+				<aside class="space-y-8">
+					@factCard("By the numbers", v.Stats)
+					@subjectsCard(v.Subjects)
+					@homeIndexCard(v.Index)
+				</aside>
+			</div>
+		</div>
+	}
+}
+
+// homeNameplate is the opening statement: a kicker, a mega line, the standfirst
+// and bio set to a readable measure, and the filed-from stamp.
+templ homeNameplate() {
+	<header class="mb-14 border-b border-fg pb-10">
+		<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Personal field journal ; est. 2023</span>
+		<h1 class="mt-4 font-sans font-bold tracking-tightest text-display text-fg leading-none md:text-mega">{ homeHero }</h1>
+		<div class="mt-6 max-w-measure space-y-4">
+			<p class="font-serif italic text-lead text-muted">{ homeStandfirst }</p>
+			<p class="font-serif text-body text-fg-body leading-relaxed">{ homeBio }</p>
+		</div>
+		<div class="mt-6">
+			@location("Sheffield", "GB", "53.22°N 1.28°W")
+		</div>
+	</header>
+}
+
+// homeDispatch is the dispatch plate: a header strip over a row of live cells,
+// each the freshest fact from one feed.
+templ homeDispatch(cells []DispatchCell) {
+	if len(cells) > 0 {
+		<section class="mb-16 border border-fg">
+			<div class="flex items-baseline justify-between border-b border-fg px-5 py-3">
+				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Where things stand</span>
+				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Sheffield ; the desk</span>
+			</div>
+			<div class={ "grid grid-cols-2 gap-px bg-rule-soft",
+				templ.KV("lg:grid-cols-5", len(cells) == 5),
+				templ.KV("lg:grid-cols-4", len(cells) == 4),
+				templ.KV("lg:grid-cols-3", len(cells) == 3),
+				templ.KV("lg:grid-cols-2", len(cells) <= 2) }>
+				for i, c := range cells {
+					@dispatchCell(c, i == 0 && len(cells)%2 == 1)
+				}
+			</div>
+		</section>
+	}
+}
+
+templ dispatchCell(c DispatchCell, span bool) {
+	<div class={ "flex flex-col bg-surface p-5", templ.KV("col-span-2 lg:col-span-1", span) }>
+		<span class="mb-2 font-mono text-kicker tracking-kicker uppercase text-fainter">{ c.Kicker }</span>
+		if c.URL != "" {
+			<a href={ c.URL } class="group flex grow flex-col">
+				@dispatchBody(c)
+			</a>
+		} else {
+			@dispatchBody(c)
+		}
+	</div>
+}
+
+templ dispatchBody(c DispatchCell) {
+	<p class={ "font-serif text-body text-fg-body leading-snug group-hover:text-accent", templ.KV("italic", c.Italic) }>{ c.Lead }</p>
+	if c.Meta != "" {
+		<span class="mt-auto pt-3 font-mono text-meta text-faint tabular-nums">{ c.Meta }</span>
+	}
+}
+
+// homeStream is the merged feed in the main column: boxed cards hung from a
+// dateline in the margin, each card sized and enriched to its kind so none reads
+// as an empty frame.
+templ homeStream(entries []FeedEntry) {
+	if len(entries) > 0 {
+		<section>
+			@sectionHead("The stream", "newest first")
+			<div class="space-y-6">
+				for _, e := range entries {
+					<div class="relative">
+						@dateline(fmtDate(e.Date), "", "lg:top-5")
+						@streamCard(e)
+					</div>
+				}
+			</div>
+		</section>
+	}
+}
+
+// streamCard is one boxed feed entry, its shape set by kind. A post carries a
+// headline, a note its body, a read its cover and caption, a milestone the mark.
+templ streamCard(e FeedEntry) {
+	switch e.Kind {
+		case "post":
+			<article class="border border-rule-soft p-5">
+				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ e.Kicker }</span>
+				<a href={ e.URL } class="group mt-1 block">
+					<h3 class="font-sans font-semibold text-lead tracking-tight text-fg group-hover:text-accent">{ e.Title }</h3>
+					if e.Note != "" {
+						<p class="mt-1 max-w-[60ch] font-serif text-body text-muted leading-snug">{ e.Note }</p>
+					}
+				</a>
+				if len(e.Topics) > 0 {
+					<div class="mt-3 flex flex-wrap gap-2">
+						@tagChips(e.Topics)
+					</div>
+				}
+			</article>
+		case "note":
+			<article class="border border-rule-soft p-5">
+				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ e.Kicker }</span>
+				<div class="prose mt-1.5">
+					@templ.Raw(string(e.BodyHTML))
+				</div>
+				<div class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-3">
+					<div class="flex flex-wrap gap-2">
+						@tagChips(e.Topics)
+					</div>
+					<a href={ e.URL } class="font-mono text-meta text-faint hover:text-accent">permalink</a>
+				</div>
+			</article>
+		case "book":
+			<article class="flex gap-4 border border-rule-soft p-5">
+				if e.ImageURL != "" {
+					<img src={ e.ImageURL } alt="" class="h-20 w-14 shrink-0 self-start border border-rule object-cover"/>
+				}
+				<div class="flex min-w-0 grow flex-col">
+					<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ e.Kicker }</span>
+					<h3 class="mt-1 font-serif italic text-lead text-fg leading-tight">{ e.Title }</h3>
+					<p class="mt-0.5 font-sans text-label text-muted">{ e.Note }</p>
+					<div class="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1.5 pt-2.5">
+						if e.Rating > 0 {
+							@ratingMeter(e.Rating)
+						}
+						if e.Meta != "" {
+							<span class="font-mono text-meta text-faint lowercase">{ e.Meta }</span>
+						}
+					</div>
+				</div>
+			</article>
+		case "milestone":
+			<article class="border border-rule-soft border-l-2 border-l-accent p-5">
+				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ e.Kicker }</span>
+				if e.URL != "" {
+					<a href={ e.URL } class="group mt-1 block">
+						<p class="font-serif italic text-lead text-accent group-hover:underline">Crossed { e.Title }</p>
+					</a>
+				} else {
+					<p class="mt-1 font-serif italic text-lead text-accent">Crossed { e.Title }</p>
+				}
+			</article>
+	}
+}
+
+// subjectsCard is the margin's list of subjects, most-written first, each
+// linking to its topic feed.
+templ subjectsCard(topics []TopicCount) {
+	if len(topics) > 0 {
+		<div class="border border-rule-soft p-5">
+			<header class="mb-4 border-b border-rule pb-3">
+				<h3 class="font-mono text-kicker tracking-kicker uppercase text-fg">Subjects</h3>
+			</header>
+			<ul class="space-y-2.5">
+				for _, t := range topics {
+					<li>
+						<a href={ t.URL } class="group flex items-baseline gap-3">
+							<span class="grow font-serif text-body text-fg group-hover:text-accent">{ t.Name }</span>
+							<span class="font-mono text-label text-muted tabular-nums">{ fmt.Sprintf("%d", t.Count) }</span>
+						</a>
+					</li>
+				}
+			</ul>
+		</div>
+	}
+}
+
+// homeIndexCard is the section directory as a margin card: a numbered line per
+// section with its live count, unbuilt sections ghosted.
+templ homeIndexCard(rows []IndexRow) {
+	<div class="border border-rule-soft p-5">
+		<header class="mb-4 border-b border-rule pb-3">
+			<h3 class="font-mono text-kicker tracking-kicker uppercase text-fg">The index</h3>
+		</header>
+		<ul class="space-y-2.5">
+			for _, r := range rows {
 				<li>
-					<a href={ p.URL + "/" }>{ p.Title }</a> —
-					{ fmtDate(p.PublishedAt) }
+					if r.URL != "" {
+						<a href={ r.URL } class="group flex items-baseline gap-3">
+							<span class="font-mono text-meta text-fainter tabular-nums">{ r.Num }</span>
+							<span class="grow font-sans text-label text-fg group-hover:text-accent">{ r.Label }</span>
+							<span class="font-mono text-meta text-faint tabular-nums">{ r.Note }</span>
+						</a>
+					} else {
+						<div class="flex items-baseline gap-3">
+							<span class="font-mono text-meta text-ghost tabular-nums">{ r.Num }</span>
+							<span class="grow font-sans text-label text-ghost">{ r.Label }</span>
+							<span class="font-mono text-meta text-ghost tabular-nums">{ r.Note }</span>
+						</div>
+					}
 				</li>
 			}
 		</ul>
-		<h2>Recent books</h2>
-		<ul>
-			for _, b := range v.RecentBooks {
-				<li>{ b.Title } — { b.Author }</li>
-			}
-		</ul>
-	}
+	</div>
 }

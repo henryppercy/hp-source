@@ -5,7 +5,7 @@ templ Slice(s SliceItem) {
 	@Layout(docTitle("Slice"), "/slices") {
 		<div class="mx-auto max-w-measure">
 			<div class="relative">
-				<span class="block whitespace-nowrap border-l-2 border-accent pl-3 font-serif font-semibold italic text-accent tabular-nums leading-none mb-3 lg:absolute lg:right-full lg:top-6 lg:mr-8 lg:mb-0">{ fmtDate(s.PublishedAt) }</span>
+				@dateline(fmtDate(s.PublishedAt), "", "lg:top-6")
 				@sliceCard(s, false)
 			</div>
 			<div class="mt-12">

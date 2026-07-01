@@ -57,22 +57,62 @@ type PostListItem struct {
 	Topics      []TopicLink
 }
 
-// BookView is a book on /reading and in the home recent-books pull.
-type BookView struct {
-	Title        string
-	Author       string
-	ImageURL     string
-	Status       string // "reading" | "finished"
-	Rating       string // display form, e.g. "4.5"
-	DateFinished time.Time
+// HomeView is the frontispiece: the dispatch strip's live cells, the colophon
+// stat cells, the merged stream of everything, and the section index. The
+// nameplate and bio prose are static and live in the template.
+type HomeView struct {
+	Dispatch []DispatchCell
+	Stats    []Stat
+	Subjects []TopicCount
+	Stream   []FeedEntry
+	Index    []IndexRow
 }
 
-// HomeView is the top-level data for the home page.
-type HomeView struct {
-	RecentBooks     []BookView
-	RecentPosts     []PostListItem
-	BooksReadInYear int
-	Year            int
+// TopicCount is one subject in the margin's subjects card: a topic, its feed,
+// and how many posts carry it.
+type TopicCount struct {
+	Name  string
+	URL   string
+	Count int
+}
+
+// DispatchCell is one cell of the dispatch strip: a freshest-fact pull from a
+// single feed. Italic sets the lead in serif italic (for a book title). URL,
+// when set, makes the cell a link into its section.
+type DispatchCell struct {
+	Kicker string
+	Lead   string
+	Italic bool
+	Meta   string
+	URL    string
+}
+
+// FeedEntry is one item in the home stream, a union over the feeds. Kind selects
+// how it renders; only the fields that kind needs are set. Note carries the
+// author (book) or headline (post); Rating is the book's 0-10 score; ImageURL
+// its cover and Meta its "genre ; pages ; days" line; BodyHTML is the rendered
+// note; Topics tag a post or note.
+type FeedEntry struct {
+	Kind     string // "post" | "note" | "book" | "milestone"
+	Kicker   string
+	Date     time.Time
+	Title    string
+	Note     string
+	URL      string
+	Rating   int
+	ImageURL string
+	Meta     string
+	BodyHTML template.HTML
+	Topics   []TopicLink
+}
+
+// IndexRow is one line of the section index: a numbered directory entry with a
+// live count. URL is empty for a section that is not built yet.
+type IndexRow struct {
+	Num   string
+	Label string
+	URL   string
+	Note  string
 }
 
 // PostListView is the top-level data for a post listing page (e.g. /posts).

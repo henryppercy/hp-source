@@ -14,6 +14,22 @@ templ location(city, code, coords string) {
 	</span>
 }
 
+// datelineClass is the shared look of the hung marginal date: a serif italic in
+// muted grey, pulled into the left margin on wide screens. The lg top-offset,
+// which aligns it with each card's first line, is passed in by the caller.
+const datelineClass = "block whitespace-nowrap font-serif italic text-muted tabular-nums leading-none mb-3 lg:absolute lg:right-full lg:mr-8 lg:mb-0"
+
+// dateline is the hung marginal date shared across the feeds. href links the
+// date when set (the slices timeline anchors each note to itself); top is the lg
+// top-offset that aligns it with the card's first line.
+templ dateline(label, href, top string) {
+	if href != "" {
+		<a href={ href } class={ datelineClass, top, "hover:text-accent" }>{ label }</a>
+	} else {
+		<span class={ datelineClass, top }>{ label }</span>
+	}
+}
+
 // indexLink is the shared link back to a section index.
 templ indexLink(href, label string) {
 	<a href={ href } class="font-mono text-meta text-fg hover:text-accent">{ label }</a>

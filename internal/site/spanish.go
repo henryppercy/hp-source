@@ -60,7 +60,7 @@ func spanishView(
 	}
 	start := days[0].date
 	today := dateOnly(now)
-	dayCount := int(today.Sub(start).Hours()/24) + 1
+	dayCount := spanishDayCount(days, now)
 
 	v := templates.SpanishView{
 		Total:      fmt.Sprintf("%d", total/3600),
@@ -456,6 +456,15 @@ func durShort(sec int) string {
 
 func dateOnly(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+}
+
+// spanishDayCount is the day number of the run: calendar days from the first
+// logged day to now, counting both ends. Zero when nothing is logged.
+func spanishDayCount(days []spanishDay, now time.Time) int {
+	if len(days) == 0 {
+		return 0
+	}
+	return int(dateOnly(now).Sub(days[0].date).Hours()/24) + 1
 }
 
 func fmtDay(t time.Time) string {

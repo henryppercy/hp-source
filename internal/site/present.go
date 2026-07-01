@@ -12,8 +12,6 @@ import (
 	"github.com/henryppercy/hp-source/internal/text"
 )
 
-const recentLimit = 5
-
 // parseDate parses the date/datetime text the repo stores, returning the zero
 // time when empty or unrecognised.
 func parseDate(s string) time.Time {
@@ -74,7 +72,7 @@ func articleItems(posts []repo.Post, keep func(repo.Post) bool) []templates.Post
 	return items
 }
 
-// mainArticles are the articles for /posts and home recents: every article
+// mainArticles are the articles for /posts and the home stream: every article
 // except the Spanish learning log (posts whose only topic is spanish, which live
 // on /spanish). Posts that touch spanish among other topics still appear.
 func mainArticles(posts []repo.Post) []templates.PostListItem {
@@ -86,16 +84,6 @@ func mainArticles(posts []repo.Post) []templates.PostListItem {
 // onlySpanish reports whether spanish is the post's sole topic.
 func onlySpanish(p repo.Post) bool {
 	return len(p.Topics) == 1 && p.Topics[0].Name == "spanish"
-}
-
-// recentPosts returns the n most recent main articles for the home page. Input
-// is assumed newest-first; it slices, never sorts.
-func recentPosts(posts []repo.Post, n int) []templates.PostListItem {
-	items := mainArticles(posts)
-	if len(items) > n {
-		items = items[:n]
-	}
-	return items
 }
 
 // articlesWithTopic maps the articles carrying the named topic to list items.
@@ -157,45 +145,6 @@ func coverURL(file string) string {
 		return ""
 	}
 	return imageBase + "/" + file
-}
-
-func bookView(e repo.ReadEntry) templates.BookView {
-	return templates.BookView{
-		Title:        e.Title,
-		Author:       e.Author,
-		ImageURL:     coverURL(e.CoverImage),
-		Status:       e.Status,
-		Rating:       repo.RatingDisplay(e.Rating),
-		DateFinished: parseDate(e.DateFinished),
-	}
-}
-
-func bookViews(reads []repo.ReadEntry) []templates.BookView {
-	var books []templates.BookView
-	for _, e := range reads {
-		books = append(books, bookView(e))
-	}
-	return books
-}
-
-func booksByStatus(books []templates.BookView, status string) []templates.BookView {
-	var out []templates.BookView
-	for _, b := range books {
-		if b.Status == status {
-			out = append(out, b)
-		}
-	}
-	return out
-}
-
-// recentBooks returns up to n finished books, keeping the repo's
-// newest-finished-first order; it filters then slices, never sorts.
-func recentBooks(books []templates.BookView, n int) []templates.BookView {
-	finished := booksByStatus(books, "finished")
-	if len(finished) > n {
-		finished = finished[:n]
-	}
-	return finished
 }
 
 func booksReadInYear(reads []repo.ReadEntry, year int) int {

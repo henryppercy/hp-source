@@ -26,7 +26,7 @@ templ Slices(v SliceFeedView) {
 				<div class="space-y-8">
 					for _, s := range v.Slices {
 						<div id={ s.Slug } class="relative scroll-mt-12">
-							<a href={ "#" + s.Slug } class="block whitespace-nowrap border-l-2 border-accent pl-3 font-serif font-semibold italic text-accent tabular-nums leading-none mb-3 lg:absolute lg:right-full lg:top-6 lg:mr-8 lg:mb-0">{ fmtDate(s.PublishedAt) }</a>
+							@dateline(fmtDate(s.PublishedAt), "#"+s.Slug, "lg:top-6")
 							@sliceCard(s, true)
 						</div>
 					}
