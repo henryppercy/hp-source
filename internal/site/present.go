@@ -603,16 +603,16 @@ func standouts(books []repo.ReadEntry) []templates.Superlative {
 	}
 	var out []templates.Superlative
 	if fastest != nil {
-		out = append(out, superlative("fastest", fastest, fmt.Sprintf("%d pages/day", fastPace)))
+		out = append(out, superlative("fastest pace", fastest, fmt.Sprintf("%d pages/day", fastPace)))
 	}
 	if slowest != nil && slowest != fastest {
-		out = append(out, superlative("slowest", slowest, fmt.Sprintf("%d pages/day", slowPace)))
+		out = append(out, superlative("slowest pace", slowest, fmt.Sprintf("%d pages/day", slowPace)))
 	}
 	if longest != nil {
-		out = append(out, superlative("longest", longest, fmt.Sprintf("%d pages", longPages)))
+		out = append(out, superlative("longest read", longest, fmt.Sprintf("%d pages", longPages)))
 	}
 	if shortest != nil && shortest != longest {
-		out = append(out, superlative("shortest", shortest, fmt.Sprintf("%d pages", shortPages)))
+		out = append(out, superlative("shortest read", shortest, fmt.Sprintf("%d pages", shortPages)))
 	}
 	return out
 }
