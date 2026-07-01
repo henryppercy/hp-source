@@ -1,32 +1,462 @@
 package templates
 
+import "fmt"
+
+// Reading is the /reading hub: the frontispiece plate, this year's ledger, links
+// to earlier years, and a glance at the shelf.
 templ Reading(v ReadingView) {
 	@Layout(docTitle("Reading"), "/reading") {
-		<h1>Reading</h1>
-		<h2>Currently reading</h2>
-		if len(v.CurrentlyReading) > 0 {
+		<div class="mx-auto max-w-broad">
+			<header class="mb-10">
+				<div class="space-y-4">
+					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">Reading</h1>
+					<p class="font-serif italic text-lead text-muted max-w-[52ch]">A running log of what I read ; what is open on the desk now, the shape of the year, and the shelf still waiting.</p>
+				</div>
+			</header>
+			if len(v.Nav) > 1 {
+				<div class="mb-6">
+					@yearNav(v.Nav)
+				</div>
+			}
+			@frontispiece(v)
+			if v.Shelf.Total > 0 || hasInsights(v.Insights) {
+				<div class="mt-16 grid gap-x-10 gap-y-12 lg:grid-cols-[2fr_1fr] lg:items-start">
+					<div class="min-w-0">
+						@logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d read all-time", v.TotalRead))
+					</div>
+					<aside class="space-y-8">
+						@shelfGlance(v.Shelf)
+						@standoutsCard(v.Insights.Standouts)
+						@tallyCard("Top genres", v.Insights.TopGenres)
+						@tallyCard("Top authors", v.Insights.TopAuthors)
+					</aside>
+				</div>
+			} else {
+				<section class="mt-16">
+					@logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d read all-time", v.TotalRead))
+				</section>
+			}
+		</div>
+	}
+}
+
+// logSection is the year's ledger under a section head, with any set-aside books.
+templ logSection(y FinishedYear, aside []FinishedBook, head, note string) {
+	@sectionHead(head, note)
+	@ledgerTable(y)
+	@setAside(aside)
+}
+
+// frontispiece is the hub plate: a header strip, now-reading on the left, the
+// year's almanac cells on the right, and the month density strip across the foot.
+templ frontispiece(v ReadingView) {
+	<div class="border border-fg">
+		<div class="flex items-baseline justify-between border-b border-fg px-5 py-3">
+			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">On the desk</span>
+			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Almanac ; { fmt.Sprintf("%d", v.Almanac.Year) }</span>
+		</div>
+		<div class="grid lg:grid-cols-[2fr_3fr]">
+			<div class="border-b border-fg p-6 lg:border-b-0 lg:border-r">
+				if len(v.Reading) > 0 {
+					@deskBook(v.Reading[0])
+				} else {
+					<div class="flex h-full min-h-[11rem] items-center">
+						<p class="font-serif italic text-muted">Nothing open on the desk right now.</p>
+					</div>
+				}
+			</div>
+			<div>
+				if v.Almanac.Books > 0 {
+					<dl class="grid h-full auto-rows-fr grid-cols-3 gap-px bg-rule-soft">
+						@statCells(v.Almanac)
+					</dl>
+				} else {
+					<div class="flex h-full min-h-[11rem] items-center p-6">
+						<p class="font-serif italic text-muted">No books finished in { fmt.Sprintf("%d", v.Almanac.Year) } yet.</p>
+					</div>
+				}
+			</div>
+		</div>
+		if v.Almanac.Books > 0 {
+			@monthStrip(v.Almanac)
+		}
+	</div>
+}
+
+// readingPlate is the standalone almanac plate for a year recap: header strip,
+// full-width stat cells, and the month density strip.
+templ readingPlate(a AlmanacView) {
+	<div class="border border-fg">
+		<div class="flex items-baseline justify-between border-b border-fg px-5 py-3">
+			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Almanac ; { fmt.Sprintf("%d", a.Year) }</span>
+			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ fmt.Sprintf("%d books", a.Books) }</span>
+		</div>
+		<dl class="grid grid-cols-3 gap-px bg-rule-soft lg:grid-cols-6">
+			@statCells(a)
+		</dl>
+		@monthStrip(a)
+	</div>
+}
+
+// statCells are the six almanac figures, sharing the grid of whatever wraps them.
+templ statCells(a AlmanacView) {
+	@stat("books", fmt.Sprintf("%d", a.Books))
+	@stat("pages", fmt.Sprintf("%d", a.Pages))
+	@stat("pace", a.AvgPace)
+	@stat("rating", a.AvgRating)
+	@statSplit("second-hand", a.SecondHandPct, a.SecondHandNote)
+	@statSplit("fiction", a.FictionPct, a.FictionNote)
+}
+
+// monthStrip is the year's reading density: a bar per month over a baseline rule.
+templ monthStrip(a AlmanacView) {
+	<div class="border-t border-fg px-5 pb-4 pt-5">
+		<div class="mb-4 flex items-baseline justify-between">
+			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">by month</span>
+			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">peak { fmt.Sprintf("%d", a.PeakMonth) }</span>
+		</div>
+		<div class="flex items-end gap-1.5 border-b border-rule">
+			for _, c := range a.Months {
+				<div class="flex-1">
+					<div class="flex h-16 items-end">
+						if c > 0 {
+							<div class="w-full bg-accent" style={ fmt.Sprintf("height:%d%%", barPct(c, a.PeakMonth)) }></div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+		<div class="mt-2 flex gap-1.5">
+			for i := range a.Months {
+				<div class="flex-1 text-center font-mono text-kicker text-fainter">{ monthInitials[i] }</div>
+			}
+		</div>
+	</div>
+}
+
+// deskBook is the featured currently-reading book with a progress bar.
+templ deskBook(r CurrentRead) {
+	<div class="flex h-full gap-5">
+		if r.ImageURL != "" {
+			<img src={ r.ImageURL } alt="" class="hidden w-28 shrink-0 self-start border border-rule sm:block"/>
+		}
+		<div class="flex min-w-0 grow flex-col">
+			<h2 class="font-serif italic text-h3 text-fg leading-tight">{ r.Title }</h2>
+			<p class="mt-1 font-sans text-label text-muted">{ r.Author }</p>
+			<div class="mt-auto pt-6">
+				<div class="mb-1.5 flex items-baseline justify-between font-mono text-meta text-faint tabular-nums">
+					<span>{ fmt.Sprintf("%d%%", r.Percent) }</span>
+					if r.DayCount > 0 {
+						<span>day { fmt.Sprintf("%d", r.DayCount) }</span>
+					}
+				</div>
+				<div class="h-1.5 w-full bg-rule">
+					<div class="h-full bg-accent" style={ fmt.Sprintf("width:%d%%", r.Percent) }></div>
+				</div>
+				<div class="mt-2.5 flex flex-wrap items-center gap-x-3 font-mono text-meta text-fainter">
+					if r.Format != "" {
+						<span class="lowercase">{ r.Format }</span>
+					}
+					if r.Format != "" && !r.StartedAt.IsZero() {
+						<span class="text-ghost">;</span>
+					}
+					if !r.StartedAt.IsZero() {
+						<span>since <span class="font-mono text-label text-fg tabular-nums">{ fmtDate(r.StartedAt) }</span></span>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+// ledgerTable is a single year's finished books: ruled columns, a lifetime index
+// and a pip rating, with the column header at the top.
+templ ledgerTable(y FinishedYear) {
+	if len(y.Books) > 0 {
+		<div class="overflow-x-auto">
+			<table class="w-full border-collapse text-left align-baseline">
+				<thead>
+					@ledgerHead()
+				</thead>
+				<tbody>
+					for _, b := range y.Books {
+						@ledgerRow(b)
+					}
+				</tbody>
+			</table>
+		</div>
+	} else {
+		<p class="font-serif text-muted">No finished books yet.</p>
+	}
+}
+
+// ledgerHead is the log's column-label row, matching the design-doc table head.
+templ ledgerHead() {
+	<tr class="border-b border-fg [&>td]:pb-2 [&>td]:font-mono [&>td]:text-kicker [&>td]:font-medium [&>td]:uppercase [&>td]:tracking-kicker [&>td]:text-fainter">
+		<td class="w-12 pr-3">#</td>
+		<td class="pr-4">Title</td>
+		<td class="hidden px-4 md:table-cell">Genre</td>
+		<td class="px-4">Rating</td>
+		<td class="hidden px-4 text-right xl:table-cell">Started</td>
+		<td class="hidden px-4 text-right sm:table-cell">Finished</td>
+		<td class="hidden px-4 text-right xl:table-cell">Days</td>
+		<td class="hidden px-4 text-right md:table-cell lg:hidden xl:table-cell">Pages</td>
+		<td class="hidden pl-4 text-right xl:table-cell">Format</td>
+	</tr>
+}
+
+// ledgerRow is one finished book in the log.
+templ ledgerRow(b FinishedBook) {
+	<tr class="border-b border-rule align-baseline">
+		<td class={ "py-4 pr-3 font-mono text-meta tabular-nums", templ.KV("font-medium text-accent", b.Standout), templ.KV("text-faint", !b.Standout) }>{ fmt.Sprintf("%d", b.Index) }</td>
+		<td class="py-4 pr-4">
+			<div class="font-serif text-lead text-fg leading-tight">{ b.Title }</div>
+			<div class="mt-0.5 font-sans text-label text-muted">{ b.Author }</div>
+		</td>
+		<td class="hidden px-4 py-4 align-middle font-mono text-meta text-muted lowercase md:table-cell">{ b.Genre }</td>
+		<td class="px-4 py-4 align-middle">
+			if b.Rating > 0 {
+				@ratingMeter(b.Rating)
+			} else {
+				<span class="font-mono text-meta text-faint">unrated</span>
+			}
+		</td>
+		<td class="hidden whitespace-nowrap px-4 py-4 text-right align-middle font-mono text-label text-fg tabular-nums xl:table-cell">
+			if !b.StartedAt.IsZero() {
+				{ fmtDate(b.StartedAt) }
+			} else {
+				<span class="text-ghost">·</span>
+			}
+		</td>
+		<td class="hidden whitespace-nowrap px-4 py-4 text-right align-middle font-mono text-label text-fg tabular-nums sm:table-cell">{ fmtDate(b.FinishedAt) }</td>
+		<td class="hidden px-4 py-4 text-right align-middle font-mono text-meta text-muted tabular-nums xl:table-cell">
+			if b.DaysToRead > 0 {
+				{ fmt.Sprintf("%d", b.DaysToRead) }
+			} else {
+				<span class="text-ghost">·</span>
+			}
+		</td>
+		<td class="hidden px-4 py-4 text-right align-middle font-mono text-meta text-muted tabular-nums md:table-cell lg:hidden xl:table-cell">
+			if b.Pages > 0 {
+				{ fmt.Sprintf("%d", b.Pages) }
+			} else {
+				<span class="text-ghost">·</span>
+			}
+		</td>
+		<td class="hidden py-4 pl-4 text-right align-middle font-mono text-meta text-muted lowercase xl:table-cell">
+			if b.Format != "" {
+				{ b.Format }
+			} else {
+				<span class="text-ghost">·</span>
+			}
+		</td>
+	</tr>
+}
+
+// ratingMeter renders a 0-10 rating as five half-step pips.
+templ ratingMeter(rating int) {
+	<span class="inline-flex items-center gap-[3px]">
+		for _, p := range ratingPips(rating) {
+			switch p {
+				case PipFull:
+					<span class="h-2.5 w-2.5 bg-accent"></span>
+				case PipHalf:
+					<span class="h-2.5 w-2.5 bg-[linear-gradient(90deg,#b42318_50%,#e6e6e4_50%)]"></span>
+				default:
+					<span class="h-2.5 w-2.5 bg-rule"></span>
+			}
+		}
+	</span>
+}
+
+// setAside lists books abandoned in the year, nothing when there are none.
+templ setAside(books []FinishedBook) {
+	if len(books) > 0 {
+		<div class="mt-10">
+			<h3 class="mb-3 font-mono text-kicker tracking-kicker uppercase text-muted">Set aside</h3>
 			<ul>
-				for _, b := range v.CurrentlyReading {
-					<li>{ b.Title } — { b.Author }</li>
+				for _, b := range books {
+					<li class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-rule py-3 first:border-t-0">
+						<div class="flex flex-wrap items-baseline gap-x-3">
+							<span class="font-serif text-body text-faint">{ b.Title }</span>
+							<span class="font-sans text-label text-faint">{ b.Author }</span>
+						</div>
+						<span class="font-mono text-meta text-faint lowercase">{ b.Genre }</span>
+					</li>
 				}
 			</ul>
-		} else {
-			<p>Nothing right now.</p>
+		</div>
+	}
+}
+
+// yearNav is the row of year tabs linking between the hub and the recaps.
+templ yearNav(links []YearLink) {
+	<nav class="flex flex-wrap gap-2">
+		for _, l := range links {
+			<a href={ l.URL } class={ "border p-2 font-mono text-meta leading-none", templ.KV("border-accent bg-accent text-surface", l.Active), templ.KV("border-rule-soft text-fg hover:border-fg", !l.Active) }>{ l.Label }</a>
 		}
-		<h2>Finished</h2>
-		if len(v.Finished) > 0 {
-			<ul>
-				for _, b := range v.Finished {
-					<li>
-						{ b.Title } — { b.Author }
-						if b.Rating != "" {
-							({ b.Rating })
+	</nav>
+}
+
+// shelfGlance is the hub's rail card for the antilibrary: a lead line, the
+// longest-waiting few, and a footer link to the full shelf. No header.
+templ shelfGlance(s ShelfSummary) {
+	<div class="border border-rule-soft p-5">
+		if s.Total > 0 {
+			<p class="font-serif text-body text-muted">
+				{ fmt.Sprintf("%d books I own and have not read yet", s.Total) }
+				if s.LongestWait != "" {
+					, the longest waiting <span class="font-mono text-label text-fg tabular-nums">{ s.LongestWait }</span>
+				}
+				.
+			</p>
+			<ul class="mt-4">
+				for _, b := range s.Oldest {
+					<li class="flex items-baseline justify-between gap-x-4 border-t border-rule py-2.5 first:border-t-0">
+						<div class="min-w-0">
+							<div class="truncate font-serif text-body text-fg">{ b.Title }</div>
+							<div class="font-sans text-meta text-muted">{ b.Author }</div>
+						</div>
+						if b.Waiting != "" {
+							<span class="shrink-0 font-mono text-label text-fg tabular-nums">{ b.Waiting }</span>
 						}
 					</li>
 				}
 			</ul>
+			<div class="mt-4 flex justify-end border-t border-rule pt-4">
+				@indexLink("/reading/shelf", "See the whole shelf")
+			</div>
 		} else {
-			<p>Nothing yet.</p>
+			<p class="font-serif text-muted">The shelf is clear.</p>
 		}
+	</div>
+}
+
+// standoutsCard is the rail card of the year's superlative books, each with a
+// cover thumbnail. A header, no footer.
+templ standoutsCard(items []Superlative) {
+	if len(items) > 0 {
+		<div class="border border-rule-soft p-5">
+			<header class="mb-4 border-b border-rule pb-3">
+				<h3 class="font-mono text-kicker tracking-kicker uppercase text-fg">Standouts</h3>
+			</header>
+			<ul class="space-y-4">
+				for _, s := range items {
+					<li class="flex gap-3">
+						if s.ImageURL != "" {
+							<img src={ s.ImageURL } alt="" class="h-16 w-11 shrink-0 self-start border border-rule object-cover"/>
+						}
+						<div class="flex min-w-0 grow flex-col">
+							<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ s.Label }</span>
+							<span class="mt-1 font-serif text-body text-fg leading-tight">{ s.Title }</span>
+							<span class="mt-1.5 font-mono text-label text-fg tabular-nums">{ s.Value }</span>
+						</div>
+					</li>
+				}
+			</ul>
+		</div>
 	}
+}
+
+// tallyCard is a rail card of ranked counts (top genres, top authors). A header,
+// no footer, leaving room for an index link later.
+templ tallyCard(title string, items []Tally) {
+	if len(items) > 0 {
+		<div class="border border-rule-soft p-5">
+			<header class="mb-4 border-b border-rule pb-3">
+				<h3 class="font-mono text-kicker tracking-kicker uppercase text-fg">{ title }</h3>
+			</header>
+			<ul class="space-y-2.5">
+				for i, t := range items {
+					<li class="flex items-baseline gap-3">
+						<span class="font-mono text-meta text-faint tabular-nums">{ fmt.Sprintf("%d", i+1) }</span>
+						<span class="grow font-serif text-body text-fg">{ t.Name }</span>
+						<span class="font-mono text-label text-muted tabular-nums">{ fmt.Sprintf("%d", t.Count) }</span>
+					</li>
+				}
+			</ul>
+		</div>
+	}
+}
+
+// shelf is the full antilibrary table, longest-waiting first.
+templ shelf(books []ShelfBook) {
+	<div class="overflow-x-auto">
+		<table class="w-full border-collapse text-left">
+			<thead>
+				<tr class="border-b border-fg [&>td]:pb-2 [&>td]:font-mono [&>td]:text-kicker [&>td]:font-medium [&>td]:uppercase [&>td]:tracking-kicker [&>td]:text-fainter">
+					<td class="pr-4">Title</td>
+					<td class="hidden px-4 md:table-cell">Genre</td>
+					<td class="hidden px-4 text-right md:table-cell">Pages</td>
+					<td class="hidden px-4 text-right xl:table-cell">Format</td>
+					<td class="hidden px-4 text-right sm:table-cell">Acquired</td>
+					<td class="pl-4 text-right">Waiting</td>
+				</tr>
+			</thead>
+			<tbody>
+				for _, b := range books {
+					<tr class="border-b border-rule align-baseline">
+						<td class="py-3 pr-4">
+							<span class="font-serif text-body text-fg">{ b.Title }</span>
+							<span class="ml-2 font-sans text-label text-muted">{ b.Author }</span>
+						</td>
+						<td class="hidden px-4 py-3 font-mono text-meta text-muted lowercase md:table-cell">{ b.Genre }</td>
+						<td class="hidden px-4 py-3 text-right font-mono text-meta text-muted tabular-nums md:table-cell">
+							if b.Pages > 0 {
+								{ fmt.Sprintf("%d", b.Pages) }
+							} else {
+								<span class="text-ghost">·</span>
+							}
+						</td>
+						<td class="hidden px-4 py-3 text-right font-mono text-meta text-muted lowercase xl:table-cell">
+							if b.Format != "" {
+								{ b.Format }
+							} else {
+								<span class="text-ghost">·</span>
+							}
+						</td>
+						<td class="hidden whitespace-nowrap px-4 py-3 text-right font-mono text-label text-fg tabular-nums sm:table-cell">{ fmtDate(b.AcquiredAt) }</td>
+						<td class="py-3 pl-4 text-right font-mono text-label text-fg tabular-nums">
+							if b.Waiting != "" {
+								{ b.Waiting }
+							} else {
+								<span class="text-ghost">·</span>
+							}
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+// sectionHead is a /reading section heading: a kicker over a firm rule, weightier
+// than the soft head/body dividers the index pages use so it reads as a section.
+templ sectionHead(label, note string) {
+	<header class="mb-6 flex items-baseline justify-between gap-4 border-b border-fg pb-3">
+		<h2 class="font-mono text-kicker tracking-kicker uppercase text-muted">{ label }</h2>
+		if note != "" {
+			<span class="font-mono text-meta text-faint tabular-nums">{ note }</span>
+		}
+	</header>
+}
+
+// stat is one almanac cell: a kicker label over a large figure.
+templ stat(label, value string) {
+	<div class="bg-surface p-5">
+		<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ label }</dt>
+		<dd class="mt-1.5 font-sans text-h2 text-fg tabular-nums leading-none">{ value }</dd>
+	</div>
+}
+
+// statSplit is an almanac cell whose figure is a percentage, with the raw count
+// noted beneath.
+templ statSplit(label, value, note string) {
+	<div class="bg-surface p-5">
+		<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ label }</dt>
+		<dd class="mt-1.5 font-sans text-h2 text-fg tabular-nums leading-none">{ value }</dd>
+		if note != "" {
+			<dd class="mt-1.5 font-mono text-meta text-faint tabular-nums">{ note }</dd>
+		}
+	</div>
 }

@@ -107,8 +107,180 @@ type SliceFeedView struct {
 	Slices  []SliceItem
 }
 
-// ReadingView is the top-level data for the /reading page.
+// ReadingView is the /reading hub: what's open now, this year's almanac and log,
+// links to earlier years, the rail insights, and a shelf summary.
 type ReadingView struct {
-	CurrentlyReading []BookView
-	Finished         []BookView
+	Almanac   AlmanacView
+	Reading   []CurrentRead
+	Year      FinishedYear
+	SetAside  []FinishedBook
+	TotalRead int
+	Nav       []YearLink
+	Insights  Insights
+	Shelf     ShelfSummary
+}
+
+// YearView is a /reading/{year} recap: that year's almanac, log and insights,
+// with the year nav to move between years.
+type YearView struct {
+	Almanac  AlmanacView
+	Year     FinishedYear
+	SetAside []FinishedBook
+	Insights Insights
+	Nav      []YearLink
+}
+
+// Insights are a year's rail highlights: standout books and the most-read
+// genres and authors. Slices are empty when there is too little to be useful.
+type Insights struct {
+	Standouts  []Superlative
+	TopGenres  []Tally
+	TopAuthors []Tally
+}
+
+// hasInsights reports whether any rail card has content to show.
+func hasInsights(i Insights) bool {
+	return len(i.Standouts) > 0 || len(i.TopGenres) > 0 || len(i.TopAuthors) > 0
+}
+
+// Superlative is one standout book, e.g. the fastest read, with its cover.
+type Superlative struct {
+	Label    string // "fastest" | "slowest" | "longest" | "shortest"
+	Title    string
+	Author   string
+	ImageURL string
+	Value    string // "84 pages/day" | "912 pages"
+}
+
+// Tally is one name with a count, shared by the top-genres and top-authors cards.
+type Tally struct {
+	Name  string
+	Count int
+}
+
+// ShelfView is the full antilibrary at /reading/shelf.
+type ShelfView struct {
+	Books []ShelfBook
+}
+
+// ShelfSummary is the hub's glance at the shelf: a count, the longest wait, and
+// the few books that have waited longest.
+type ShelfSummary struct {
+	Total       int
+	LongestWait string
+	Oldest      []ShelfBook
+}
+
+// YearLink is one tab in the reading year nav. Active marks the current page.
+type YearLink struct {
+	Label  string
+	URL    string
+	Active bool
+}
+
+// monthInitials labels the almanac density strip, January to December.
+var monthInitials = [12]string{"J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"}
+
+// barPct is a month's height in the density strip as a percent of the peak
+// month, with a floor so a non-zero month still shows.
+func barPct(count, peak int) int {
+	if count <= 0 || peak <= 0 {
+		return 0
+	}
+	if pct := count * 100 / peak; pct >= 12 {
+		return pct
+	}
+	return 12
+}
+
+// AlmanacView is the year's reading tally for the frontispiece. AvgRating and
+// AvgPace are display-ready, "—" when there is nothing to average. Months holds
+// a per-month finished count for the density strip, indexed January to December.
+type AlmanacView struct {
+	Year           int
+	Books          int
+	Pages          int
+	AvgRating      string
+	AvgPace        string
+	FictionPct     string // percent of the year that was fiction
+	FictionNote    string // "17 of 19"
+	SecondHandPct  string // percent that came second-hand
+	SecondHandNote string
+	Abandoned      int
+	Months         [12]int
+	PeakMonth      int
+}
+
+// CurrentRead is a book open on the desk now. DayCount is days since started;
+// Percent is progress through the book.
+type CurrentRead struct {
+	Title     string
+	Author    string
+	ImageURL  string
+	Format    string
+	StartedAt time.Time
+	DayCount  int
+	Percent   int
+}
+
+// FinishedBook is one entry in the reading log. Index is its lifetime number
+// (oldest is 1). Rating is the raw 0-10 score for the pip meter, RatingText its
+// display form. Standout marks a top rating for the margin mark.
+type FinishedBook struct {
+	Index      int
+	Title      string
+	Author     string
+	Genre      string
+	Rating     int
+	RatingText string
+	StartedAt  time.Time
+	FinishedAt time.Time
+	DaysToRead int
+	Pages      int
+	Format     string
+	Standout   bool
+}
+
+// FinishedYear groups finished books under the year they were finished.
+type FinishedYear struct {
+	Year  int
+	Books []FinishedBook
+}
+
+// ShelfBook is an owned, unread book: the antilibrary still waiting. Waiting is
+// how long it has sat unread, "" when the acquisition date is unknown.
+type ShelfBook struct {
+	Title      string
+	Author     string
+	ImageURL   string
+	Genre      string
+	Pages      int
+	Format     string
+	AcquiredAt time.Time
+	Waiting    string
+}
+
+// Pip is one mark in a rating meter: empty, half or full.
+type Pip int
+
+const (
+	PipEmpty Pip = iota
+	PipHalf
+	PipFull
+)
+
+// ratingPips maps a raw 0-10 rating to five pips, each a half-point of stars.
+func ratingPips(rating int) []Pip {
+	pips := make([]Pip, 5)
+	for i := range pips {
+		switch {
+		case rating >= (i+1)*2:
+			pips[i] = PipFull
+		case rating == i*2+1:
+			pips[i] = PipHalf
+		default:
+			pips[i] = PipEmpty
+		}
+	}
+	return pips
 }

@@ -1,0 +1,28 @@
+package templates
+
+import "fmt"
+
+// ReadingShelf is /reading/shelf: the full antilibrary, longest-waiting first.
+templ ReadingShelf(v ShelfView) {
+	@Layout(docTitle("The shelf"), "/reading") {
+		<div class="mx-auto max-w-broad">
+			<header class="mb-8">
+				<div class="space-y-4">
+					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">The shelf</h1>
+					<p class="font-serif italic text-lead text-muted max-w-[52ch]">Books I own and have not read yet, longest-waiting first. An antilibrary in no hurry.</p>
+				</div>
+			</header>
+			<div class="mb-10">
+				@indexLink("/reading", "Back to reading")
+			</div>
+			<section>
+				@sectionHead("On the shelf", fmt.Sprintf("%d waiting", len(v.Books)))
+				if len(v.Books) > 0 {
+					@shelf(v.Books)
+				} else {
+					<p class="font-serif text-muted">The shelf is clear.</p>
+				}
+			</section>
+		</div>
+	}
+}

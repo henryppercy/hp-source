@@ -1,0 +1,38 @@
+package templates
+
+import "fmt"
+
+// ReadingYear is a /reading/{year} recap: the year nav, that year's almanac
+// plate, and its ledger.
+templ ReadingYear(v YearView) {
+	@Layout(docTitle(fmt.Sprintf("Reading %d", v.Almanac.Year)), "/reading") {
+		<div class="mx-auto max-w-broad">
+			<header class="mb-8">
+				<div class="space-y-4">
+					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">{ fmt.Sprintf("%d", v.Almanac.Year) }</h1>
+					<p class="font-serif italic text-lead text-muted max-w-[52ch]">A year in books.</p>
+				</div>
+			</header>
+			<div class="mb-6">
+				@yearNav(v.Nav)
+			</div>
+			@readingPlate(v.Almanac)
+			if hasInsights(v.Insights) {
+				<div class="mt-16 grid gap-x-10 gap-y-12 lg:grid-cols-[2fr_1fr] lg:items-start">
+					<div class="min-w-0">
+						@logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books)))
+					</div>
+					<aside class="space-y-8">
+						@standoutsCard(v.Insights.Standouts)
+						@tallyCard("Top genres", v.Insights.TopGenres)
+						@tallyCard("Top authors", v.Insights.TopAuthors)
+					</aside>
+				</div>
+			} else {
+				<section class="mt-16">
+					@logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books)))
+				</section>
+			}
+		</div>
+	}
+}

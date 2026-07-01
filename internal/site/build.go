@@ -56,6 +56,10 @@ func (b *builder) Build() error {
 	if err != nil {
 		return err
 	}
+	shelf, err := b.repo.ListShelf()
+	if err != nil {
+		return err
+	}
 
 	books := bookViews(reads)
 	year := time.Now().Year()
@@ -113,11 +117,15 @@ func (b *builder) Build() error {
 		}
 	}
 
-	reading := templates.ReadingView{
-		CurrentlyReading: booksByStatus(books, "reading"),
-		Finished:         booksByStatus(books, "finished"),
+	if err := b.render("/reading", templates.Reading(readingHub(reads, shelf, year))); err != nil {
+		return err
 	}
-	if err := b.render("/reading", templates.Reading(reading)); err != nil {
+	for _, p := range readingYearPages(reads, year) {
+		if err := b.render(fmt.Sprintf("/reading/%d", p.Year), templates.ReadingYear(p.View)); err != nil {
+			return err
+		}
+	}
+	if err := b.render("/reading/shelf", templates.ReadingShelf(readingShelf(shelf))); err != nil {
 		return err
 	}
 

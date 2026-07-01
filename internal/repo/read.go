@@ -23,9 +23,26 @@ type ReadEntry struct {
 	Title        string
 	Author       string
 	CoverImage   string
+	Genre        string
+	BookType     string
+	Format       string
+	Source       string
 	Status       string
 	Rating       int
+	PageCount    int
+	DateStarted  string
 	DateFinished string
+}
+
+// ShelfEntry is an owned book with no read yet: the antilibrary.
+type ShelfEntry struct {
+	Title        string
+	Author       string
+	CoverImage   string
+	Genre        string
+	Format       string
+	PageCount    int
+	DateAcquired string
 }
 
 type StartReadInput struct {
@@ -126,9 +143,11 @@ func (r *Repo) ListActiveReads() ([]ActiveRead, error) {
 // first. The site groups them by status.
 func (r *Repo) ListReads() ([]ReadEntry, error) {
 	rows, err := r.db.Query(
-		`SELECT b.title, a.name, bc.cover_image, rd.status, rd.rating, rd.date_finished
+		`SELECT b.title, a.name, bc.cover_image, g.name, b.type, bc.format, bc.source,
+                rd.status, rd.rating, bc.page_count, rd.date_started, rd.date_finished
          FROM read rd
          JOIN book b ON b.id = rd.book_id
+         JOIN genre g ON g.id = b.genre_id
          LEFT JOIN book_author ba ON ba.book_id = b.id AND ba.role = 'author'
          LEFT JOIN author a ON a.id = ba.author_id
          LEFT JOIN book_copy bc ON bc.id = rd.copy_id
@@ -142,9 +161,12 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 	var entries []ReadEntry
 	for rows.Next() {
 		var e ReadEntry
-		var author, coverImage, dateFinished *string
-		var rating *int
-		if err := rows.Scan(&e.Title, &author, &coverImage, &e.Status, &rating, &dateFinished); err != nil {
+		var author, coverImage, format, source, dateStarted, dateFinished *string
+		var rating, pageCount *int
+		if err := rows.Scan(
+			&e.Title, &author, &coverImage, &e.Genre, &e.BookType, &format, &source,
+			&e.Status, &rating, &pageCount, &dateStarted, &dateFinished,
+		); err != nil {
 			return nil, fmt.Errorf("failed to scan read: %w", err)
 		}
 		if author != nil {
@@ -153,11 +175,70 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 		if coverImage != nil {
 			e.CoverImage = *coverImage
 		}
+		if format != nil {
+			e.Format = *format
+		}
+		if source != nil {
+			e.Source = *source
+		}
 		if rating != nil {
 			e.Rating = *rating
 		}
+		if pageCount != nil {
+			e.PageCount = *pageCount
+		}
+		if dateStarted != nil {
+			e.DateStarted = *dateStarted
+		}
 		if dateFinished != nil {
 			e.DateFinished = *dateFinished
+		}
+		entries = append(entries, e)
+	}
+	return entries, rows.Err()
+}
+
+// ListShelf returns owned books with no read yet, newest acquisition first.
+func (r *Repo) ListShelf() ([]ShelfEntry, error) {
+	rows, err := r.db.Query(
+		`SELECT b.title, a.name, MAX(bc.cover_image), g.name, MAX(bc.format),
+                MAX(bc.page_count), MAX(bc.date_acquired)
+         FROM book b
+         JOIN book_copy bc ON bc.book_id = b.id
+         JOIN genre g ON g.id = b.genre_id
+         LEFT JOIN book_author ba ON ba.book_id = b.id AND ba.role = 'author'
+         LEFT JOIN author a ON a.id = ba.author_id
+         WHERE NOT EXISTS (SELECT 1 FROM read r WHERE r.book_id = b.id)
+         GROUP BY b.id
+         ORDER BY MAX(bc.date_acquired) DESC`,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list shelf: %w", err)
+	}
+	defer rows.Close()
+
+	var entries []ShelfEntry
+	for rows.Next() {
+		var e ShelfEntry
+		var author, coverImage, format, dateAcquired *string
+		var pageCount *int
+		if err := rows.Scan(&e.Title, &author, &coverImage, &e.Genre, &format, &pageCount, &dateAcquired); err != nil {
+			return nil, fmt.Errorf("failed to scan shelf book: %w", err)
+		}
+		if author != nil {
+			e.Author = *author
+		}
+		if coverImage != nil {
+			e.CoverImage = *coverImage
+		}
+		if format != nil {
+			e.Format = *format
+		}
+		if pageCount != nil {
+			e.PageCount = *pageCount
+		}
+		if dateAcquired != nil {
+			e.DateAcquired = *dateAcquired
 		}
 		entries = append(entries, e)
 	}
