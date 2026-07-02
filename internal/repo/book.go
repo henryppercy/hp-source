@@ -23,6 +23,7 @@ type BookInput struct {
 	CoverImage   string
 	Source       string
 	DateAcquired string
+	SecondHand   bool
 }
 
 func (r *Repo) AddBook(input *BookInput) error {
@@ -92,7 +93,7 @@ func (r *Repo) AddBook(input *BookInput) error {
 			tx, int(bookID), input.Format,
 			nullableInt(input.PageCount),
 			input.Language, input.ISBN, input.CoverImage,
-			input.Source, input.DateAcquired,
+			input.Source, input.DateAcquired, input.SecondHand,
 		)
 		if err != nil {
 			return fmt.Errorf("failed to create copy: %w", err)

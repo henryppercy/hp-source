@@ -58,8 +58,10 @@ templ postRow(p PostListItem) {
 		</div>
 		<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
 			<span>6 min read</span>
-			<span class="text-ghost">;</span>
-			<span>Sheffield</span>
+			if p.Location.Name != "" {
+				<span class="text-ghost">;</span>
+				<span>{ p.Location.Name }</span>
+			}
 		</div>
 	</div>
 }
@@ -78,8 +80,10 @@ templ sliceCard(s SliceItem, permalink bool) {
 			</div>
 			<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
 				<time>{ fmtDateTime(s.PublishedAt) }</time>
-				<span class="text-ghost">;</span>
-				<span>Sheffield</span>
+				if s.Location.Name != "" {
+					<span class="text-ghost">;</span>
+					<span>{ s.Location.Name }</span>
+				}
 				if permalink {
 					<span class="text-ghost">;</span>
 					<a href={ s.URL + "/" } class="hover:text-accent">permalink</a>

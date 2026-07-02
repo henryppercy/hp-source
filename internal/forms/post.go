@@ -10,17 +10,17 @@ import (
 	"github.com/henryppercy/hp-source/internal/text"
 )
 
-func AddPost(in *repo.PostInput, topics []repo.Topic) error {
-	return postForm(in, topics, "Add Post", "Create")
+func AddPost(in *repo.PostInput, topics []repo.Topic, locations []repo.Location) error {
+	return postForm(in, topics, locations, "Add Post", "Create")
 }
-func EditPost(in *repo.PostInput, topics []repo.Topic) error {
-	return postForm(in, topics, "Edit Post", "Save")
+func EditPost(in *repo.PostInput, topics []repo.Topic, locations []repo.Location) error {
+	return postForm(in, topics, locations, "Edit Post", "Save")
 }
 
-// postForm collects an article's metadata and topics. Slices use sliceForm. The
-// slug is finalised by the repo (override, else title), so the form just
-// collects the raw optional override.
-func postForm(in *repo.PostInput, topics []repo.Topic, heading, saveLabel string) error {
+// postForm collects an article's metadata, location and topics. Slices use
+// sliceForm. The slug is finalised by the repo (override, else title), so the
+// form just collects the raw optional override.
+func postForm(in *repo.PostInput, topics []repo.Topic, locations []repo.Location, heading, saveLabel string) error {
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewNote().
@@ -55,13 +55,15 @@ func postForm(in *repo.PostInput, topics []repo.Topic, heading, saveLabel string
 				Value(&in.PublishedAt),
 		),
 
+		locationsGroup(in, locations),
+
 		topicsGroup(in, topics),
 
 		huh.NewGroup(
 			huh.NewNote().
 				Title("Confirm").
 				DescriptionFunc(func() string {
-					return postSummary(in, topics)
+					return postSummary(in, topics, locations)
 				}, &in.PublishedAt).
 				Next(true).
 				NextLabel(saveLabel),
@@ -71,16 +73,16 @@ func postForm(in *repo.PostInput, topics []repo.Topic, heading, saveLabel string
 	return form.Run()
 }
 
-func AddSlice(in *repo.PostInput, topics []repo.Topic) error {
-	return sliceForm(in, topics, "Add Slice")
+func AddSlice(in *repo.PostInput, topics []repo.Topic, locations []repo.Location) error {
+	return sliceForm(in, topics, locations, "Add Slice")
 }
-func EditSlice(in *repo.PostInput, topics []repo.Topic) error {
-	return sliceForm(in, topics, "Edit Slice")
+func EditSlice(in *repo.PostInput, topics []repo.Topic, locations []repo.Location) error {
+	return sliceForm(in, topics, locations, "Edit Slice")
 }
 
 // sliceForm collects a slice's thin metadata: an optional slug override (else a
-// date slug is assigned by the repo), the publish date, and topics.
-func sliceForm(in *repo.PostInput, topics []repo.Topic, heading string) error {
+// date slug is assigned by the repo), the publish date, location, and topics.
+func sliceForm(in *repo.PostInput, topics []repo.Topic, locations []repo.Location, heading string) error {
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
@@ -95,9 +97,28 @@ func sliceForm(in *repo.PostInput, topics []repo.Topic, heading string) error {
 				Value(&in.PublishedAt),
 		),
 
+		locationsGroup(in, locations),
+
 		topicsGroup(in, topics),
 	)
 	return form.Run()
+}
+
+// locationsGroup is the shared optional location select, preselected from
+// in.LocationID. Zero is "None".
+func locationsGroup(in *repo.PostInput, locations []repo.Location) *huh.Group {
+	options := []huh.Option[int]{huh.NewOption("None", 0)}
+	for _, l := range locations {
+		options = append(options, huh.NewOption(l.Name, l.ID))
+	}
+	sel := huh.NewSelect[int]().
+		Title("Location").
+		Options(options...).
+		Value(&in.LocationID)
+	if len(options) > 10 {
+		sel.Height(10)
+	}
+	return huh.NewGroup(sel)
 }
 
 // topicsGroup is the shared topics multiselect, preselected from in.TopicIDs.
@@ -214,7 +235,7 @@ func validateDateOptional(s string) error {
 	return validateDate(s)
 }
 
-func postSummary(in *repo.PostInput, topics []repo.Topic) string {
+func postSummary(in *repo.PostInput, topics []repo.Topic, locations []repo.Location) string {
 	var sb strings.Builder
 
 	fmt.Fprintf(&sb, "Title:      %s\n", in.Title)
@@ -234,6 +255,13 @@ func postSummary(in *repo.PostInput, topics []repo.Topic) string {
 		published = "draft"
 	}
 	fmt.Fprintf(&sb, "Published:  %s\n", published)
+
+	for _, l := range locations {
+		if l.ID == in.LocationID {
+			fmt.Fprintf(&sb, "Location:   %s\n", l.Name)
+			break
+		}
+	}
 
 	if names := topicNames(in.TopicIDs, topics); len(names) > 0 {
 		fmt.Fprintf(&sb, "Topics:     %s\n", strings.Join(names, ", "))

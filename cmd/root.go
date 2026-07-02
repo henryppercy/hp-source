@@ -86,6 +86,7 @@ func newRootCmd() *cobra.Command {
 		newMigrateCmd(a),
 		newBookCmd(a),
 		newReadCmd(a),
+		newLocationCmd(a),
 		newExportCmd(a),
 		newSiteCmd(a),
 		newPostCmd(a),

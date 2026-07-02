@@ -38,7 +38,21 @@ type PostView struct {
 	BodyHTML    template.HTML
 	TOC         []TOCEntry
 	Topics      []TopicLink
+	Location    Place
 }
+
+// Place is a location stamp for the location component. Coords is preformatted
+// (e.g. "53.22°N 1.28°W"); Code and Coords are optional.
+type Place struct {
+	Name   string
+	Code   string
+	Coords string
+}
+
+// HomeLocation is the site's filed-from place, shown in the header, footer and
+// home nameplate. The builder sets it from the database; the default keeps a
+// standalone render sensible.
+var HomeLocation = Place{Name: "Sheffield", Code: "GB", Coords: "53.22°N 1.28°W"}
 
 // TOCEntry is a table-of-contents node; Children holds nested sub-headings.
 type TOCEntry struct {
@@ -55,6 +69,7 @@ type PostListItem struct {
 	PublishedAt time.Time
 	Headline    string
 	Topics      []TopicLink
+	Location    Place
 }
 
 // HomeView is the frontispiece: the dispatch strip's live cells, the colophon
@@ -226,6 +241,7 @@ type SliceItem struct {
 	PublishedAt time.Time
 	BodyHTML    template.HTML
 	Topics      []TopicLink
+	Location    Place
 }
 
 // SliceFeedView is the top-level data for the /slices timeline.

@@ -20,3 +20,10 @@ func deref(s *string) string {
 	}
 	return *s
 }
+
+func boolInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}

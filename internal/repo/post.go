@@ -18,6 +18,7 @@ type Post struct {
 	PublishedAt string
 	CreatedAt   string
 	UpdatedAt   string
+	LocationID  int // 0 = none
 	Topics      []Topic
 }
 
@@ -28,17 +29,19 @@ type PostInput struct {
 	Kind        string // article | slice
 	Headline    string
 	PublishedAt string // "" = draft
+	LocationID  int    // 0 = none
 	TopicIDs    []int
 }
 
-const postColumns = `id, slug, title, kind, headline, body, published_at, created_at, updated_at`
+const postColumns = `id, slug, title, kind, headline, body, published_at, created_at, updated_at, location_id`
 
 func scanPost(rows *sql.Rows) (Post, error) {
 	var p Post
 	var headline, publishedAt *string
+	var locationID *int
 	if err := rows.Scan(
 		&p.ID, &p.Slug, &p.Title, &p.Kind, &headline, &p.Body,
-		&publishedAt, &p.CreatedAt, &p.UpdatedAt,
+		&publishedAt, &p.CreatedAt, &p.UpdatedAt, &locationID,
 	); err != nil {
 		return Post{}, fmt.Errorf("failed to scan post: %w", err)
 	}
@@ -47,6 +50,9 @@ func scanPost(rows *sql.Rows) (Post, error) {
 	}
 	if publishedAt != nil {
 		p.PublishedAt = *publishedAt
+	}
+	if locationID != nil {
+		p.LocationID = *locationID
 	}
 	return p, nil
 }
@@ -202,9 +208,9 @@ func (r *Repo) CreatePost(in *PostInput) (int, error) {
 	defer tx.Rollback()
 
 	result, err := tx.Exec(
-		`INSERT INTO post (slug, title, kind, headline, published_at)
-         VALUES (?, ?, ?, ?, ?)`,
-		in.Slug, in.Title, in.Kind, nullable(in.Headline), nullable(in.PublishedAt),
+		`INSERT INTO post (slug, title, kind, headline, published_at, location_id)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+		in.Slug, in.Title, in.Kind, nullable(in.Headline), nullable(in.PublishedAt), nullableInt(in.LocationID),
 	)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create post %q: %w", in.Slug, err)
@@ -262,9 +268,9 @@ func (r *Repo) UpdatePost(in *PostInput) error {
 	defer tx.Rollback()
 
 	if _, err := tx.Exec(
-		`UPDATE post SET slug = ?, title = ?, headline = ?, published_at = ?
+		`UPDATE post SET slug = ?, title = ?, headline = ?, published_at = ?, location_id = ?
          WHERE id = ?`,
-		in.Slug, in.Title, nullable(in.Headline), nullable(in.PublishedAt), in.ID,
+		in.Slug, in.Title, nullable(in.Headline), nullable(in.PublishedAt), nullableInt(in.LocationID), in.ID,
 	); err != nil {
 		return fmt.Errorf("failed to update post: %w", err)
 	}

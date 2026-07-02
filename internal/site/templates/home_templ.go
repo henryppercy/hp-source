@@ -189,7 +189,7 @@ func homeNameplate() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = location("Sheffield", "GB", "53.22°N 1.28°W").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = location(HomeLocation.Name, HomeLocation.Code, HomeLocation.Coords).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

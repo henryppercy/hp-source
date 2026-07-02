@@ -49,6 +49,8 @@ func AddBook(
 		pageCountStr     string
 	)
 
+	input.SecondHand = true
+
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewNote().
@@ -226,13 +228,17 @@ func AddBook(
 			huh.NewSelect[string]().
 				Title("Source").
 				Options(
-					huh.NewOption("New", "new"),
-					huh.NewOption("Second-hand", "second-hand"),
-					huh.NewOption("Borrowed", "borrowed"),
+					huh.NewOption("Bought", "bought"),
 					huh.NewOption("Gifted", "gifted"),
+					huh.NewOption("Borrowed", "borrowed"),
 					huh.NewOption("Library", "library"),
 				).
 				Value(&input.Source),
+			huh.NewConfirm().
+				Title("Second-hand?").
+				Affirmative("Yes").
+				Negative("No").
+				Value(&input.SecondHand),
 			huh.NewInput().
 				Title("Date Acquired").
 				Placeholder("today").
@@ -350,6 +356,7 @@ func AddBook(
 						if input.Source != "" {
 							fmt.Fprintf(&sb, "Source:     %s\n", input.Source)
 						}
+						fmt.Fprintf(&sb, "Second-hand: %s\n", yesNo(input.SecondHand))
 						acquired := input.DateAcquired
 						if acquired == "" {
 							acquired = "today"
@@ -440,6 +447,13 @@ func sortName(authorName string) string {
 	} else {
 		return authorName
 	}
+}
+
+func yesNo(b bool) string {
+	if b {
+		return "yes"
+	}
+	return "no"
 }
 
 func coverImageName(title string) string {

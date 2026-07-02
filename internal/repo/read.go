@@ -27,6 +27,7 @@ type ReadEntry struct {
 	BookType     string
 	Format       string
 	Source       string
+	SecondHand   bool
 	Status       string
 	Rating       int
 	PageCount    int
@@ -144,7 +145,7 @@ func (r *Repo) ListActiveReads() ([]ActiveRead, error) {
 // first. The site groups them by status.
 func (r *Repo) ListReads() ([]ReadEntry, error) {
 	rows, err := r.db.Query(
-		`SELECT b.title, a.name, bc.cover_image, g.name, b.type, bc.format, bc.source,
+		`SELECT b.title, a.name, bc.cover_image, g.name, b.type, bc.format, bc.source, bc.second_hand,
                 rd.status, rd.rating, bc.page_count,
                 (SELECT rl.page FROM read_log rl
                  WHERE rl.read_id = rd.id AND rl.page IS NOT NULL
@@ -167,9 +168,9 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 	for rows.Next() {
 		var e ReadEntry
 		var author, coverImage, format, source, dateStarted, dateFinished *string
-		var rating, pageCount, currentPage *int
+		var rating, pageCount, currentPage, secondHand *int
 		if err := rows.Scan(
-			&e.Title, &author, &coverImage, &e.Genre, &e.BookType, &format, &source,
+			&e.Title, &author, &coverImage, &e.Genre, &e.BookType, &format, &source, &secondHand,
 			&e.Status, &rating, &pageCount, &currentPage, &dateStarted, &dateFinished,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan read: %w", err)
@@ -186,6 +187,7 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 		if source != nil {
 			e.Source = *source
 		}
+		e.SecondHand = secondHand != nil && *secondHand == 1
 		if rating != nil {
 			e.Rating = *rating
 		}

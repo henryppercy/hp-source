@@ -80,9 +80,13 @@ func runSliceAdd(r *repo.Repo) error {
 	if err != nil {
 		return err
 	}
+	locations, err := r.ListLocations()
+	if err != nil {
+		return err
+	}
 
 	input := &repo.PostInput{Kind: "slice"}
-	if err := forms.AddSlice(input, topics); err != nil {
+	if err := forms.AddSlice(input, topics, locations); err != nil {
 		return err
 	}
 
@@ -108,15 +112,20 @@ func runSliceEdit(r *repo.Repo) error {
 	if err != nil {
 		return err
 	}
+	locations, err := r.ListLocations()
+	if err != nil {
+		return err
+	}
 
 	input := &repo.PostInput{
 		ID:          slice.ID,
 		Slug:        slice.Slug,
 		Kind:        slice.Kind,
 		PublishedAt: slice.PublishedAt,
+		LocationID:  slice.LocationID,
 		TopicIDs:    topicIDs(slice.Topics),
 	}
-	if err := forms.EditSlice(input, topics); err != nil {
+	if err := forms.EditSlice(input, topics, locations); err != nil {
 		return err
 	}
 

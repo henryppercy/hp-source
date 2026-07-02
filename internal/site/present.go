@@ -23,6 +23,11 @@ func parseDate(s string) time.Time {
 	return time.Time{}
 }
 
+// locationStamps maps location ids to display stamps for the post and slice
+// cards. The builder populates it before rendering; a missing id yields a blank
+// stamp, so unlocated content simply shows no place.
+var locationStamps map[int]templates.Place
+
 func toListItem(p repo.Post) templates.PostListItem {
 	return templates.PostListItem{
 		Title:       p.Title,
@@ -31,6 +36,7 @@ func toListItem(p repo.Post) templates.PostListItem {
 		PublishedAt: parseDate(p.PublishedAt),
 		Headline:    p.Headline,
 		Topics:      topicLinks(p.Topics),
+		Location:    locationStamps[p.LocationID],
 	}
 }
 
@@ -433,7 +439,7 @@ func humanizeSince(t time.Time) string {
 func almanac(reads []repo.ReadEntry, year int) templates.AlmanacView {
 	a := templates.AlmanacView{Year: year, AvgRating: "—", AvgPace: "—"}
 	ratingSum, ratingN, paceSum, paceN := 0, 0, 0, 0
-	fiction, secondHand, sourced := 0, 0, 0
+	fiction, secondHand, owned := 0, 0, 0
 	for _, e := range reads {
 		if e.Status == "abandoned" {
 			a.Abandoned++
@@ -452,9 +458,9 @@ func almanac(reads []repo.ReadEntry, year int) templates.AlmanacView {
 		if e.BookType == "fiction" {
 			fiction++
 		}
-		if e.Source != "" {
-			sourced++
-			if isSecondHand(e.Source) {
+		if isOwned(e.Source) {
+			owned++
+			if e.SecondHand {
 				secondHand++
 			}
 		}
@@ -475,19 +481,41 @@ func almanac(reads []repo.ReadEntry, year int) templates.AlmanacView {
 	}
 	a.FictionPct = percent(fiction, a.Books)
 	a.FictionNote = countNote(fiction, a.Books)
-	a.SecondHandPct = percent(secondHand, sourced)
-	a.SecondHandNote = countNote(secondHand, sourced)
+	a.SecondHandPct = percent(secondHand, owned)
+	a.SecondHandNote = countNote(secondHand, owned)
 	return a
 }
 
-// isSecondHand reports whether a copy came already lived-in rather than bought
-// new. Gifted counts as second-hand here; move it if that's wrong.
-func isSecondHand(source string) bool {
-	switch source {
-	case "second-hand", "borrowed":
-		return true
+// isOwned reports whether a copy is one I acquired to keep, so it belongs in the
+// second-hand split. Borrowed and library copies are excluded.
+func isOwned(source string) bool {
+	return source == "bought" || source == "gifted"
+}
+
+// homeSlug is the location the header, footer and home nameplate are filed from.
+const homeSlug = "sheffield"
+
+// placeOf turns a stored location into a display stamp, formatting its raw
+// coordinates.
+func placeOf(l repo.Location) templates.Place {
+	return templates.Place{Name: l.Name, Code: l.Code, Coords: formatCoords(l.Lat, l.Lng)}
+}
+
+// formatCoords renders raw decimal degrees as "53.22°N 1.28°W", blank when
+// either coordinate is missing.
+func formatCoords(lat, lng *float64) string {
+	if lat == nil || lng == nil {
+		return ""
 	}
-	return false
+	ns, la := "N", *lat
+	if la < 0 {
+		ns, la = "S", -la
+	}
+	ew, lo := "E", *lng
+	if lo < 0 {
+		ew, lo = "W", -lo
+	}
+	return fmt.Sprintf("%.2f°%s %.2f°%s", la, ns, lo, ew)
 }
 
 // percent formats n/total as a whole percent, "—" when there is no base.

@@ -95,13 +95,17 @@ func EditCopy(in *repo.CopyInput) error {
 				Title("Source").
 				Options(
 					huh.NewOption("None", ""),
-					huh.NewOption("New", "new"),
-					huh.NewOption("Second-hand", "second-hand"),
-					huh.NewOption("Borrowed", "borrowed"),
+					huh.NewOption("Bought", "bought"),
 					huh.NewOption("Gifted", "gifted"),
+					huh.NewOption("Borrowed", "borrowed"),
 					huh.NewOption("Library", "library"),
 				).
 				Value(&in.Source),
+			huh.NewConfirm().
+				Title("Second-hand?").
+				Affirmative("Yes").
+				Negative("No").
+				Value(&in.SecondHand),
 			huh.NewInput().
 				Title("Date Acquired").
 				Placeholder("e.g. 2026-06-20").
@@ -130,6 +134,7 @@ func EditCopy(in *repo.CopyInput) error {
 						source = "none"
 					}
 					fmt.Fprintf(&sb, "Source:     %s\n", source)
+					fmt.Fprintf(&sb, "Second-hand: %s\n", yesNo(in.SecondHand))
 					acquired := in.DateAcquired
 					if acquired == "" {
 						acquired = "none"

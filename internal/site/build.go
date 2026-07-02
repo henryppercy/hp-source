@@ -65,6 +65,10 @@ func (b *builder) Build() error {
 		return err
 	}
 
+	if err := b.loadLocations(); err != nil {
+		return err
+	}
+
 	now := time.Now()
 	year := now.Year()
 
@@ -156,6 +160,7 @@ func (b *builder) sliceItem(p repo.Post) (templates.SliceItem, error) {
 		PublishedAt: parseDate(p.PublishedAt),
 		BodyHTML:    body,
 		Topics:      topicLinks(p.Topics),
+		Location:    locationStamps[p.LocationID],
 	}, nil
 }
 
@@ -223,7 +228,29 @@ func (b *builder) postView(p repo.Post) (templates.PostView, error) {
 		BodyHTML:    body,
 		TOC:         toc,
 		Topics:      topicLinks(p.Topics),
+		Location:    locationStamps[p.LocationID],
 	}, nil
+}
+
+// loadLocations caches every place by id into locationStamps for the post and
+// slice cards, and sets the shared home location used by the header, footer and
+// home nameplate.
+func (b *builder) loadLocations() error {
+	locations, err := b.repo.ListLocations()
+	if err != nil {
+		return err
+	}
+	locationStamps = make(map[int]templates.Place, len(locations))
+	for _, l := range locations {
+		locationStamps[l.ID] = placeOf(l)
+	}
+
+	home, err := b.repo.GetLocationBySlug(homeSlug)
+	if err != nil {
+		return err
+	}
+	templates.HomeLocation = placeOf(*home)
+	return nil
 }
 
 // writeCodeCSS emits the kazari stylesheet that styles the rendered code blocks.

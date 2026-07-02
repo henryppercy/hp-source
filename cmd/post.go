@@ -83,9 +83,13 @@ func runPostAdd(r *repo.Repo) error {
 	if err != nil {
 		return err
 	}
+	locations, err := r.ListLocations()
+	if err != nil {
+		return err
+	}
 
 	input := &repo.PostInput{Kind: "article"}
-	if err := forms.AddPost(input, topics); err != nil {
+	if err := forms.AddPost(input, topics, locations); err != nil {
 		return err
 	}
 
@@ -115,6 +119,10 @@ func runPostEdit(r *repo.Repo) error {
 	if err != nil {
 		return err
 	}
+	locations, err := r.ListLocations()
+	if err != nil {
+		return err
+	}
 
 	input := &repo.PostInput{
 		ID:          post.ID,
@@ -123,9 +131,10 @@ func runPostEdit(r *repo.Repo) error {
 		Kind:        post.Kind,
 		Headline:    post.Headline,
 		PublishedAt: post.PublishedAt,
+		LocationID:  post.LocationID,
 		TopicIDs:    topicIDs(post.Topics),
 	}
-	if err := forms.EditPost(input, topics); err != nil {
+	if err := forms.EditPost(input, topics, locations); err != nil {
 		return err
 	}
 

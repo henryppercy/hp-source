@@ -1,9 +1,9 @@
 package repo
 
-func createCopy(tx TX, bookID int, format string, pageCount *int, language, isbn, coverImage, source, dateAcquired string) (int, error) {
+func createCopy(tx TX, bookID int, format string, pageCount *int, language, isbn, coverImage, source, dateAcquired string, secondHand bool) (int, error) {
 	result, err := tx.Exec(
-		`INSERT INTO book_copy (book_id, format, page_count, language, isbn, cover_image, source, date_acquired)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		`INSERT INTO book_copy (book_id, format, page_count, language, isbn, cover_image, source, date_acquired, second_hand)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		bookID,
 		format,
 		pageCount,
@@ -12,6 +12,7 @@ func createCopy(tx TX, bookID int, format string, pageCount *int, language, isbn
 		nullable(coverImage),
 		nullable(source),
 		nullable(dateAcquired),
+		boolInt(secondHand),
 	)
 	if err != nil {
 		return 0, err
@@ -28,17 +29,18 @@ type CopyInput struct {
 	CoverImage   string
 	Source       string
 	DateAcquired string
+	SecondHand   bool
 }
 
 func (r *Repo) GetCopy(copyID int) (*CopyInput, error) {
 	var in CopyInput
-	var pageCount *int
+	var pageCount, secondHand *int
 	var isbn, coverImage, source, dateAcquired *string
 	err := r.db.QueryRow(
-		`SELECT format, page_count, language, isbn, cover_image, source, date_acquired
+		`SELECT format, page_count, language, isbn, cover_image, source, date_acquired, second_hand
          FROM book_copy WHERE id = ?`,
 		copyID,
-	).Scan(&in.Format, &pageCount, &in.Language, &isbn, &coverImage, &source, &dateAcquired)
+	).Scan(&in.Format, &pageCount, &in.Language, &isbn, &coverImage, &source, &dateAcquired, &secondHand)
 	if err != nil {
 		return nil, err
 	}
@@ -49,13 +51,14 @@ func (r *Repo) GetCopy(copyID int) (*CopyInput, error) {
 	in.CoverImage = deref(coverImage)
 	in.Source = deref(source)
 	in.DateAcquired = deref(dateAcquired)
+	in.SecondHand = secondHand != nil && *secondHand == 1
 	return &in, nil
 }
 
 func (r *Repo) UpdateCopy(copyID int, in *CopyInput) error {
 	_, err := r.db.Exec(
 		`UPDATE book_copy
-         SET format = ?, page_count = ?, language = ?, isbn = ?, cover_image = ?, source = ?, date_acquired = ?
+         SET format = ?, page_count = ?, language = ?, isbn = ?, cover_image = ?, source = ?, date_acquired = ?, second_hand = ?
          WHERE id = ?`,
 		in.Format,
 		nullableInt(in.PageCount),
@@ -64,6 +67,7 @@ func (r *Repo) UpdateCopy(copyID int, in *CopyInput) error {
 		nullable(in.CoverImage),
 		nullable(in.Source),
 		nullable(in.DateAcquired),
+		boolInt(in.SecondHand),
 		copyID,
 	)
 	return err

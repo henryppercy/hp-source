@@ -25,7 +25,11 @@ templ Post(v PostView) {
 					<div class="flex flex-col gap-1.5 p-5">
 						<dt class="font-mono text-meta text-fainter">location</dt>
 						<dd>
-							@location("Sheffield", "GB", "53.22°N 1.28°W")
+							if v.Location.Name != "" {
+								@location(v.Location.Name, v.Location.Code, v.Location.Coords)
+							} else {
+								<span class="font-mono text-meta text-fainter">—</span>
+							}
 						</dd>
 					</div>
 					<div class="flex flex-col gap-1.5 p-5">
