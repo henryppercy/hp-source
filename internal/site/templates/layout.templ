@@ -55,17 +55,12 @@ templ Layout(title, active string) {
 		</head>
 		<body>
             <header class="m-4 md:m-gutter divide-y divide-fg border border-fg">
-              <div class="grid grid-cols-1 divide-y md:grid-cols-3 md:divide-y-0 md:divide-x divide-fg">
-                <a href="/" class="flex items-center font-sans font-bold text-h2 tracking-tightest text-fg leading-none p-5">
+              <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-4">
+                <a href="/" class="font-sans font-bold text-h2 tracking-tightest text-fg leading-none">
                   Henry Percy
                 </a>
 
-                <div class="flex flex-col gap-1.5 p-5">
-                  <span class="font-mono text-meta text-fainter">date</span>
-                  <span class="font-mono text-label text-fg tabular-nums">{ buildDate(LastBuild.Date) }</span>
-                </div>
-
-                <div class="flex flex-col gap-1.5 p-5">
+                <div class="flex flex-col gap-1.5 md:items-end">
                   <span class="font-mono text-meta text-fainter">filed from</span>
                   @location(LastBuild.Location.Name, LastBuild.Location.Code, LastBuild.Location.Coords)
                 </div>
@@ -73,7 +68,7 @@ templ Layout(title, active string) {
 
               <nav class="grid grid-cols-2 md:grid-cols-none md:grid-flow-col md:auto-cols-fr gap-px bg-fg">
                 for i, l := range navLinks {
-                  <a href={ templ.SafeURL(l.href) } class={ "flex flex-col gap-1.5 p-5 hover:bg-code-inline", templ.KV("bg-surface", l.href != active), templ.KV("bg-code-inline", l.href == active), templ.KV("col-span-2 md:col-span-1", i == 0 && len(navLinks)%2 == 1) }>
+                  <a href={ templ.SafeURL(l.href) } class={ "flex flex-col gap-1.5 p-4 hover:bg-code-inline", templ.KV("bg-surface", l.href != active), templ.KV("bg-code-inline", l.href == active), templ.KV("col-span-2 md:col-span-1", i == 0 && len(navLinks)%2 == 1) }>
                     <span class={ "font-mono text-meta", templ.KV("text-accent", l.href == active), templ.KV("text-fainter", l.href != active) }>{ l.num }</span>
                     <span class="font-sans text-label text-fg">{ l.label }</span>
                   </a>
