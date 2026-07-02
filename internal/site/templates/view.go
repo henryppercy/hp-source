@@ -44,6 +44,20 @@ func buildStamp(t time.Time) string {
 	return t.Format("2 January 2006; 15:04")
 }
 
+// editedLater reports whether updated falls on a later calendar day than
+// published: the signal that a post was genuinely revised after going public,
+// rather than just created and published (which bump updated_at the same day).
+func editedLater(published, updated time.Time) bool {
+	if published.IsZero() || updated.IsZero() {
+		return false
+	}
+	py, pm, pd := published.Date()
+	uy, um, ud := updated.Date()
+	publishedDay := time.Date(py, pm, pd, 0, 0, 0, 0, time.UTC)
+	updatedDay := time.Date(uy, um, ud, 0, 0, 0, 0, time.UTC)
+	return updatedDay.After(publishedDay)
+}
+
 // TopicLink is a topic shown on a page, linking to its feed.
 type TopicLink struct {
 	Name string

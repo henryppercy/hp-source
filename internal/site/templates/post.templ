@@ -71,7 +71,7 @@ templ Post(v PostView) {
 				<div class="flex flex-wrap gap-2">
 					@tagChips(v.Topics)
 				</div>
-				if !v.UpdatedAt.IsZero() {
+				if editedLater(v.PublishedAt, v.UpdatedAt) {
 					<span class="font-mono text-meta text-faint">Last edited { fmtDate(v.UpdatedAt) }</span>
 				}
 			</footer>
