@@ -24,7 +24,7 @@ templ Reading(v ReadingView) {
 					<div class="min-w-0">
 						@logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d read all-time", v.TotalRead))
 					</div>
-					<aside class="space-y-8">
+					<aside class="min-w-0 space-y-8">
 						@shelfGlance(v.Shelf)
 						@standoutsCard(v.Insights.Standouts)
 						@tallyCard("Top genres", v.Insights.TopGenres)
