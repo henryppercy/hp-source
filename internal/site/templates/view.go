@@ -2,6 +2,7 @@ package templates
 
 import (
 	"html/template"
+	"strconv"
 	"time"
 )
 
@@ -20,6 +21,20 @@ func fmtDateTime(t time.Time) string {
 		return ""
 	}
 	return t.Format("2 Jan 2006, 15:04")
+}
+
+// readLabel is the post's reading-time stamp, e.g. "6 min read".
+func readLabel(mins int) string {
+	return strconv.Itoa(mins) + " min read"
+}
+
+// wordLabel is the post's length stamp with thousands commas, e.g. "1,240 words".
+func wordLabel(n int) string {
+	s := strconv.Itoa(n)
+	for i := len(s) - 3; i > 0; i -= 3 {
+		s = s[:i] + "," + s[i:]
+	}
+	return s + " words"
 }
 
 // BuildInfo is the colophon shown in the header and footer: when the site was
@@ -72,6 +87,8 @@ type PostView struct {
 	UpdatedAt   time.Time
 	Headline    string
 	BodyHTML    template.HTML
+	ReadMinutes int
+	Words       int
 	TOC         []TOCEntry
 	Topics      []TopicLink
 	Location    Place
@@ -104,6 +121,7 @@ type PostListItem struct {
 	URL         string
 	PublishedAt time.Time
 	Headline    string
+	ReadMinutes int
 	Topics      []TopicLink
 	Location    Place
 }

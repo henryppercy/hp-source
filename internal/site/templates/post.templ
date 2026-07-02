@@ -34,11 +34,11 @@ templ Post(v PostView) {
 					</div>
 					<div class="flex flex-col gap-1.5 p-5">
 						<dt class="font-mono text-meta text-fainter">reading</dt>
-						<dd class="font-sans text-label text-fg tabular-nums">6 min</dd>
+						<dd class="font-sans text-label text-fg tabular-nums">{ fmt.Sprintf("%d min", v.ReadMinutes) }</dd>
 					</div>
 					<div class="flex flex-col gap-1.5 p-5">
 						<dt class="font-mono text-meta text-fainter">length</dt>
-						<dd class="font-sans text-label text-fg tabular-nums">1,240 words</dd>
+						<dd class="font-sans text-label text-fg tabular-nums">{ wordLabel(v.Words) }</dd>
 					</div>
 				</dl>
 			</header>

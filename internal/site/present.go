@@ -35,6 +35,7 @@ func toListItem(p repo.Post) templates.PostListItem {
 		URL:         postURL(p),
 		PublishedAt: parseDate(p.PublishedAt),
 		Headline:    p.Headline,
+		ReadMinutes: text.ReadMinutes(p.Body),
 		Topics:      topicLinks(p.Topics),
 		Location:    locationStamps[p.LocationID],
 	}

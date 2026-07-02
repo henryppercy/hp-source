@@ -231,6 +231,8 @@ func (b *builder) postView(p repo.Post) (templates.PostView, error) {
 		UpdatedAt:   parseDate(p.UpdatedAt),
 		Headline:    p.Headline,
 		BodyHTML:    body,
+		ReadMinutes: text.ReadMinutes(p.Body),
+		Words:       text.WordCount(p.Body),
 		TOC:         toc,
 		Topics:      topicLinks(p.Topics),
 		Location:    locationStamps[p.LocationID],

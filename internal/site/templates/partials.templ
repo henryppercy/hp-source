@@ -57,7 +57,7 @@ templ postRow(p PostListItem) {
 			@tagChips(p.Topics)
 		</div>
 		<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
-			<span>6 min read</span>
+			<span>{ readLabel(p.ReadMinutes) }</span>
 			if p.Location.Name != "" {
 				<span class="text-ghost">;</span>
 				<span>{ p.Location.Name }</span>
