@@ -1469,6 +1469,16 @@
       display: table-cell;
     }
   }
+  .md\:auto-cols-fr {
+    @media (width >= 48rem) {
+      grid-auto-columns: minmax(0, 1fr);
+    }
+  }
+  .md\:grid-flow-col {
+    @media (width >= 48rem) {
+      grid-auto-flow: column;
+    }
+  }
   .md\:grid-cols-2 {
     @media (width >= 48rem) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1484,9 +1494,19 @@
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
+  .md\:grid-cols-6 {
+    @media (width >= 48rem) {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
   .md\:grid-cols-7 {
     @media (width >= 48rem) {
       grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+  }
+  .md\:grid-cols-none {
+    @media (width >= 48rem) {
+      grid-template-columns: none;
     }
   }
   .md\:divide-x {

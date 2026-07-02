@@ -227,7 +227,6 @@ func milestoneEntries(rungs []templates.MilestoneRung) []templates.FeedEntry {
 }
 
 // indexRows build the section directory with a live count against each line.
-// Photos has no page yet, so it carries no link.
 func indexRows(
 	articles []templates.PostListItem,
 	notes []templates.SliceItem,
@@ -240,7 +239,6 @@ func indexRows(
 		{Num: "03", Label: "Slices", URL: "/slices", Note: fmt.Sprintf("%d notes", len(notes))},
 		{Num: "04", Label: "Reading", URL: "/reading", Note: readingNote(reads, now.Year())},
 		{Num: "05", Label: "Spanish", URL: "/spanish", Note: spanishIndexNote(days, now)},
-		{Num: "06", Label: "Photos", Note: "soon"},
 	}
 }
 

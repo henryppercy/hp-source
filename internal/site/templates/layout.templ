@@ -7,13 +7,23 @@ type navLink struct {
 }
 
 var navLinks = []navLink{
-	{"00", "Design System", "/design"},
 	{"01", "Home", "/"},
 	{"02", "Posts", "/posts"},
 	{"03", "Slices", "/slices"},
 	{"04", "Reading", "/reading"},
 	{"05", "Spanish", "/spanish"},
-	{"06", "Photos", "/photos"},
+}
+
+type footerLink struct {
+	label string
+	href  string
+}
+
+var footerLinks = []footerLink{
+	{"GitHub", "https://github.com/henryppercy"},
+	{"LinkedIn", "https://www.linkedin.com/in/henry-b-percy"},
+	{"RSS feed", "#"},
+	{"Email", "#"},
 }
 
 const siteName = "Henry Percy"
@@ -61,7 +71,7 @@ templ Layout(title, active string) {
                 </div>
               </div>
 
-              <nav class="grid grid-cols-2 md:grid-cols-7 gap-px bg-fg">
+              <nav class="grid grid-cols-2 md:grid-cols-none md:grid-flow-col md:auto-cols-fr gap-px bg-fg">
                 for i, l := range navLinks {
                   <a href={ templ.SafeURL(l.href) } class={ "flex flex-col gap-1.5 p-5 hover:bg-code-inline", templ.KV("bg-surface", l.href != active), templ.KV("bg-code-inline", l.href == active), templ.KV("col-span-2 md:col-span-1", i == 0 && len(navLinks)%2 == 1) }>
                     <span class={ "font-mono text-meta", templ.KV("text-accent", l.href == active), templ.KV("text-fainter", l.href != active) }>{ l.num }</span>
@@ -117,31 +127,15 @@ templ Layout(title, active string) {
                                     Site
                                 </h4>
                                 <ul class="space-y-1">
-                                    <li class="text-label font-sans">
-                                        <a href="/posts">
-                                            Posts
-                                        </a>
-                                    </li>
-                                    <li class="text-label font-sans">
-                                        <a href="/slices">
-                                            Slices
-                                        </a>
-                                    </li>
-                                    <li class="text-label font-sans">
-                                        <a href="/reading">
-                                            Reading
-                                        </a>
-                                    </li>
-                                    <li class="text-label font-sans">
-                                        <a href="/spanish">
-                                            Spanish
-                                        </a>
-                                    </li>
-                                    <li class="text-label font-sans">
-                                        <a href="/photos">
-                                            Photos
-                                        </a>
-                                    </li>
+                                    for _, l := range navLinks {
+                                        if l.href != "/" {
+                                            <li class="text-label font-sans">
+                                                <a href={ templ.SafeURL(l.href) } class="hover:text-accent">
+                                                    { l.label }
+                                                </a>
+                                            </li>
+                                        }
+                                    }
                                 </ul>
                             </div>
                             <div class="p-5 space-y-3">
@@ -149,33 +143,20 @@ templ Layout(title, active string) {
                                     Links
                                 </h4>
                                 <ul class="space-y-1">
-                                    <li class="text-label font-sans">
-                                        <a href="https://github.com/henryppercy">
-                                            GitHub
-                                        </a>
-                                    </li>
-                                    <li class="text-label font-sans">
-                                        <a href="https://www.linkedin.com/in/henry-b-percy">
-                                            LinkedIn
-                                        </a>
-                                    </li>
-                                    <li class="text-label font-sans">
-                                        <a href="#">
-                                            RSS feed
-                                        </a>
-                                    </li>
-                                    <li class="text-label font-sans">
-                                        <a href="#">
-                                            Email
-                                        </a>
-                                    </li>
+                                    for _, l := range footerLinks {
+                                        <li class="text-label font-sans">
+                                            <a href={ templ.SafeURL(l.href) } class="hover:text-accent">
+                                                { l.label }
+                                            </a>
+                                        </li>
+                                    }
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                    <p class="font-mono text-meta text-fainter">CC BY-NC-SA 4.0; 2023-26 © Henry Percy</p>
+                    <p class="font-mono text-meta text-fainter"><a class="hover:text-accent" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>; 2023-26 © Henry Percy</p>
                     <p class="font-mono text-meta text-fainter">No trackers; No JavaScript</p>
                 </div>
             </footer>

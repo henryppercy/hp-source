@@ -15,13 +15,23 @@ type navLink struct {
 }
 
 var navLinks = []navLink{
-	{"00", "Design System", "/design"},
 	{"01", "Home", "/"},
 	{"02", "Posts", "/posts"},
 	{"03", "Slices", "/slices"},
 	{"04", "Reading", "/reading"},
 	{"05", "Spanish", "/spanish"},
-	{"06", "Photos", "/photos"},
+}
+
+type footerLink struct {
+	label string
+	href  string
+}
+
+var footerLinks = []footerLink{
+	{"GitHub", "https://github.com/henryppercy"},
+	{"LinkedIn", "https://www.linkedin.com/in/henry-b-percy"},
+	{"RSS feed", "#"},
+	{"Email", "#"},
 }
 
 const siteName = "Henry Percy"
@@ -65,7 +75,7 @@ func Layout(title, active string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 38, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 48, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -78,7 +88,7 @@ func Layout(title, active string) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(buildDate(LastBuild.Date))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 55, Col: 101}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 65, Col: 101}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -92,7 +102,7 @@ func Layout(title, active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></div><nav class=\"grid grid-cols-2 md:grid-cols-7 gap-px bg-fg\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></div><nav class=\"grid grid-cols-2 md:grid-cols-none md:grid-flow-col md:auto-cols-fr gap-px bg-fg\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -109,7 +119,7 @@ func Layout(title, active string) templ.Component {
 			var templ_7745c5c3_Var5 templ.SafeURL
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(l.href))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 66, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 76, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -157,7 +167,7 @@ func Layout(title, active string) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(l.num)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 67, Col: 152}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 77, Col: 152}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -170,7 +180,7 @@ func Layout(title, active string) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(l.label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 68, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 78, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -204,7 +214,7 @@ func Layout(title, active string) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(LastBuild.Go)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 102, Col: 86}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 112, Col: 86}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -217,7 +227,7 @@ func Layout(title, active string) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(LastBuild.On)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 105, Col: 86}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 115, Col: 86}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -230,13 +240,87 @@ func Layout(title, active string) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(buildStamp(LastBuild.Date))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 111, Col: 100}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 121, Col: 100}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</dd></dl></div><div class=\"md:col-span-4 grid grid-cols-2 divide-x divide-fg\"><div class=\"p-5 space-y-3\"><h4 class=\"tracking-kicker text-kicker font-mono text-fainter uppercase\">Site</h4><ul class=\"space-y-1\"><li class=\"text-label font-sans\"><a href=\"/posts\">Posts</a></li><li class=\"text-label font-sans\"><a href=\"/slices\">Slices</a></li><li class=\"text-label font-sans\"><a href=\"/reading\">Reading</a></li><li class=\"text-label font-sans\"><a href=\"/spanish\">Spanish</a></li><li class=\"text-label font-sans\"><a href=\"/photos\">Photos</a></li></ul></div><div class=\"p-5 space-y-3\"><h4 class=\"tracking-kicker text-kicker font-mono text-fainter uppercase\">Links</h4><ul class=\"space-y-1\"><li class=\"text-label font-sans\"><a href=\"https://github.com/henryppercy\">GitHub</a></li><li class=\"text-label font-sans\"><a href=\"https://www.linkedin.com/in/henry-b-percy\">LinkedIn</a></li><li class=\"text-label font-sans\"><a href=\"#\">RSS feed</a></li><li class=\"text-label font-sans\"><a href=\"#\">Email</a></li></ul></div></div></div></div><div class=\"flex flex-col gap-2 sm:flex-row sm:justify-between\"><p class=\"font-mono text-meta text-fainter\">CC BY-NC-SA 4.0; 2023-26 © Henry Percy</p><p class=\"font-mono text-meta text-fainter\">No trackers; No JavaScript</p></div></footer></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</dd></dl></div><div class=\"md:col-span-4 grid grid-cols-2 divide-x divide-fg\"><div class=\"p-5 space-y-3\"><h4 class=\"tracking-kicker text-kicker font-mono text-fainter uppercase\">Site</h4><ul class=\"space-y-1\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, l := range navLinks {
+			if l.href != "/" {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<li class=\"text-label font-sans\"><a href=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var14 templ.SafeURL
+				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(l.href))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 133, Col: 79}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"hover:text-accent\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var15 string
+				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(l.label)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 134, Col: 61}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</a></li>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</ul></div><div class=\"p-5 space-y-3\"><h4 class=\"tracking-kicker text-kicker font-mono text-fainter uppercase\">Links</h4><ul class=\"space-y-1\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, l := range footerLinks {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<li class=\"text-label font-sans\"><a href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var16 templ.SafeURL
+			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(l.href))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 148, Col: 75}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"hover:text-accent\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var17 string
+			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(l.label)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/layout.templ`, Line: 149, Col: 57}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</a></li>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</ul></div></div></div></div><div class=\"flex flex-col gap-2 sm:flex-row sm:justify-between\"><p class=\"font-mono text-meta text-fainter\"><a class=\"hover:text-accent\" href=\"https://creativecommons.org/licenses/by-nc-sa/4.0/\">CC BY-NC-SA 4.0</a>; 2023-26 © Henry Percy</p><p class=\"font-mono text-meta text-fainter\">No trackers; No JavaScript</p></div></footer></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
