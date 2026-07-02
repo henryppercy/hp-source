@@ -30,6 +30,7 @@ type ReadEntry struct {
 	Status       string
 	Rating       int
 	PageCount    int
+	CurrentPage  int
 	DateStarted  string
 	DateFinished string
 }
@@ -144,7 +145,11 @@ func (r *Repo) ListActiveReads() ([]ActiveRead, error) {
 func (r *Repo) ListReads() ([]ReadEntry, error) {
 	rows, err := r.db.Query(
 		`SELECT b.title, a.name, bc.cover_image, g.name, b.type, bc.format, bc.source,
-                rd.status, rd.rating, bc.page_count, rd.date_started, rd.date_finished
+                rd.status, rd.rating, bc.page_count,
+                (SELECT rl.page FROM read_log rl
+                 WHERE rl.read_id = rd.id AND rl.page IS NOT NULL
+                 ORDER BY rl.id DESC LIMIT 1),
+                rd.date_started, rd.date_finished
          FROM read rd
          JOIN book b ON b.id = rd.book_id
          JOIN genre g ON g.id = b.genre_id
@@ -162,10 +167,10 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 	for rows.Next() {
 		var e ReadEntry
 		var author, coverImage, format, source, dateStarted, dateFinished *string
-		var rating, pageCount *int
+		var rating, pageCount, currentPage *int
 		if err := rows.Scan(
 			&e.Title, &author, &coverImage, &e.Genre, &e.BookType, &format, &source,
-			&e.Status, &rating, &pageCount, &dateStarted, &dateFinished,
+			&e.Status, &rating, &pageCount, &currentPage, &dateStarted, &dateFinished,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan read: %w", err)
 		}
@@ -186,6 +191,9 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 		}
 		if pageCount != nil {
 			e.PageCount = *pageCount
+		}
+		if currentPage != nil {
+			e.CurrentPage = *currentPage
 		}
 		if dateStarted != nil {
 			e.DateStarted = *dateStarted
@@ -243,6 +251,23 @@ func (r *Repo) ListShelf() ([]ShelfEntry, error) {
 		entries = append(entries, e)
 	}
 	return entries, rows.Err()
+}
+
+type ReadLogInput struct {
+	ReadID int
+	Page   int
+	Note   string
+}
+
+func (r *Repo) AddReadLog(in *ReadLogInput) error {
+	_, err := r.db.Exec(
+		`INSERT INTO read_log (read_id, page, note) VALUES (?, ?, ?)`,
+		in.ReadID, nullableInt(in.Page), nullable(in.Note),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to add read log: %w", err)
+	}
+	return nil
 }
 
 func (r *Repo) StartRead(bookID, copyID int, dateStarted string) error {

@@ -16,6 +16,7 @@ func newReadCmd(a *app) *cobra.Command {
 	cmd.AddCommand(
 		newReadStartCmd(a),
 		newReadFinishCmd(a),
+		newReadProgressCmd(a),
 		newReadLogCmd(a),
 	)
 	return cmd
@@ -49,6 +50,39 @@ func newReadLogCmd(a *app) *cobra.Command {
 			return runReadLog(a.repo)
 		},
 	}
+}
+
+func newReadProgressCmd(a *app) *cobra.Command {
+	return &cobra.Command{
+		Use:   "progress",
+		Short: "Log a page and/or note against an active read",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runReadProgress(a.repo)
+		},
+	}
+}
+
+func runReadProgress(r *repo.Repo) error {
+	reads, err := r.ListActiveReads()
+	if err != nil {
+		return err
+	}
+	if len(reads) == 0 {
+		fmt.Println("No active reads to log against.")
+		return nil
+	}
+
+	input := &repo.ReadLogInput{}
+	if err := forms.LogProgress(input, reads); err != nil {
+		return err
+	}
+
+	if err := r.AddReadLog(input); err != nil {
+		return err
+	}
+
+	fmt.Println("Progress logged.")
+	return nil
 }
 
 func runReadStart(r *repo.Repo) error {

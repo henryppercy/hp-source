@@ -301,11 +301,23 @@ func currentReads(reads []repo.ReadEntry) []templates.CurrentRead {
 			Format:    e.Format,
 			StartedAt: started,
 			DayCount:  daysSince(started),
-			// Hardcoded until reads track a current page; then it is page/pages.
-			Percent: 64,
+			Percent:   readingPercent(e.CurrentPage, e.PageCount),
 		})
 	}
 	return out
+}
+
+// readingPercent is the latest logged page against the copy's length, capped at
+// 100 and zero until a page is logged.
+func readingPercent(page, pages int) int {
+	if page <= 0 || pages <= 0 {
+		return 0
+	}
+	p := int(math.Round(float64(page) / float64(pages) * 100))
+	if p > 100 {
+		return 100
+	}
+	return p
 }
 
 // daysSince counts days from start to today, inclusive, zero when undated.
