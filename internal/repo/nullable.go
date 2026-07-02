@@ -13,3 +13,10 @@ func nullableInt(n int) *int {
 	}
 	return &n
 }
+
+func deref(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}

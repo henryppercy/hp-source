@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/henryppercy/hp-source/internal/forms"
 	"github.com/henryppercy/hp-source/internal/repo"
 	"github.com/spf13/cobra"
@@ -11,7 +13,10 @@ func newBookCmd(a *app) *cobra.Command {
 		Use:   "book",
 		Short: "Manage your book collection",
 	}
-	cmd.AddCommand(newBookAddCmd(a))
+	cmd.AddCommand(
+		newBookAddCmd(a),
+		newBookUpdateCmd(a),
+	)
 	return cmd
 }
 
@@ -23,6 +28,47 @@ func newBookAddCmd(a *app) *cobra.Command {
 			return runBookAdd(a.repo)
 		},
 	}
+}
+
+func newBookUpdateCmd(a *app) *cobra.Command {
+	return &cobra.Command{
+		Use:   "update",
+		Short: "Update a book's copy details",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runBookUpdate(a.repo)
+		},
+	}
+}
+
+func runBookUpdate(r *repo.Repo) error {
+	books, err := r.ListBooks(true)
+	if err != nil {
+		return err
+	}
+	if len(books) == 0 {
+		fmt.Println("No books with copies to update.")
+		return nil
+	}
+
+	var bookID, copyID int
+	if err := forms.SelectCopy(books, r.ListCopies, &bookID, &copyID); err != nil {
+		return err
+	}
+
+	detail, err := r.GetCopy(copyID)
+	if err != nil {
+		return err
+	}
+	if err := forms.EditCopy(detail); err != nil {
+		return err
+	}
+
+	if err := r.UpdateCopy(copyID, detail); err != nil {
+		return err
+	}
+
+	fmt.Println("Copy updated.")
+	return nil
 }
 
 func runBookAdd(r *repo.Repo) error {

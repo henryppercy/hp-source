@@ -20,6 +20,55 @@ func createCopy(tx TX, bookID int, format string, pageCount *int, language, isbn
 	return int(id), nil
 }
 
+type CopyInput struct {
+	Format       string
+	PageCount    int
+	Language     string
+	ISBN         string
+	CoverImage   string
+	Source       string
+	DateAcquired string
+}
+
+func (r *Repo) GetCopy(copyID int) (*CopyInput, error) {
+	var in CopyInput
+	var pageCount *int
+	var isbn, coverImage, source, dateAcquired *string
+	err := r.db.QueryRow(
+		`SELECT format, page_count, language, isbn, cover_image, source, date_acquired
+         FROM book_copy WHERE id = ?`,
+		copyID,
+	).Scan(&in.Format, &pageCount, &in.Language, &isbn, &coverImage, &source, &dateAcquired)
+	if err != nil {
+		return nil, err
+	}
+	if pageCount != nil {
+		in.PageCount = *pageCount
+	}
+	in.ISBN = deref(isbn)
+	in.CoverImage = deref(coverImage)
+	in.Source = deref(source)
+	in.DateAcquired = deref(dateAcquired)
+	return &in, nil
+}
+
+func (r *Repo) UpdateCopy(copyID int, in *CopyInput) error {
+	_, err := r.db.Exec(
+		`UPDATE book_copy
+         SET format = ?, page_count = ?, language = ?, isbn = ?, cover_image = ?, source = ?, date_acquired = ?
+         WHERE id = ?`,
+		in.Format,
+		nullableInt(in.PageCount),
+		in.Language,
+		nullable(in.ISBN),
+		nullable(in.CoverImage),
+		nullable(in.Source),
+		nullable(in.DateAcquired),
+		copyID,
+	)
+	return err
+}
+
 type Copy struct {
 	ID     int
 	Format string
