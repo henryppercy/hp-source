@@ -9,13 +9,13 @@ templ Topic(v TopicFeedView) {
 			<header class="mb-12">
 				<div class="space-y-4">
 					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">{ v.Heading }</h1>
-					if v.Intro != "" {
-						@standfirst(v.Intro)
+					if v.Standfirst != "" {
+						@standfirst(v.Standfirst)
 					}
 				</div>
 			</header>
 			if len(v.Articles) == 0 && len(v.Slices) == 0 {
-				<p class="font-serif text-muted">Nothing here yet.</p>
+				<p class="font-serif text-muted">{ v.Empty }</p>
 			} else {
 				<div class="grid gap-x-16 md:grid-cols-2">
 					<section>

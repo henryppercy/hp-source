@@ -22,6 +22,8 @@ const (
 	spanishGoalMonth = time.December
 )
 
+const spanishStandfirst = "Learning by comprehensible input ; the hours banked, the road ahead, and what I have written along the way."
+
 const spanishIntro = "I am learning Spanish almost entirely through comprehensible input: " +
 	"listening to and reading things I can mostly follow, and letting the language settle in " +
 	"on its own. What follows is a running count of the hours, one square a day since I began."
@@ -51,7 +53,7 @@ func spanishView(
 ) templates.SpanishView {
 	days, secByDate := aggregateSpanish(entries)
 	if len(days) == 0 {
-		return templates.SpanishView{Year: now.Year(), Articles: feedArticles(articles), Slices: slices}
+		return templates.SpanishView{Standfirst: spanishStandfirst, Year: now.Year(), Articles: feedArticles(articles), Slices: slices}
 	}
 
 	total := 0
@@ -64,6 +66,7 @@ func spanishView(
 
 	v := templates.SpanishView{
 		Total:      fmt.Sprintf("%d", total/3600),
+		Standfirst: spanishStandfirst,
 		Intro:      spanishIntro,
 		StartDate:  start,
 		DayCount:   dayCount,

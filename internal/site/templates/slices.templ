@@ -9,8 +9,8 @@ templ Slices(v SliceFeedView) {
 			<header class="mb-12">
 				<div class="space-y-4">
 					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">{ v.Heading }</h1>
-					if v.Intro != "" {
-						@standfirst(v.Intro)
+					if v.Standfirst != "" {
+						@standfirst(v.Standfirst)
 					}
 				</div>
 				if len(v.Slices) > 0 {
@@ -32,7 +32,7 @@ templ Slices(v SliceFeedView) {
 					}
 				</div>
 			} else {
-				<p class="font-serif text-muted">Nothing here yet.</p>
+				<p class="font-serif text-muted">{ v.Empty }</p>
 			}
 		</div>
 	}

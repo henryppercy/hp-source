@@ -130,6 +130,7 @@ type PostListItem struct {
 // stat cells, the merged stream of everything, and the section index. The
 // nameplate and bio prose are static and live in the template.
 type HomeView struct {
+	Copy     HomeCopy
 	Dispatch []DispatchCell
 	Stats    []Stat
 	Subjects []TopicCount
@@ -186,22 +187,26 @@ type IndexRow struct {
 
 // PostListView is the top-level data for a post listing page (e.g. /posts).
 type PostListView struct {
-	Heading string
-	Posts   []PostListItem
+	Heading    string
+	Standfirst string
+	Empty      string
+	Posts      []PostListItem
 }
 
 // TopicFeedView is a topic page (/topics/{topic} and /spanish): a list of
 // articles and a timeline of slices, each rendered only when non-empty.
 type TopicFeedView struct {
-	Heading  string
-	Intro    string
-	Articles []PostListItem
-	Slices   []SliceItem
+	Heading    string
+	Standfirst string
+	Empty      string
+	Articles   []PostListItem
+	Slices     []SliceItem
 }
 
 // SpanishView is the /spanish page: the input dashboard above the writing feed.
 type SpanishView struct {
 	Total      string // lifetime hours, e.g. "472"
+	Standfirst string // the page lead under the title
 	Intro      string // the serif interlude framing the daily log
 	Band       BandView
 	StartDate  time.Time
@@ -300,32 +305,36 @@ type SliceItem struct {
 
 // SliceFeedView is the top-level data for the /slices timeline.
 type SliceFeedView struct {
-	Heading string
-	Intro   string
-	Slices  []SliceItem
+	Heading    string
+	Standfirst string
+	Empty      string
+	Slices     []SliceItem
 }
 
 // ReadingView is the /reading hub: what's open now, this year's almanac and log,
 // links to earlier years, the rail insights, and a shelf summary.
 type ReadingView struct {
-	Almanac   AlmanacView
-	Reading   []CurrentRead
-	Year      FinishedYear
-	SetAside  []FinishedBook
-	TotalRead int
-	Nav       []YearLink
-	Insights  Insights
-	Shelf     ShelfSummary
+	Standfirst string
+	DeskEmpty  string // shown when nothing is currently being read
+	Almanac    AlmanacView
+	Reading    []CurrentRead
+	Year       FinishedYear
+	SetAside   []FinishedBook
+	TotalRead  int
+	Nav        []YearLink
+	Insights   Insights
+	Shelf      ShelfSummary
 }
 
 // YearView is a /reading/{year} recap: that year's almanac, log and insights,
 // with the year nav to move between years.
 type YearView struct {
-	Almanac  AlmanacView
-	Year     FinishedYear
-	SetAside []FinishedBook
-	Insights Insights
-	Nav      []YearLink
+	Standfirst string
+	Almanac    AlmanacView
+	Year       FinishedYear
+	SetAside   []FinishedBook
+	Insights   Insights
+	Nav        []YearLink
 }
 
 // Insights are a year's rail highlights: standout books and the most-read
@@ -358,7 +367,8 @@ type Tally struct {
 
 // ShelfView is the full antilibrary at /reading/shelf.
 type ShelfView struct {
-	Books []ShelfBook
+	Standfirst string
+	Books      []ShelfBook
 }
 
 // ShelfSummary is the hub's glance at the shelf: a count, the longest wait, and

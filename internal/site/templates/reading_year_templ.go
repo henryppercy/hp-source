@@ -62,7 +62,7 @@ func ReadingYear(v YearView) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = standfirst("A year in books.").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = standfirst(v.Standfirst).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

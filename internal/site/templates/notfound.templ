@@ -4,15 +4,15 @@ templ NotFound() {
 	@Layout(docTitle("Not Found"), "") {
 		<div class="mx-auto max-w-wide">
             <div class="flex flex-col items-center px-5 py-16 text-center">
-                <span class="font-sans font-bold tracking-tightest text-mega text-fg leading-none">404</span>
+                <span class="font-sans font-bold tracking-tightest text-mega text-fg leading-none">{ Chrome.NotFound.Code }</span>
                 <div class="mt-6">
-                    @standfirst("Nothing is filed at this address.")
+                    @standfirst(Chrome.NotFound.Message)
                 </div>
                 <div class="mt-8">
-                    @location("Nowhere", "??", "--.--°N --.--°W")
+                    @location(Chrome.NotFound.Place, "??", Chrome.NotFound.Coords)
                 </div>
                 <div class="mt-5">
-                    @indexLink("/", "Back on track")
+                    @indexLink("/", Chrome.NotFound.BackLabel)
                 </div>
             </div>
 		</div>

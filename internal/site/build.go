@@ -47,6 +47,7 @@ func (b *builder) Build() error {
 	if err := os.RemoveAll(b.out); err != nil {
 		return fmt.Errorf("failed to clear output directory: %w", err)
 	}
+	templates.Chrome = chrome
 
 	posts, err := b.repo.ListPublishedPosts()
 	if err != nil {
@@ -88,16 +89,19 @@ func (b *builder) Build() error {
 	}
 
 	if err := b.render("/posts", templates.PostList(templates.PostListView{
-		Heading: "Posts",
-		Posts:   mainArticles(posts),
+		Heading:    postsHeading,
+		Standfirst: postsStandfirst,
+		Empty:      feedEmpty,
+		Posts:      mainArticles(posts),
 	})); err != nil {
 		return err
 	}
 
 	if err := b.render("/slices", templates.Slices(templates.SliceFeedView{
-		Heading: "Slices",
-		Intro:   "Get a slice of my life. A personal feed of my thoughts, notes, and updates.",
-		Slices:  timeline,
+		Heading:    slicesHeading,
+		Standfirst: slicesStandfirst,
+		Empty:      feedEmpty,
+		Slices:     timeline,
 	})); err != nil {
 		return err
 	}
@@ -214,6 +218,7 @@ func (b *builder) topicFeed(name string, posts []repo.Post) (templates.TopicFeed
 	}
 	return templates.TopicFeedView{
 		Heading:  titleCase(name),
+		Empty:    feedEmpty,
 		Articles: articlesWithTopic(posts, name),
 		Slices:   slices,
 	}, nil

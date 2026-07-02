@@ -8,7 +8,7 @@ templ PostList(v PostListView) {
 			<header class="mb-12">
 				<div class="space-y-4">
 					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">{ v.Heading }</h1>
-					@standfirst("Long-form writing ; field notes, essays and the occasional deep dive, newest first.")
+					@standfirst(v.Standfirst)
 				</div>
 				if len(v.Posts) > 0 {
 					<dl class="mt-8 flex flex-wrap gap-x-10 gap-y-2 border-t border-rule pt-4">
@@ -31,7 +31,7 @@ templ PostList(v PostListView) {
 					}
 				</ol>
 			} else {
-				<p class="font-serif text-muted">Nothing here yet.</p>
+				<p class="font-serif text-muted">{ v.Empty }</p>
 			}
 		</div>
 	}

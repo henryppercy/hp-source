@@ -2,29 +2,15 @@ package templates
 
 import "fmt"
 
-// The frontispiece prose. Static, so it lives with the markup rather than the
-// view; edit these lines to reword the introduction. The standfirst says who I
-// am, the bio what the site is, so the two do not repeat each other.
-const homeHero = "I like to keep a record."
-
-const homeStandfirst = "Software developer in Sheffield, and an inveterate note-taker."
-
-const homeBio = "This site is the notebook: a reading log going back years, a running count " +
-	"of my Spanish, short field notes, longer posts, and the photographs in between. Everything " +
-	"here is captured by hand and rendered from one small program."
-
-const homeStreamIntro = "I have never kept separate notebooks for separate things. Reading, " +
-	"writing, the slow work of learning Spanish; it all lands here in the order it happened."
-
 // Home is the frontispiece: a nameplate, the live dispatch strip, then a
 // notebook body with the merged stream in the main column and the figures and
 // index crammed into the margin.
 templ Home(v HomeView) {
 	@Layout(docTitle(""), "/") {
 		<div class="mx-auto max-w-broad">
-			@homeNameplate()
-			@homeDispatch(v.Dispatch)
-			<p class="mx-auto mb-16 max-w-measure font-serif text-lead text-muted leading-relaxed">{ homeStreamIntro }</p>
+			@homeNameplate(v.Copy)
+			@homeDispatch(v.Dispatch, v.Copy)
+			<p class="mx-auto mb-16 max-w-measure font-serif text-lead text-muted leading-relaxed">{ v.Copy.StreamIntro }</p>
 			<div class="grid gap-x-10 gap-y-12 lg:grid-cols-[2fr_1fr] lg:items-start">
 				<div class="min-w-0">
 					@homeStream(v.Stream)
@@ -41,13 +27,13 @@ templ Home(v HomeView) {
 
 // homeNameplate is the opening statement: a kicker, a mega line, the standfirst
 // and bio set to a readable measure, and the filed-from stamp.
-templ homeNameplate() {
+templ homeNameplate(c HomeCopy) {
 	<header class="mb-14 border-b border-fg pb-10">
-		<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Personal field journal ; est. 2023</span>
-		<h1 class="mt-4 font-sans font-bold tracking-tightest text-display text-fg leading-none md:text-mega">{ homeHero }</h1>
+		<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ c.Kicker }</span>
+		<h1 class="mt-4 font-sans font-bold tracking-tightest text-display text-fg leading-none md:text-mega">{ c.Hero }</h1>
 		<div class="mt-6 max-w-measure space-y-4">
-			@standfirst(homeStandfirst)
-			<p class="font-serif text-body text-fg-body leading-relaxed">{ homeBio }</p>
+			@standfirst(c.Standfirst)
+			<p class="font-serif text-body text-fg-body leading-relaxed">{ c.Bio }</p>
 		</div>
 		<div class="mt-6">
 			@location(HomeLocation.Name, HomeLocation.Code, HomeLocation.Coords)
@@ -57,12 +43,12 @@ templ homeNameplate() {
 
 // homeDispatch is the dispatch plate: a header strip over a row of live cells,
 // each the freshest fact from one feed.
-templ homeDispatch(cells []DispatchCell) {
+templ homeDispatch(cells []DispatchCell, c HomeCopy) {
 	if len(cells) > 0 {
 		<section class="mb-16 border border-fg">
 			<div class="flex items-baseline justify-between border-b border-fg px-5 py-3">
-				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Where things stand</span>
-				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Sheffield ; the desk</span>
+				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ c.DispatchLeft }</span>
+				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ c.DispatchRight }</span>
 			</div>
 			<div class={ "grid grid-cols-2 gap-px bg-rule-soft",
 				templ.KV("lg:grid-cols-5", len(cells) == 5),

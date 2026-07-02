@@ -20,6 +20,32 @@ const homeStreamLimit = 5
 // homeCurrently is the free-text "what I'm up to" line in the dispatch strip.
 const homeCurrently = "Building this site by hand, and holding a Spanish streak together."
 
+// The frontispiece prose. The standfirst says who I am, the bio what the site
+// is, so the two do not repeat each other.
+const (
+	homeKicker        = "Personal field journal ; est. 2023"
+	homeHero          = "I like to keep a record."
+	homeStandfirst    = "Software developer in Sheffield, and an inveterate note-taker."
+	homeBio           = "This site is the notebook: a reading log going back years, a running count " +
+		"of my Spanish, short field notes, longer posts, and the photographs in between. Everything " +
+		"here is captured by hand and rendered from one small program."
+	homeStreamIntro   = "I have never kept separate notebooks for separate things. Reading, " +
+		"writing, the slow work of learning Spanish; it all lands here in the order it happened."
+	homeDispatchLeft  = "Where things stand"
+	homeDispatchRight = "Sheffield ; the desk"
+)
+
+// homeCopy is the frontispiece prose, gathered for the view.
+var homeCopy = templates.HomeCopy{
+	Kicker:        homeKicker,
+	Hero:          homeHero,
+	Standfirst:    homeStandfirst,
+	Bio:           homeBio,
+	StreamIntro:   homeStreamIntro,
+	DispatchLeft:  homeDispatchLeft,
+	DispatchRight: homeDispatchRight,
+}
+
 // homeView assembles the frontispiece: the dispatch strip, the colophon stats,
 // the merged stream, and the section index.
 func homeView(
@@ -39,6 +65,7 @@ func homeView(
 	milestones := spanishMilestones(days, total, articleURLs(articlesWithTopic(posts, "spanish")))
 
 	return templates.HomeView{
+		Copy:     homeCopy,
 		Dispatch: dispatchCells(reads, days, total, articles, notes, now),
 		Stats:    colophonStats(reads, articles, notes, total),
 		Subjects: topicCounts(posts),

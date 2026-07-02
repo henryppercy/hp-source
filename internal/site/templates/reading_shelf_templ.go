@@ -48,7 +48,7 @@ func ReadingShelf(v ShelfView) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = standfirst("Books I own and have not read yet, longest-waiting first. An antilibrary in no hurry.").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = standfirst(v.Standfirst).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
