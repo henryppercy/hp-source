@@ -15,7 +15,7 @@ import (
 // parseDate parses the date/datetime text the repo stores, returning the zero
 // time when empty or unrecognised.
 func parseDate(s string) time.Time {
-	for _, layout := range []string{"2006-01-02 15:04:05", "2006-01-02", time.RFC3339} {
+	for _, layout := range []string{"2006-01-02 15:04:05", "2006-01-02 15:04", "2006-01-02", time.RFC3339} {
 		if t, err := time.Parse(layout, s); err == nil {
 			return t
 		}

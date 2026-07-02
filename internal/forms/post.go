@@ -50,8 +50,8 @@ func postForm(in *repo.PostInput, topics []repo.Topic, locations []repo.Location
 				Value(&in.Slug),
 			huh.NewInput().
 				Title("Published At").
-				Placeholder("blank = draft, e.g. 2026-06-20").
-				Validate(validateDateOptional).
+				Placeholder("blank = draft, e.g. 2026-06-20 or 2026-06-20 14:32").
+				Validate(validateDateTimeOptional).
 				Value(&in.PublishedAt),
 		),
 
@@ -92,8 +92,8 @@ func sliceForm(in *repo.PostInput, topics []repo.Topic, locations []repo.Locatio
 				Value(&in.Slug),
 			huh.NewInput().
 				Title("Published At").
-				Placeholder("blank = draft, e.g. 2026-06-20").
-				Validate(validateDateOptional).
+				Placeholder("blank = draft, e.g. 2026-06-20 or 2026-06-20 14:32").
+				Validate(validateDateTimeOptional).
 				Value(&in.PublishedAt),
 		),
 
@@ -206,16 +206,18 @@ func preview(body string) string {
 	return line
 }
 
-// PublishPost prompts for the publish date, defaulting an empty answer to today.
+// PublishPost prompts for the publish date. A blank answer means "now" and is
+// stamped with the full current timestamp; a typed date is kept as-is (a past
+// date has no time of day).
 func PublishPost(title string, date *string) error {
-	today := time.Now().Format("2006-01-02")
+	now := time.Now()
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Published At").
 				Description("Publishing: " + title).
-				Placeholder(today).
-				Validate(validateDateOptional).
+				Placeholder(now.Format("2006-01-02")).
+				Validate(validateDateTimeOptional).
 				Value(date),
 		),
 	)
@@ -223,7 +225,7 @@ func PublishPost(title string, date *string) error {
 		return err
 	}
 	if *date == "" {
-		*date = today
+		*date = now.Format("2006-01-02 15:04:05")
 	}
 	return nil
 }
@@ -233,6 +235,20 @@ func validateDateOptional(s string) error {
 		return nil
 	}
 	return validateDate(s)
+}
+
+// validateDateTimeOptional accepts a blank value, a date, or a date with a time
+// of day (minute or second precision), for published_at.
+func validateDateTimeOptional(s string) error {
+	if s == "" {
+		return nil
+	}
+	for _, layout := range []string{"2006-01-02", "2006-01-02 15:04", "2006-01-02 15:04:05"} {
+		if _, err := time.Parse(layout, s); err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("must be a date or date time, e.g. 2026-06-20 or 2026-06-20 14:32")
 }
 
 func postSummary(in *repo.PostInput, topics []repo.Topic, locations []repo.Location) string {
