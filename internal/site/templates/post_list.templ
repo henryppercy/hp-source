@@ -24,7 +24,7 @@ templ PostList(v PostListView) {
 					for i, p := range v.Posts {
 						<li class={ "relative first:mt-0", templ.KV("mt-16", i == 0 || p.PublishedAt.Year() != v.Posts[i-1].PublishedAt.Year()), templ.KV("border-t border-rule", !(i == 0 || p.PublishedAt.Year() != v.Posts[i-1].PublishedAt.Year())) }>
 							if i == 0 || p.PublishedAt.Year() != v.Posts[i-1].PublishedAt.Year() {
-								@dateline(fmt.Sprintf("%d", p.PublishedAt.Year()), "", "lg:top-10")
+								@dateline(fmt.Sprintf("%d", p.PublishedAt.Year()), "", "lg:top-10", false)
 							}
 							@postRow(p)
 						</li>

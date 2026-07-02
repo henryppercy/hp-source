@@ -12,10 +12,10 @@ import (
 
 // Reading copy for the hub, the year recaps and the shelf. Edit the wording here.
 const (
-	readingStandfirst = "A running log of what I read ; what is open on the desk now, the shape of the year, and the shelf still waiting."
+	readingStandfirst = "The book I'm currently reading, the books I've read, and what books are on the shelf to be read."
 	readingDeskEmpty  = "Nothing open on the desk right now."
-	shelfStandfirst   = "Books I own and have not read yet, longest-waiting first. An antilibrary in no hurry."
-	yearStandfirst    = "A year in books."
+	shelfStandfirst   = "Books that I own and have not read yet, longest-waiting first."
+	yearStandfirst    = "A year in books; goodreads not invited."
 )
 
 func booksReadInYear(reads []repo.ReadEntry, year int) int {

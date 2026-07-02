@@ -85,11 +85,11 @@ templ dispatchBody(c DispatchCell) {
 templ homeStream(entries []FeedEntry) {
 	if len(entries) > 0 {
 		<section>
-			@sectionHead("The stream", "newest first")
+			@sectionHead("Filed entries", "newest first")
 			<div class="space-y-6">
 				for _, e := range entries {
 					<div class="relative">
-						@dateline(fmtDate(e.Date), "", "lg:top-5")
+						@dateline(fmtDate(e.Date), "", "3xl:top-5", true)
 						@streamCard(e)
 					</div>
 				}

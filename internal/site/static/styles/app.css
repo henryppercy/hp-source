@@ -1491,6 +1491,16 @@
       justify-content: space-between;
     }
   }
+  .md\:absolute {
+    @media (width >= 48rem) {
+      position: absolute;
+    }
+  }
+  .md\:right-full {
+    @media (width >= 48rem) {
+      right: 100%;
+    }
+  }
   .md\:col-span-1 {
     @media (width >= 48rem) {
       grid-column: span 1 / span 1;
@@ -1519,6 +1529,21 @@
   .md\:mt-0 {
     @media (width >= 48rem) {
       margin-top: 0;
+    }
+  }
+  .md\:mr-8 {
+    @media (width >= 48rem) {
+      margin-right: calc(var(--spacing) * 8);
+    }
+  }
+  .md\:mb-0 {
+    @media (width >= 48rem) {
+      margin-bottom: 0;
+    }
+  }
+  .md\:\!block {
+    @media (width >= 48rem) {
+      display: block !important;
     }
   }
   .md\:table-cell {
@@ -1709,9 +1734,39 @@
       border-bottom-width: 0px;
     }
   }
+  .lg\:pl-36 {
+    @media (width >= 64rem) {
+      padding-left: calc(var(--spacing) * 36);
+    }
+  }
   .xl\:table-cell {
     @media (width >= 80rem) {
       display: table-cell;
+    }
+  }
+  .\32 xl\:absolute {
+    @media (width >= 96rem) {
+      position: absolute;
+    }
+  }
+  .\32 xl\:top-5 {
+    @media (width >= 96rem) {
+      top: calc(var(--spacing) * 5);
+    }
+  }
+  .\32 xl\:right-full {
+    @media (width >= 96rem) {
+      right: 100%;
+    }
+  }
+  .\32 xl\:mr-8 {
+    @media (width >= 96rem) {
+      margin-right: calc(var(--spacing) * 8);
+    }
+  }
+  .\32 xl\:mb-0 {
+    @media (width >= 96rem) {
+      margin-bottom: 0;
     }
   }
   .\[\&\>td\]\:pb-2 {

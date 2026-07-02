@@ -26,7 +26,7 @@ templ Slices(v SliceFeedView) {
 				<div class="space-y-8">
 					for _, s := range v.Slices {
 						<div id={ s.Slug } class="relative scroll-mt-12">
-							@dateline(fmtDate(s.PublishedAt), "#"+s.Slug, "lg:top-6")
+							@dateline(fmtDate(s.PublishedAt), "#"+s.Slug, "lg:top-6", false)
 							@sliceCard(s, true)
 						</div>
 					}

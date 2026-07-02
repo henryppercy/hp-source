@@ -67,10 +67,6 @@ templ Spanish(v SpanishView) {
 // the headline figures on the right, the year's hours by month across the foot.
 templ spanishFrontispiece(v SpanishView) {
 	<div class="border border-fg">
-		<div class="flex items-baseline justify-between border-b border-fg px-5 py-3">
-			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Comprehensible input</span>
-			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">since { fmtDate(v.StartDate) } ; day { fmt.Sprintf("%d", v.DayCount) }</span>
-		</div>
 		<div class="grid lg:grid-cols-[2fr_3fr]">
 			<div class="flex flex-col border-b border-fg p-6 lg:border-b-0 lg:border-r">
 				<div class="flex items-baseline gap-2">
@@ -190,12 +186,12 @@ templ milestoneRung(r MilestoneRung) {
 	<li class="border-t border-rule first:border-t-0">
 		if r.Reached && r.URL != "" {
 			<a href={ r.URL } class="group flex items-baseline justify-between gap-4 py-3">
-				<span class="font-sans font-medium tabular-nums text-fg group-hover:text-accent">{ r.Label }</span>
+				<span class="font-sans tabular-nums text-fg group-hover:text-accent">{ r.Label }</span>
 				<span class="font-mono text-meta tabular-nums text-faint">{ fmtDate(r.Date) }</span>
 			</a>
 		} else if r.Reached {
 			<div class="flex items-baseline justify-between gap-4 py-3">
-				<span class="font-sans font-medium tabular-nums text-fg">{ r.Label }</span>
+				<span class="font-sans tabular-nums text-fg">{ r.Label }</span>
 				<span class="font-mono text-meta tabular-nums text-faint">{ fmtDate(r.Date) }</span>
 			</div>
 		} else {

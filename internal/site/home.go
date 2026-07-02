@@ -15,22 +15,23 @@ import (
 )
 
 // homeStreamLimit caps the merged stream on the frontispiece.
-const homeStreamLimit = 5
+const homeStreamLimit = 6
 
 // homeCurrently is the free-text "what I'm up to" line in the dispatch strip.
-const homeCurrently = "Refactoring this website, learning Spanish, and trying to read more."
+const homeCurrently = "Rebuilding this website from scratch, trying to read more, " +
+	"and being kept awake by England's defensive mistakes."
 
 // The frontispiece prose. The standfirst says who I am, the bio what the site
 // is, so the two do not repeat each other.
 const (
 	homeKicker     = "Personal field journal"
 	homeHero       = "I like to keep a record."
-	homeStandfirst = "Software developer in Sheffield, and an inveterate note-taker."
-	homeBio        = "This site is the notebook: a reading log going back years, a running count " +
-		"of my Spanish, short field notes, longer posts, and the photographs in between. Everything " +
-		"here is captured by hand and rendered from one small program."
-	homeStreamIntro = "I have never kept separate notebooks for separate things. Reading, " +
-		"writing, the slow work of learning Spanish; it all lands here in the order it happened."
+	homeStandfirst = "Software developer based in Sheffield and semi-obsessive logger of things."
+	homeBio        = "This is my digital field journal; it's where I write down my thoughts, " +
+		"log my reading, and track my Spanish learning. Everything enters via the command " +
+		"line and the output is this website."
+	homeStreamIntro = "This is everything: articles, notes, completed reads, spanish milestones; " +
+		"being outputted in the reverse order that they came in."
 )
 
 // homeCopy is the frontispiece prose, gathered for the view.
@@ -116,7 +117,7 @@ func dispatchCells(
 			meta += fmt.Sprintf(" ; day %d", r.DayCount)
 		}
 		cells = append(cells, templates.DispatchCell{
-			Kicker: "On the desk",
+			Kicker: "Open on the desk",
 			Lead:   r.Title + ", " + r.Author,
 			Italic: true,
 			Meta:   meta,
@@ -132,7 +133,7 @@ func dispatchCells(
 			meta += fmt.Sprintf(" ; %dd streak", cur)
 		}
 		cells = append(cells, templates.DispatchCell{
-			Kicker: "Español",
+			Kicker: "Spanish",
 			Lead:   fmt.Sprintf("Day %d of comprehensible input", dayCount),
 			Meta:   meta,
 			URL:    "/spanish",
@@ -172,9 +173,9 @@ func colophonStats(
 ) []templates.Stat {
 	return []templates.Stat{
 		{Label: "books read", Value: fmt.Sprintf("%d", countStatus(reads, "finished"))},
-		{Label: "hours español", Value: fmt.Sprintf("%d", total/3600)},
-		{Label: "posts filed", Value: fmt.Sprintf("%d", len(articles))},
-		{Label: "notes", Value: fmt.Sprintf("%d", len(notes))},
+		{Label: "spanish hours logged", Value: fmt.Sprintf("%d", total/3600)},
+		{Label: "articles filed", Value: fmt.Sprintf("%d", len(articles))},
+		{Label: "notes made", Value: fmt.Sprintf("%d", len(notes))},
 	}
 }
 

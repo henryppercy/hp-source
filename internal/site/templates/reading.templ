@@ -51,10 +51,6 @@ templ logSection(y FinishedYear, aside []FinishedBook, head, note string) {
 // year's almanac cells on the right, and the month density strip across the foot.
 templ frontispiece(v ReadingView) {
 	<div class="border border-fg">
-		<div class="flex items-baseline justify-between border-b border-fg px-5 py-3">
-			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">On the desk</span>
-			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Almanac ; { fmt.Sprintf("%d", v.Almanac.Year) }</span>
-		</div>
 		<div class="grid lg:grid-cols-[2fr_3fr]">
 			<div class="border-b border-fg p-6 lg:border-b-0 lg:border-r">
 				if len(v.Reading) > 0 {
@@ -298,7 +294,7 @@ templ shelfGlance(s ShelfSummary) {
 			<p class="font-serif text-body text-muted">
 				{ fmt.Sprintf("%d books I own and have not read yet", s.Total) }
 				if s.LongestWait != "" {
-					, the longest waiting <span class="font-mono text-label text-fg tabular-nums">{ s.LongestWait }</span>
+					, the longest has been waiting <span class="font-mono text-label text-fg tabular-nums">{ s.LongestWait }</span>
 				}
 				.
 			</p>

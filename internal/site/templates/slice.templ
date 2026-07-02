@@ -5,7 +5,7 @@ templ Slice(s SliceItem) {
 	@Layout(docTitle("Slice"), "/slices") {
 		<div class="mx-auto max-w-measure">
 			<div class="relative">
-				@dateline(fmtDate(s.PublishedAt), "", "lg:top-6")
+				@dateline(fmtDate(s.PublishedAt), "", "lg:top-6", false)
 				@sliceCard(s, false)
 			</div>
 			<div class="mt-12">

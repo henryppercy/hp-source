@@ -22,15 +22,15 @@ const (
 	spanishGoalMonth = time.December
 )
 
-const spanishStandfirst = "Learning by comprehensible input ; the hours banked, the road ahead, and what I have written along the way."
+const spanishStandfirst = "The stats and trends which map my journey to functional " +
+	"Spanish fluency. Currently learning via Comprehensible Input."
 
-const spanishIntro = "I am learning Spanish almost entirely through comprehensible input: " +
-	"listening to and reading things I can mostly follow, and letting the language settle in " +
-	"on its own. What follows is a running count of the hours, one square a day since I began."
+const spanishIntro = "I am currently learning Spanish using Comprehensible Input, " +
+	"a language learning style favouring comprehension over output. The core is formed " +
+	"of listening to spoken language at a level slightly above my current proficiency, " +
+	"before incorporating reading and speaking."
 
-const spanishNote = "Roughly an hour a day of input, mostly Dreaming Spanish with " +
-	"YouTube and podcasts filling the gaps. Following the words most of the time now, " +
-	"losing the thread when two natives get going."
+const spanishNote = "I'm currently aiming for roughly an hour of input per day. The majority of this comes from intermediate podcasts such as Español Al Vuelo, and YouTube channels like La Capital or more recently Ramilla de Aventura."
 
 // spanishGoalDeadline is the last moment of the goal month.
 func spanishGoalDeadline(loc *time.Location) time.Time {

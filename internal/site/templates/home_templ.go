@@ -468,7 +468,7 @@ func homeStream(entries []FeedEntry) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = sectionHead("The stream", "newest first").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = sectionHead("Filed entries", "newest first").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -481,7 +481,7 @@ func homeStream(entries []FeedEntry) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = dateline(fmtDate(e.Date), "", "lg:top-5").Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = dateline(fmtDate(e.Date), "", "3xl:top-5", true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

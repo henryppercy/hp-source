@@ -120,7 +120,7 @@ func PostList(v PostListView) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					if i == 0 || p.PublishedAt.Year() != v.Posts[i-1].PublishedAt.Year() {
-						templ_7745c5c3_Err = dateline(fmt.Sprintf("%d", p.PublishedAt.Year()), "", "lg:top-10").Render(ctx, templ_7745c5c3_Buffer)
+						templ_7745c5c3_Err = dateline(fmt.Sprintf("%d", p.PublishedAt.Year()), "", "lg:top-10", false).Render(ctx, templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
