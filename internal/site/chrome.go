@@ -31,8 +31,6 @@ var chrome = templates.ChromeCopy{
 		Links: []templates.FooterLink{
 			{Label: "GitHub", Href: "https://github.com/henryppercy"},
 			{Label: "LinkedIn", Href: "https://www.linkedin.com/in/henry-b-percy"},
-			{Label: "RSS feed", Href: "#"},
-			{Label: "Email", Href: "#"},
 		},
 	},
 	NotFound: templates.NotFoundCopy{
