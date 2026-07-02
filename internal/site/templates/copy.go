@@ -58,11 +58,9 @@ type NotFoundCopy struct {
 // The standfirst says who I am, the bio what the site is, so the two do not
 // repeat each other.
 type HomeCopy struct {
-	Kicker        string
-	Hero          string
-	Standfirst    string
-	Bio           string
-	StreamIntro   string
-	DispatchLeft  string // the dispatch strip's left kicker
-	DispatchRight string // its right kicker
+	Kicker      string
+	Hero        string
+	Standfirst  string
+	Bio         string
+	StreamIntro string
 }

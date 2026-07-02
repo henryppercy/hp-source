@@ -28,7 +28,7 @@ templ Home(v HomeView) {
 // homeNameplate is the opening statement: a kicker, a mega line, the standfirst
 // and bio set to a readable measure, and the filed-from stamp.
 templ homeNameplate(c HomeCopy) {
-	<header class="mb-14 border-b border-fg pb-10">
+	<header class="pb-14">
 		<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ c.Kicker }</span>
 		<h1 class="mt-4 font-sans font-bold tracking-tightest text-display text-fg leading-none md:text-mega">{ c.Hero }</h1>
 		<div class="mt-6 max-w-measure space-y-4">
@@ -46,10 +46,6 @@ templ homeNameplate(c HomeCopy) {
 templ homeDispatch(cells []DispatchCell, c HomeCopy) {
 	if len(cells) > 0 {
 		<section class="mb-16 border border-fg">
-			<div class="flex items-baseline justify-between border-b border-fg px-5 py-3">
-				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ c.DispatchLeft }</span>
-				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ c.DispatchRight }</span>
-			</div>
 			<div class={ "grid grid-cols-2 gap-px bg-rule-soft",
 				templ.KV("lg:grid-cols-5", len(cells) == 5),
 				templ.KV("lg:grid-cols-4", len(cells) == 4),
