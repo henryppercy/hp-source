@@ -83,10 +83,6 @@ templ frontispiece(v ReadingView) {
 // full-width stat cells, and the month density strip.
 templ readingPlate(a AlmanacView) {
 	<div class="border border-fg">
-		<div class="flex items-baseline justify-between border-b border-fg px-5 py-3">
-			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Almanac ; { fmt.Sprintf("%d", a.Year) }</span>
-			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ fmt.Sprintf("%d books", a.Books) }</span>
-		</div>
 		<dl class="grid grid-cols-3 gap-px bg-rule-soft lg:grid-cols-6">
 			@statCells(a)
 		</dl>
