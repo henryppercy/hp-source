@@ -46,7 +46,7 @@ templ homeNameplate() {
 		<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">Personal field journal ; est. 2023</span>
 		<h1 class="mt-4 font-sans font-bold tracking-tightest text-display text-fg leading-none md:text-mega">{ homeHero }</h1>
 		<div class="mt-6 max-w-measure space-y-4">
-			<p class="font-serif italic text-lead text-muted">{ homeStandfirst }</p>
+			@standfirst(homeStandfirst)
 			<p class="font-serif text-body text-fg-body leading-relaxed">{ homeBio }</p>
 		</div>
 		<div class="mt-6">

@@ -10,7 +10,7 @@ templ Reading(v ReadingView) {
 			<header class="mb-10">
 				<div class="space-y-4">
 					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">Reading</h1>
-					<p class="font-serif italic text-lead text-muted max-w-[52ch]">A running log of what I read ; what is open on the desk now, the shape of the year, and the shelf still waiting.</p>
+					@standfirst("A running log of what I read ; what is open on the desk now, the shape of the year, and the shelf still waiting.")
 				</div>
 			</header>
 			if len(v.Nav) > 1 {

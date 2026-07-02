@@ -14,7 +14,7 @@ templ Post(v PostView) {
 						<h1 class="font-sans font-bold tracking-tightest text-display text-fg">{ v.Title }</h1>
 					}
 					if v.Headline != "" {
-						<p class="font-serif italic text-lead text-muted max-w-[34ch]">{ v.Headline }</p>
+						@standfirst(v.Headline)
 					}
 				</div>
 				<dl class="mt-8 grid grid-cols-1 divide-y md:grid-cols-4 md:divide-y-0 md:divide-x divide-fg border border-fg">

@@ -61,6 +61,7 @@
 
   /* Layout rhythm */
   --spacing-gutter: 56px; /* page left/right padding */
+  --spacing-standfirst: 52ch; /* one-line page standfirst measure */
   --spacing-measure: 720px; /* prose column max-width */
   --spacing-wide: 980px; /* feature image / map max-width */
   --spacing-broad: 1400px; /* near-full-width pages: indexes, grids */

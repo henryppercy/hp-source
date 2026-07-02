@@ -35,6 +35,12 @@ templ indexLink(href, label string) {
 	<a href={ href } class="font-mono text-meta text-fg hover:text-accent">{ label }</a>
 }
 
+// standfirst is the italic serif lead beneath a page title: the one-line summary
+// shared by the section fronts and post headers, set to a fixed measure.
+templ standfirst(text string) {
+	<p class="font-serif italic text-lead text-muted max-w-standfirst">{ text }</p>
+}
+
 // tagChips renders a post's topic links.
 templ tagChips(links []TopicLink) {
 	for _, t := range links {

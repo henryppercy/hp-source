@@ -167,6 +167,13 @@ templ Design() {
 						<p class="font-mono text-lead text-fg">The quick brown fox jumps</p>
 					</div>
 				</figure>
+				<figure class="flex flex-col gap-4">
+					<figcaption class="font-mono text-kicker tracking-kicker uppercase text-fainter">02.c; standfirst</figcaption>
+					<div class="space-y-1.5">
+						<span class="font-mono text-meta text-fainter tabular-nums">serif italic lead; muted; 52ch measure</span>
+						@standfirst("The one-line lead under a page title ; a serif italic standfirst set to a fixed measure across the section fronts and post headers.")
+					</div>
+				</figure>
 			</section>
 			<section class="border-t border-fg mt-12 pt-12 space-y-8">
 				<header class="flex items-baseline gap-4">
@@ -256,7 +263,7 @@ templ Design() {
 								@tagChips(demoTopics)
 							</div>
 							<h1 class="font-sans font-bold tracking-tightest text-display text-fg">A weekend in the Pyrenees</h1>
-							<p class="font-serif italic text-lead text-muted max-w-[34ch]">Two days, one ridge, and a flask of trail coffee.</p>
+							@standfirst("Two days, one ridge, and a flask of trail coffee.")
 						</div>
 						<dl class="mt-8 grid grid-cols-1 divide-y md:grid-cols-4 md:divide-y-0 md:divide-x divide-fg border border-fg">
 							<div class="flex flex-col gap-1.5 p-5">

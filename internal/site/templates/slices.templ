@@ -10,7 +10,7 @@ templ Slices(v SliceFeedView) {
 				<div class="space-y-4">
 					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">{ v.Heading }</h1>
 					if v.Intro != "" {
-						<p class="font-serif italic text-lead text-muted max-w-[48ch]">{ v.Intro }</p>
+						@standfirst(v.Intro)
 					}
 				</div>
 				if len(v.Slices) > 0 {
