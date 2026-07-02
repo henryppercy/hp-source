@@ -22,6 +22,28 @@ func fmtDateTime(t time.Time) string {
 	return t.Format("2 Jan 2006, 15:04")
 }
 
+// BuildInfo is the colophon shown in the header and footer: when the site was
+// built, on what, and the place it was filed from. The builder sets LastBuild.
+type BuildInfo struct {
+	Date     time.Time
+	Go       string
+	On       string
+	Location Place
+}
+
+// LastBuild drives the header date and the footer's "The Build" panel.
+var LastBuild BuildInfo
+
+// buildDate is the header masthead date, e.g. "Sat 14 Jun 2026".
+func buildDate(t time.Time) string {
+	return t.Format("Mon 2 Jan 2006")
+}
+
+// buildStamp is the footer's "last build" line, e.g. "14 June 2026; 09:14".
+func buildStamp(t time.Time) string {
+	return t.Format("2 January 2006; 15:04")
+}
+
 // TopicLink is a topic shown on a page, linking to its feed.
 type TopicLink struct {
 	Name string

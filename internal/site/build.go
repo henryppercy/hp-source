@@ -68,6 +68,11 @@ func (b *builder) Build() error {
 	if err := b.loadLocations(); err != nil {
 		return err
 	}
+	// A recorded build (hp site build) has already set LastBuild; dev serving
+	// and watch rebuilds fall back to live info filed from home.
+	if templates.LastBuild.Date.IsZero() {
+		templates.LastBuild = liveBuildInfo()
+	}
 
 	now := time.Now()
 	year := now.Year()
@@ -245,7 +250,7 @@ func (b *builder) loadLocations() error {
 		locationStamps[l.ID] = placeOf(l)
 	}
 
-	home, err := b.repo.GetLocationBySlug(homeSlug)
+	home, err := b.repo.GetLocationBySlug(HomeSlug)
 	if err != nil {
 		return err
 	}

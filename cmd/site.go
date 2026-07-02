@@ -23,10 +23,20 @@ func newSiteBuildCmd(a *app) *cobra.Command {
 		Short: "Build the static site",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			out, _ := cmd.Flags().GetString("out")
-			return site.Build(a.repo, out)
+			from, _ := cmd.Flags().GetString("from")
+
+			id, err := site.RecordBuild(a.repo, from)
+			if err != nil {
+				return err
+			}
+			if err := site.Build(a.repo, out); err != nil {
+				return err
+			}
+			return a.repo.MarkBuildSuccess(id)
 		},
 	}
 	cmd.Flags().String("out", "./dist", "Output directory for the built site")
+	cmd.Flags().String("from", site.HomeSlug, "Location slug the build is filed from")
 	return cmd
 }
 

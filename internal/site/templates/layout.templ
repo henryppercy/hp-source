@@ -52,12 +52,12 @@ templ Layout(title, active string) {
 
                 <div class="flex flex-col gap-1.5 p-5">
                   <span class="font-mono text-meta text-fainter">date</span>
-                  <span class="font-mono text-label text-fg tabular-nums">Sat 14 Jun 2026</span>
+                  <span class="font-mono text-label text-fg tabular-nums">{ buildDate(LastBuild.Date) }</span>
                 </div>
 
                 <div class="flex flex-col gap-1.5 p-5">
                   <span class="font-mono text-meta text-fainter">filed from</span>
-                  @location(HomeLocation.Name, HomeLocation.Code, HomeLocation.Coords)
+                  @location(LastBuild.Location.Name, LastBuild.Location.Code, LastBuild.Location.Coords)
                 </div>
               </div>
 
@@ -87,7 +87,7 @@ templ Layout(title, active string) {
                              Plain text in, static pages out.
                             </p>
                         </div>
-                        @location(HomeLocation.Name, HomeLocation.Code, HomeLocation.Coords)
+                        @location(LastBuild.Location.Name, LastBuild.Location.Code, LastBuild.Location.Coords)
                     </div>
                     <div class="grid grid-cols-1 divide-y md:grid-cols-7 md:divide-y-0 md:divide-x divide-fg border border-fg">
                         <div class="md:col-span-3 p-5 space-y-3">
@@ -99,16 +99,16 @@ templ Layout(title, active string) {
                                 <dd class="text-meta font-mono text-fg">Custom Go SSG</dd>
 
                                 <dt class="text-meta font-mono text-fainter">go</dt>
-                                <dd class="text-meta font-mono text-fg">1.25.8</dd>
+                                <dd class="text-meta font-mono text-fg">{ LastBuild.Go }</dd>
 
                                 <dt class="text-meta font-mono text-fainter">built on</dt>
-                                <dd class="text-meta font-mono text-fg">Linux 7.0.12-arch1-1; x86_64</dd>
+                                <dd class="text-meta font-mono text-fg">{ LastBuild.On }</dd>
 
                                 <dt class="text-meta font-mono text-fainter">javascript</dt>
                                 <dd class="text-meta font-mono text-fg">0 KB; none</dd>
 
                                 <dt class="text-meta font-mono text-fainter">last build</dt>
-                                <dd class="text-meta font-mono text-fg">14 June 2026; 09:14</dd>
+                                <dd class="text-meta font-mono text-fg">{ buildStamp(LastBuild.Date) }</dd>
                             </dl>
                         </div>
                         <div class="md:col-span-4 grid grid-cols-2 divide-x divide-fg">
@@ -176,7 +176,7 @@ templ Layout(title, active string) {
                 </div>
                 <div class="flex flex-col gap-2 sm:flex-row sm:justify-between">
                     <p class="font-mono text-meta text-fainter">CC BY-NC-SA 4.0; 2023-26 © Henry Percy</p>
-                    <p class="font-mono text-meta text-fainter">No trackers; No JavaScript; 28 KB</p>
+                    <p class="font-mono text-meta text-fainter">No trackers; No JavaScript</p>
                 </div>
             </footer>
 		</body>

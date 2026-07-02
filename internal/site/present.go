@@ -492,8 +492,9 @@ func isOwned(source string) bool {
 	return source == "bought" || source == "gifted"
 }
 
-// homeSlug is the location the header, footer and home nameplate are filed from.
-const homeSlug = "sheffield"
+// HomeSlug is the location I live in, shown on the home nameplate and used as
+// the default place a build is filed from.
+const HomeSlug = "sheffield"
 
 // placeOf turns a stored location into a display stamp, formatting its raw
 // coordinates.
