@@ -18,8 +18,7 @@ import (
 const homeStreamLimit = 6
 
 // homeCurrently is the free-text "what I'm up to" line in the dispatch strip.
-const homeCurrently = "Peeling myself of the ceiling after England v Mexico, " +
-	"building Ikea flatpack, and pulling yellow eletrical tape out of my laptop."
+const homeCurrently = "Worshipping Jude Bellingham."
 
 // The frontispiece prose. The standfirst says who I am, the bio what the site
 // is, so the two do not repeat each other.
