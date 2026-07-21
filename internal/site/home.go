@@ -58,28 +58,24 @@ func homeView(
 	for _, d := range days {
 		total += d.sec
 	}
-	milestones := spanishMilestones(days, total, articleURLs(articlesWithTopic(posts, "spanish")))
 
 	return templates.HomeView{
 		Copy:     homeCopy,
 		Dispatch: dispatchCells(reads, days, total, articles, notes, now),
 		Stats:    colophonStats(reads, articles, notes, total),
 		Subjects: topicCounts(posts),
-		Stream:   lifeStream(articles, notes, reads, milestoneEntries(milestones)),
+		Stream:   lifeStream(articles, notes, reads, spanishMilestones(days, total)),
 		Index:    indexRows(articles, notes, reads, days, now),
 	}
 }
 
 // topicCounts ranks the subjects across all posts by how many carry each, most
-// first. Spanish is left out; it has its own section and index line.
+// first.
 func topicCounts(posts []repo.Post) []templates.TopicCount {
 	counts := map[string]int{}
 	var order []string
 	for _, p := range posts {
 		for _, t := range p.Topics {
-			if t.Name == "spanish" {
-				continue
-			}
 			if counts[t.Name] == 0 {
 				order = append(order, t.Name)
 			}
@@ -234,17 +230,24 @@ func bookMeta(e repo.ReadEntry) string {
 	return strings.Join(parts, " ; ")
 }
 
-// milestoneEntries turns the reached roadmap rungs into stream entries, dropping
-// the day-one zero rung, which marks a start rather than a crossing.
-func milestoneEntries(rungs []templates.MilestoneRung) []templates.FeedEntry {
+// spanishMilestones marks every 50 hours of Spanish input crossed, dated by the
+// day the running total reached each step, for the home stream. Each carries the
+// day of the journey it landed on and the pace since the previous mark.
+func spanishMilestones(days []spanishDay, total int) []templates.FeedEntry {
+	if len(days) == 0 {
+		return nil
+	}
+	start := days[0].date
+	prev := start
 	var out []templates.FeedEntry
-	for _, r := range rungs {
-		if !r.Reached || r.Date.IsZero() || strings.HasPrefix(r.Label, "0 ") {
-			continue
-		}
+	for step := 50; step <= total/3600; step += 50 {
+		date := crossingDate(days, step)
 		out = append(out, templates.FeedEntry{
-			Kind: "milestone", Kicker: "Español", Date: r.Date, Title: r.Label, URL: r.URL,
+			Kind: "milestone", Kicker: "Spanish", Date: date,
+			Title: fmt.Sprintf("%s hours", commaNum(step)), URL: "/spanish",
+			Meta: fmt.Sprintf("day %d ; 50h in %d days", daysBetween(start, date), daysBetween(prev, date)),
 		})
+		prev = date
 	}
 	return out
 }

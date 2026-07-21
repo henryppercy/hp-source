@@ -150,14 +150,17 @@ templ streamCard(e FeedEntry) {
 				</div>
 			</article>
 		case "milestone":
-			<article class="border border-rule-soft border-l-2 border-l-accent p-5">
+			<article class="border border-rule-soft p-5">
 				<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ e.Kicker }</span>
 				if e.URL != "" {
 					<a href={ e.URL } class="group mt-1 block">
-						<p class="font-serif italic text-lead text-accent group-hover:underline">Crossed { e.Title }</p>
+						<p class="font-serif italic text-lead text-fg group-hover:text-accent">Passed { e.Title } of Spanish input</p>
 					</a>
 				} else {
-					<p class="mt-1 font-serif italic text-lead text-accent">Crossed { e.Title }</p>
+					<p class="mt-1 font-serif italic text-lead text-fg">Passed { e.Title } of Spanish input</p>
+				}
+				if e.Meta != "" {
+					<p class="mt-1.5 font-mono text-meta text-faint tabular-nums lowercase">{ e.Meta }</p>
 				}
 			</article>
 	}

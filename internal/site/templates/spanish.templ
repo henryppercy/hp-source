@@ -2,8 +2,8 @@ package templates
 
 import "fmt"
 
-// Spanish is the /spanish page: the input dashboard (the count, the goal burn-up,
-// the daily heatmap and the roadmap) above the Spanish writing feed.
+// Spanish is the /spanish page: the input dashboard (the count, the goal burn-up
+// and the daily heatmap) above the Spanish writing feed.
 templ Spanish(v SpanishView) {
 	@Layout(docTitle("Spanish"), "/spanish") {
 		<div class="mx-auto max-w-broad">
@@ -21,32 +21,15 @@ templ Spanish(v SpanishView) {
 				@spanishCalendarPlate(v.Calendar)
 				<div class="mt-16 grid gap-x-10 gap-y-12 lg:grid-cols-[2fr_1fr] lg:items-start">
 					<div class="min-w-0">
-						@sectionHead("The roadmap", fmt.Sprintf("%s hours logged", v.Total))
-						<ul>
-							for _, r := range v.Milestones {
-								@milestoneRung(r)
-							}
-						</ul>
-						if len(v.Articles) > 0 || len(v.Slices) > 0 {
-							<div class="mt-16">
-								@sectionHead("Writing", fmt.Sprintf("%d posts", len(v.Articles)+len(v.Slices)))
-								if len(v.Articles) > 0 {
-									<ol>
-										for _, p := range v.Articles {
-											<li class="border-t border-rule first:border-t-0">
-												@postRow(p)
-											</li>
-										}
-									</ol>
+						if len(v.Articles) > 0 {
+							@sectionHead("Writing", fmt.Sprintf("%d posts", len(v.Articles)))
+							<ol>
+								for _, p := range v.Articles {
+									<li class="border-t border-rule first:border-t-0">
+										@postRow(p)
+									</li>
 								}
-								if len(v.Slices) > 0 {
-									<div class="mt-8 space-y-6">
-										for _, s := range v.Slices {
-											@sliceCard(s, true)
-										}
-									</div>
-								}
-							</div>
+							</ol>
 						}
 					</div>
 					<aside class="space-y-8">
@@ -177,30 +160,6 @@ templ spanishCalendarPlate(c CalendarView) {
 			</div>
 		</div>
 	</div>
-}
-
-// milestoneRung is one rung of the roadmap: hours on the left, the date crossed
-// on the right. Reached rungs link out to their reflection post; unreached rungs
-// sit ghosted with a TBD date.
-templ milestoneRung(r MilestoneRung) {
-	<li class="border-t border-rule first:border-t-0">
-		if r.Reached && r.URL != "" {
-			<a href={ r.URL } class="group flex items-baseline justify-between gap-4 py-3">
-				<span class="font-sans tabular-nums text-fg group-hover:text-accent">{ r.Label }</span>
-				<span class="font-mono text-meta tabular-nums text-faint">{ fmtDate(r.Date) }</span>
-			</a>
-		} else if r.Reached {
-			<div class="flex items-baseline justify-between gap-4 py-3">
-				<span class="font-sans tabular-nums text-fg">{ r.Label }</span>
-				<span class="font-mono text-meta tabular-nums text-faint">{ fmtDate(r.Date) }</span>
-			</div>
-		} else {
-			<div class="flex items-baseline justify-between gap-4 py-3">
-				<span class="font-sans tabular-nums text-ghost">{ r.Label }</span>
-				<span class="font-mono text-meta tabular-nums text-ghost">TBD</span>
-			</div>
-		}
-	</li>
 }
 
 // factCard is a rail card of label/value rows, for the records and averages.

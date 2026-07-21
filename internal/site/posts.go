@@ -70,18 +70,9 @@ func articleItems(posts []repo.Post, keep func(repo.Post) bool) []templates.Post
 	return items
 }
 
-// mainArticles are the articles for /posts and the home stream: every article
-// except the Spanish learning log (posts whose only topic is spanish, which live
-// on /spanish). Posts that touch spanish among other topics still appear.
+// mainArticles are the articles for /posts and the home stream, newest first.
 func mainArticles(posts []repo.Post) []templates.PostListItem {
-	return articleItems(posts, func(p repo.Post) bool {
-		return !onlySpanish(p)
-	})
-}
-
-// onlySpanish reports whether spanish is the post's sole topic.
-func onlySpanish(p repo.Post) bool {
-	return len(p.Topics) == 1 && p.Topics[0].Name == "spanish"
+	return articleItems(posts, func(repo.Post) bool { return true })
 }
 
 // articlesWithTopic maps the articles carrying the named topic to list items.

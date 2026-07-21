@@ -10,8 +10,9 @@ import (
 	"github.com/henryppercy/hp-source/internal/site/templates"
 )
 
-// dsLevels are the Dreaming Spanish roadmap thresholds in hours. The level a
-// learner sits on is the highest threshold they have passed.
+// dsLevels are the Dreaming Spanish level thresholds in hours. The level a
+// learner sits on is the highest threshold they have passed; the band figure
+// shows progress toward the next.
 var dsLevels = []int{0, 50, 150, 300, 600, 1000, 1500}
 
 // The current goal: reach spanishGoalHours by the end of the given month and
@@ -43,17 +44,16 @@ type spanishDay struct {
 	sec  int
 }
 
-// spanishView assembles the /spanish dashboard from the raw log, the reflection
-// articles (for milestone links), and the writing feed items.
+// spanishView assembles the /spanish dashboard from the raw log and the Spanish
+// writing feed items.
 func spanishView(
 	entries []repo.SpanishLogEntry,
 	articles []templates.PostListItem,
-	slices []templates.SliceItem,
 	now time.Time,
 ) templates.SpanishView {
 	days, secByDate := aggregateSpanish(entries)
 	if len(days) == 0 {
-		return templates.SpanishView{Standfirst: spanishStandfirst, Year: now.Year(), Articles: feedArticles(articles), Slices: slices}
+		return templates.SpanishView{Standfirst: spanishStandfirst, Year: now.Year(), Articles: articles}
 	}
 
 	total := 0
@@ -73,12 +73,10 @@ func spanishView(
 		Year:       now.Year(),
 		Goal:       spanishGoal(days, total, start, now),
 		Calendar:   spanishCalendar(secByDate, start, today),
-		Milestones: spanishMilestones(days, total, articleURLs(articles)),
 		Records:    spanishRecords(days),
 		Averages:   spanishAverages(total, dayCount, len(days)),
 		Note:       spanishNote,
-		Articles:   feedArticles(articles),
-		Slices:     slices,
+		Articles:   articles,
 	}
 	v.Band = spanishBand(total)
 	v.Stats = spanishStats(days, total, dayCount, now, v.Goal.Delta)
@@ -285,26 +283,6 @@ func calClass(sec int) string {
 	}
 }
 
-// spanishMilestones builds the roadmap ladder, dating each reached rung from the
-// day the running total crossed it and linking it to its reflection post.
-func spanishMilestones(days []spanishDay, total int, urls map[string]string) []templates.MilestoneRung {
-	rungs := make([]templates.MilestoneRung, 0, len(dsLevels))
-	for _, threshold := range dsLevels {
-		r := templates.MilestoneRung{
-			Label:   fmt.Sprintf("%s Hours", commaNum(threshold)),
-			Reached: total/3600 >= threshold,
-		}
-		if r.Reached {
-			r.Date = crossingDate(days, threshold)
-			if url, ok := urls[fmt.Sprintf("%d-hours", threshold)]; ok {
-				r.URL = url
-			}
-		}
-		rungs = append(rungs, r)
-	}
-	return rungs
-}
-
 // crossingDate is the first day the running total reached threshold hours.
 func crossingDate(days []spanishDay, threshold int) time.Time {
 	if threshold == 0 && len(days) > 0 {
@@ -387,30 +365,6 @@ func streaks(days []spanishDay, today time.Time) (current, longest int) {
 		current = run
 	}
 	return current, longest
-}
-
-// feedArticles drops the milestone reflection posts, which the ladder already
-// carries, leaving the rest of the Spanish writing for the feed.
-func feedArticles(articles []templates.PostListItem) []templates.PostListItem {
-	milestone := map[string]bool{}
-	for _, t := range dsLevels {
-		milestone[fmt.Sprintf("%d-hours", t)] = true
-	}
-	var out []templates.PostListItem
-	for _, a := range articles {
-		if !milestone[a.Slug] {
-			out = append(out, a)
-		}
-	}
-	return out
-}
-
-func articleURLs(articles []templates.PostListItem) map[string]string {
-	urls := map[string]string{}
-	for _, a := range articles {
-		urls[a.Slug] = a.URL + "/"
-	}
-	return urls
 }
 
 // commaNum groups a whole number with thousands commas, e.g. 1500 -> "1,500".

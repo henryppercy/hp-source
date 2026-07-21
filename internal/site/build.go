@@ -190,11 +190,7 @@ func (b *builder) sliceItems(slices []repo.Post) ([]templates.SliceItem, error) 
 // renderTopics renders /spanish (kept as a special top-level route) plus a
 // /topics/{topic} page for every topic present on a published post.
 func (b *builder) renderTopics(posts []repo.Post, log []repo.SpanishLogEntry) error {
-	slices, err := b.sliceItems(slicesWithTopic(posts, "spanish"))
-	if err != nil {
-		return err
-	}
-	spanish := spanishView(log, articlesWithTopic(posts, "spanish"), slices, time.Now())
+	spanish := spanishView(log, articlesWithTopic(posts, "spanish"), time.Now())
 	if err := b.render("/spanish", templates.Spanish(spanish)); err != nil {
 		return err
 	}

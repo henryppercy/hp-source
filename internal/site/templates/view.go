@@ -218,12 +218,10 @@ type SpanishView struct {
 	PeakLabel  string
 	Goal       GoalView
 	Calendar   CalendarView
-	Milestones []MilestoneRung
 	Records    []Stat
 	Averages   []Stat
 	Note       string // hand-written "where I'm at" line
 	Articles   []PostListItem
-	Slices     []SliceItem
 }
 
 // Stat is a label over or beside a figure, shared across the Spanish cards.
@@ -281,15 +279,6 @@ type CalDay struct {
 	InRange bool
 	Class   string
 	Title   string
-}
-
-// MilestoneRung is one rung of the roadmap ladder. URL is set only for a reached
-// milestone that has a reflection post.
-type MilestoneRung struct {
-	Label   string
-	Reached bool
-	Date    time.Time
-	URL     string
 }
 
 // SliceItem is one note in the /slices timeline, body rendered inline. Slug is
