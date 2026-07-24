@@ -38,13 +38,17 @@ type ReadEntry struct {
 
 // ShelfEntry is an owned book with no read yet: the antilibrary.
 type ShelfEntry struct {
-	Title        string
-	Author       string
-	CoverImage   string
-	Genre        string
-	Format       string
-	PageCount    int
-	DateAcquired string
+	Title          string
+	Author         string
+	CoverImage     string
+	Genre          string
+	Format         string
+	Source         string
+	SecondHand     bool
+	Series         string
+	SeriesPosition *float64
+	PageCount      int
+	DateAcquired   string
 }
 
 type StartReadInput struct {
@@ -213,12 +217,14 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 func (r *Repo) ListShelf() ([]ShelfEntry, error) {
 	rows, err := r.db.Query(
 		`SELECT COALESCE(bc.title, b.title), a.name, bc.cover_image, g.name, bc.format,
+                bc.source, bc.second_hand, s.name, b.series_position,
                 bc.page_count, bc.date_acquired
          FROM book_copy bc
          JOIN book b ON b.id = bc.book_id
          JOIN genre g ON g.id = b.genre_id
          LEFT JOIN book_author ba ON ba.book_id = b.id AND ba.role = 'author'
          LEFT JOIN author a ON a.id = ba.author_id
+         LEFT JOIN series s ON s.id = b.series_id
          WHERE bc.shelf_status = 'shelf'
          AND NOT EXISTS (SELECT 1 FROM read r WHERE r.copy_id = bc.id)
          ORDER BY bc.date_acquired DESC`,
@@ -231,9 +237,13 @@ func (r *Repo) ListShelf() ([]ShelfEntry, error) {
 	var entries []ShelfEntry
 	for rows.Next() {
 		var e ShelfEntry
-		var author, coverImage, format, dateAcquired *string
-		var pageCount *int
-		if err := rows.Scan(&e.Title, &author, &coverImage, &e.Genre, &format, &pageCount, &dateAcquired); err != nil {
+		var author, coverImage, format, source, series, dateAcquired *string
+		var pageCount, secondHand *int
+		if err := rows.Scan(
+			&e.Title, &author, &coverImage, &e.Genre, &format,
+			&source, &secondHand, &series, &e.SeriesPosition,
+			&pageCount, &dateAcquired,
+		); err != nil {
 			return nil, fmt.Errorf("failed to scan shelf book: %w", err)
 		}
 		if author != nil {
@@ -244,6 +254,13 @@ func (r *Repo) ListShelf() ([]ShelfEntry, error) {
 		}
 		if format != nil {
 			e.Format = *format
+		}
+		if source != nil {
+			e.Source = *source
+		}
+		e.SecondHand = secondHand != nil && *secondHand == 1
+		if series != nil {
+			e.Series = *series
 		}
 		if pageCount != nil {
 			e.PageCount = *pageCount

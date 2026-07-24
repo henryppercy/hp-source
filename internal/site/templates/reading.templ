@@ -22,7 +22,7 @@ templ Reading(v ReadingView) {
 			if v.Shelf.Total > 0 || hasInsights(v.Insights) {
 				<div class="mt-16 grid gap-x-10 gap-y-12 lg:grid-cols-[2fr_1fr] lg:items-start">
 					<div class="min-w-0">
-						@logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d read all-time", v.TotalRead))
+						@logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books)))
 					</div>
 					<aside class="min-w-0 space-y-8">
 						@shelfGlance(v.Shelf)
@@ -33,7 +33,7 @@ templ Reading(v ReadingView) {
 				</div>
 			} else {
 				<section class="mt-16">
-					@logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d read all-time", v.TotalRead))
+					@logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books)))
 				</section>
 			}
 		</div>
@@ -94,8 +94,8 @@ templ readingPlate(a AlmanacView) {
 templ statCells(a AlmanacView) {
 	@stat("books", fmt.Sprintf("%d", a.Books))
 	@stat("pages", fmt.Sprintf("%d", a.Pages))
-	@stat("pace", a.AvgPace)
-	@stat("rating", a.AvgRating)
+	@stat("avg pace", a.AvgPace)
+	@stat("avg rating", a.AvgRating)
 	@statSplit("second-hand", a.SecondHandPct, a.SecondHandNote)
 	@statSplit("fiction", a.FictionPct, a.FictionNote)
 }
@@ -108,8 +108,8 @@ templ monthStrip(a AlmanacView) {
 			<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">peak { fmt.Sprintf("%d", a.PeakMonth) }</span>
 		</div>
 		<div class="flex items-end gap-1.5 border-b border-rule">
-			for _, c := range a.Months {
-				<div class="flex-1">
+			for i, c := range a.Months {
+				<div class="flex-1" title={ fmt.Sprintf("%s: %d", monthNames[i], c) }>
 					<div class="flex h-16 items-end">
 						if c > 0 {
 							<div class="w-full bg-accent" style={ fmt.Sprintf("height:%d%%", barPct(c, a.PeakMonth)) }></div>
@@ -137,23 +137,27 @@ templ deskBook(r CurrentRead) {
 			<p class="mt-1 font-sans text-label text-muted">{ r.Author }</p>
 			<div class="mt-auto pt-6">
 				<div class="mb-1.5 flex items-baseline justify-between font-mono text-meta text-faint tabular-nums">
-					<span>{ fmt.Sprintf("%d%%", r.Percent) }</span>
-					if r.DayCount > 0 {
-						<span>day { fmt.Sprintf("%d", r.DayCount) }</span>
+					if r.CurrentPage > 0 && r.Pages > 0 {
+						<span>{ fmt.Sprintf("%d/%d pages", r.CurrentPage, r.Pages) }</span>
+					} else if r.Pages > 0 {
+						<span>{ fmt.Sprintf("%d pages", r.Pages) }</span>
+					} else {
+						<span></span>
 					}
+					<span>{ fmt.Sprintf("%d%%", r.Percent) }</span>
 				</div>
 				<div class="h-1.5 w-full bg-rule">
 					<div class="h-full bg-accent" style={ fmt.Sprintf("width:%d%%", r.Percent) }></div>
 				</div>
 				<div class="mt-2.5 flex flex-wrap items-center gap-x-3 font-mono text-meta text-fainter">
-					if r.Format != "" {
-						<span class="lowercase">{ r.Format }</span>
-					}
-					if r.Format != "" && !r.StartedAt.IsZero() {
-						<span class="text-ghost">;</span>
-					}
 					if !r.StartedAt.IsZero() {
 						<span>since { fmtDate(r.StartedAt) }</span>
+					}
+					if !r.StartedAt.IsZero() && r.DayCount > 0 {
+						<span class="text-ghost">;</span>
+					}
+					if r.DayCount > 0 {
+						<span>day { fmt.Sprintf("%d", r.DayCount) }</span>
 					}
 				</div>
 			</div>
@@ -371,6 +375,7 @@ templ shelf(books []ShelfBook) {
 				<tr class="border-b border-fg [&>td]:pb-2 [&>td]:font-mono [&>td]:text-kicker [&>td]:font-medium [&>td]:uppercase [&>td]:tracking-kicker [&>td]:text-fainter">
 					<td class="pr-4">Title</td>
 					<td class="hidden px-4 md:table-cell">Genre</td>
+					<td class="hidden px-4 lg:table-cell">Source</td>
 					<td class="hidden px-4 text-right md:table-cell">Pages</td>
 					<td class="hidden px-4 text-right xl:table-cell">Format</td>
 					<td class="hidden px-4 text-right sm:table-cell">Acquired</td>
@@ -383,8 +388,25 @@ templ shelf(books []ShelfBook) {
 						<td class="py-3 pr-4">
 							<span class="font-serif text-body text-fg">{ b.Title }</span>
 							<span class="ml-2 font-sans text-label text-muted">{ b.Author }</span>
+							if b.Series != "" {
+								<span class="ml-2 hidden font-mono text-meta text-faint xl:inline">{ b.Series }</span>
+							}
 						</td>
 						<td class="hidden px-4 py-3 font-mono text-meta text-muted lowercase md:table-cell">{ b.Genre }</td>
+						<td class="hidden px-4 py-3 font-mono text-meta text-muted lowercase lg:table-cell">
+							if b.Source != "" || b.SecondHand {
+								<span class="inline-flex items-baseline gap-x-2">
+									if b.Source != "" {
+										<span>{ b.Source }</span>
+									}
+									if b.SecondHand {
+										<span class="hidden text-faint xl:inline">second-hand</span>
+									}
+								</span>
+							} else {
+								<span class="text-ghost">·</span>
+							}
+						</td>
 						<td class="hidden px-4 py-3 text-right font-mono text-meta text-muted tabular-nums md:table-cell">
 							if b.Pages > 0 {
 								{ fmt.Sprintf("%d", b.Pages) }

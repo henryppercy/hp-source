@@ -309,7 +309,6 @@ type ReadingView struct {
 	Reading    []CurrentRead
 	Year       FinishedYear
 	SetAside   []FinishedBook
-	TotalRead  int
 	Nav        []YearLink
 	Insights   Insights
 	Shelf      ShelfSummary
@@ -378,6 +377,10 @@ type YearLink struct {
 // monthInitials labels the almanac density strip, January to December.
 var monthInitials = [12]string{"J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"}
 
+// monthNames are the density strip's hover labels, January to December.
+var monthNames = [12]string{"January", "February", "March", "April", "May", "June",
+	"July", "August", "September", "October", "November", "December"}
+
 // barPct is a month's height in the density strip as a percent of the peak
 // month, with a floor so a non-zero month still shows.
 func barPct(count, peak int) int {
@@ -409,15 +412,17 @@ type AlmanacView struct {
 }
 
 // CurrentRead is a book open on the desk now. DayCount is days since started;
-// Percent is progress through the book.
+// Percent is progress through the book; CurrentPage over Pages is that progress
+// in pages.
 type CurrentRead struct {
-	Title     string
-	Author    string
-	ImageURL  string
-	Format    string
-	StartedAt time.Time
-	DayCount  int
-	Percent   int
+	Title       string
+	Author      string
+	ImageURL    string
+	StartedAt   time.Time
+	DayCount    int
+	Percent     int
+	CurrentPage int
+	Pages       int
 }
 
 // FinishedBook is one entry in the reading log. Index is its lifetime number
@@ -445,12 +450,16 @@ type FinishedYear struct {
 }
 
 // ShelfBook is an owned, unread book: the antilibrary still waiting. Waiting is
-// how long it has sat unread, "" when the acquisition date is unknown.
+// how long it has sat unread, "" when the acquisition date is unknown. Series is
+// preformatted with its position, e.g. "Wolf Hall #2".
 type ShelfBook struct {
 	Title      string
 	Author     string
 	ImageURL   string
 	Genre      string
+	Series     string
+	Source     string
+	SecondHand bool
 	Pages      int
 	Format     string
 	AcquiredAt time.Time

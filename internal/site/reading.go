@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/henryppercy/hp-source/internal/repo"
@@ -39,7 +40,6 @@ func readingHub(reads []repo.ReadEntry, shelf []repo.ShelfEntry, year int) templ
 		Reading:    currentReads(reads),
 		Year:       yearLog(log, year),
 		SetAside:   abandonedInYear(reads, year),
-		TotalRead:  countStatus(reads, "finished"),
 		Nav:        yearLinks(logYears(log), year, year),
 		Insights:   yearInsights(reads, year),
 		Shelf:      shelfSummary(shelfBooks(shelf)),
@@ -169,13 +169,14 @@ func currentReads(reads []repo.ReadEntry) []templates.CurrentRead {
 		}
 		started := parseDate(e.DateStarted)
 		out = append(out, templates.CurrentRead{
-			Title:     e.Title,
-			Author:    e.Author,
-			ImageURL:  coverURL(e.CoverImage),
-			Format:    e.Format,
-			StartedAt: started,
-			DayCount:  daysSince(started),
-			Percent:   readingPercent(e.CurrentPage, e.PageCount),
+			Title:       e.Title,
+			Author:      e.Author,
+			ImageURL:    coverURL(e.CoverImage),
+			StartedAt:   started,
+			DayCount:    daysSince(started),
+			Percent:     readingPercent(e.CurrentPage, e.PageCount),
+			CurrentPage: e.CurrentPage,
+			Pages:       e.PageCount,
 		})
 	}
 	return out
@@ -264,6 +265,9 @@ func shelfBooks(shelf []repo.ShelfEntry) []templates.ShelfBook {
 			Author:     e.Author,
 			ImageURL:   coverURL(e.CoverImage),
 			Genre:      e.Genre,
+			Series:     seriesLabel(e.Series, e.SeriesPosition),
+			Source:     e.Source,
+			SecondHand: e.SecondHand,
 			Pages:      e.PageCount,
 			Format:     e.Format,
 			AcquiredAt: acquired,
@@ -278,6 +282,19 @@ func shelfBooks(shelf []repo.ShelfEntry) []templates.ShelfBook {
 		return a.Before(b)
 	})
 	return out
+}
+
+// seriesLabel formats a book's series for display, e.g. "Wolf Hall #2", "" when
+// it stands alone. The position drops a trailing ".0" so #2 reads cleanly but a
+// #2.5 novella keeps its half.
+func seriesLabel(name string, pos *float64) string {
+	if name == "" {
+		return ""
+	}
+	if pos == nil {
+		return name
+	}
+	return fmt.Sprintf("%s #%s", name, strconv.FormatFloat(*pos, 'f', -1, 64))
 }
 
 // almanac tallies the year's finished reads: counts, pages, mean rating (in
