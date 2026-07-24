@@ -284,6 +284,90 @@ func (r *Repo) StartRead(bookID, copyID int, dateStarted string) error {
 	return nil
 }
 
+// ReadDetail is an existing read with the current values the edit form prefills.
+type ReadDetail struct {
+	ReadID       int
+	BookTitle    string
+	Author       string
+	Format       string
+	Status       string
+	Rating       int
+	DateStarted  string
+	DateFinished string
+}
+
+type EditReadInput struct {
+	ReadID       int
+	Status       string
+	Rating       int
+	DateStarted  string
+	DateFinished string
+}
+
+// ListReadsForEdit returns every read with its current values, newest first.
+func (r *Repo) ListReadsForEdit() ([]ReadDetail, error) {
+	rows, err := r.db.Query(
+		`SELECT rd.id, b.title, a.name, bc.format,
+                rd.status, rd.rating, rd.date_started, rd.date_finished
+         FROM read rd
+         JOIN book b ON b.id = rd.book_id
+         LEFT JOIN book_author ba ON ba.book_id = b.id AND ba.role = 'author'
+         LEFT JOIN author a ON a.id = ba.author_id
+         LEFT JOIN book_copy bc ON bc.id = rd.copy_id
+         ORDER BY rd.date_finished DESC, rd.date_started DESC, rd.id DESC`,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list reads for edit: %w", err)
+	}
+	defer rows.Close()
+
+	var reads []ReadDetail
+	for rows.Next() {
+		var d ReadDetail
+		var author, format, dateStarted, dateFinished *string
+		var rating *int
+		if err := rows.Scan(
+			&d.ReadID, &d.BookTitle, &author, &format,
+			&d.Status, &rating, &dateStarted, &dateFinished,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan read: %w", err)
+		}
+		if author != nil {
+			d.Author = *author
+		}
+		if format != nil {
+			d.Format = *format
+		}
+		if rating != nil {
+			d.Rating = *rating
+		}
+		if dateStarted != nil {
+			d.DateStarted = *dateStarted
+		}
+		if dateFinished != nil {
+			d.DateFinished = *dateFinished
+		}
+		reads = append(reads, d)
+	}
+	return reads, rows.Err()
+}
+
+func (r *Repo) UpdateRead(in *EditReadInput) error {
+	_, err := r.db.Exec(
+		`UPDATE read SET status = ?, rating = ?, date_started = ?, date_finished = ?
+         WHERE id = ?`,
+		in.Status,
+		nullableInt(in.Rating),
+		nullable(in.DateStarted),
+		nullable(in.DateFinished),
+		in.ReadID,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update read: %w", err)
+	}
+	return nil
+}
+
 func (r *Repo) FinishRead(readID int, status string, rating int, dateFinished string) error {
 	_, err := r.db.Exec(
 		`UPDATE read SET status = ?, rating = ?, date_finished = ?

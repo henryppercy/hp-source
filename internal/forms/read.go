@@ -262,6 +262,115 @@ func StartRead(input *repo.StartReadInput, books []repo.BookSummary, fetchCopies
 	return nil
 }
 
+func EditRead(input *repo.EditReadInput, reads []repo.ReadDetail) error {
+	readOptions := make([]huh.Option[int], len(reads))
+	for i, r := range reads {
+		label := r.BookTitle
+		if r.Author != "" {
+			label += " - " + r.Author
+		}
+		label += " (" + r.Status + ")"
+		readOptions[i] = huh.NewOption(label, r.ReadID)
+	}
+
+	readSelect := huh.NewSelect[int]().
+		Title("Edit Read").
+		Description("Which read do you want to edit?").
+		Options(readOptions...).
+		Value(&input.ReadID)
+
+	if len(reads) > 10 {
+		readSelect.Height(10)
+	}
+
+	picker := huh.NewForm(huh.NewGroup(readSelect))
+	if err := picker.Run(); err != nil {
+		return err
+	}
+
+	var chosen repo.ReadDetail
+	for _, r := range reads {
+		if r.ReadID == input.ReadID {
+			chosen = r
+			input.Status = r.Status
+			input.Rating = r.Rating
+			input.DateStarted = r.DateStarted
+			input.DateFinished = r.DateFinished
+			break
+		}
+	}
+
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				Title("Status").
+				Options(
+					huh.NewOption("Reading", "reading"),
+					huh.NewOption("Finished", "finished"),
+					huh.NewOption("Abandoned", "abandoned"),
+				).
+				Value(&input.Status),
+		),
+
+		huh.NewGroup(
+			huh.NewSelect[int]().
+				Title("Rating").
+				Options(ratingHuhOptions()...).
+				Value(&input.Rating),
+		).WithHideFunc(func() bool {
+			return input.Status == "abandoned"
+		}),
+
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Date Started").
+				Validate(validateDateOptional).
+				Value(&input.DateStarted),
+			huh.NewInput().
+				Title("Date Finished").
+				Validate(validateDateOptional).
+				Value(&input.DateFinished),
+		),
+
+		huh.NewGroup(
+			huh.NewNote().
+				Title("Confirm Changes").
+				DescriptionFunc(func() string {
+					var sb strings.Builder
+
+					label := chosen.BookTitle
+					if chosen.Author != "" {
+						label += " - " + chosen.Author
+					}
+					fmt.Fprintf(&sb, "Book:       %s\n", label)
+
+					if chosen.Format != "" {
+						fmt.Fprintf(&sb, "Copy:       %s\n", chosen.Format)
+					}
+
+					fmt.Fprintf(&sb, "Status:     %s\n", input.Status)
+
+					if input.Status != "abandoned" && input.Rating > 0 {
+						fmt.Fprintf(&sb, "Rating:     %s/5\n", repo.RatingDisplay(input.Rating))
+					}
+
+					if input.DateStarted != "" {
+						fmt.Fprintf(&sb, "Started:    %s\n", input.DateStarted)
+					}
+					if input.DateFinished != "" {
+						fmt.Fprintf(&sb, "Finished:   %s\n", input.DateFinished)
+					}
+
+					return sb.String()
+				}, &input.DateFinished).
+				Next(true).
+				NextLabel("Save"),
+		),
+	)
+
+	return form.Run()
+}
+
 func FinishRead(input *repo.FinishReadInput, reads []repo.ActiveRead) error {
 	readOptions := make([]huh.Option[int], len(reads))
 	for i, r := range reads {

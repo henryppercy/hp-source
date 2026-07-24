@@ -18,6 +18,7 @@ func newReadCmd(a *app) *cobra.Command {
 		newReadFinishCmd(a),
 		newReadProgressCmd(a),
 		newReadLogCmd(a),
+		newReadEditCmd(a),
 	)
 	return cmd
 }
@@ -58,6 +59,16 @@ func newReadProgressCmd(a *app) *cobra.Command {
 		Short: "Log a page and/or note against an active read",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runReadProgress(a.repo)
+		},
+	}
+}
+
+func newReadEditCmd(a *app) *cobra.Command {
+	return &cobra.Command{
+		Use:   "edit",
+		Short: "Edit an existing read",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runReadEdit(a.repo)
 		},
 	}
 }
@@ -143,4 +154,27 @@ func runReadLog(r *repo.Repo) error {
 	}
 
 	return r.AddRead(input)
+}
+
+func runReadEdit(r *repo.Repo) error {
+	reads, err := r.ListReadsForEdit()
+	if err != nil {
+		return err
+	}
+	if len(reads) == 0 {
+		fmt.Println("No reads to edit.")
+		return nil
+	}
+
+	input := &repo.EditReadInput{}
+	if err := forms.EditRead(input, reads); err != nil {
+		return err
+	}
+
+	if err := r.UpdateRead(input); err != nil {
+		return err
+	}
+
+	fmt.Println("Read updated.")
+	return nil
 }
