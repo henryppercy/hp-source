@@ -189,7 +189,7 @@ func CopyForm(in *repo.CopyInput, translators []repo.Translator, defaultTitle, o
 				Value(&in.SecondHand),
 			huh.NewInput().
 				Title("Date Acquired").
-				Placeholder("today").
+				Placeholder("YYYY-MM-DD").
 				Validate(validateDateOptional).
 				Value(&in.DateAcquired),
 		),
@@ -310,7 +310,7 @@ func copySummary(in *repo.CopyInput, pageCount, originalLanguage string) string 
 	fmt.Fprintf(&sb, "Second-hand: %s\n", yesNo(in.SecondHand))
 	acquired := in.DateAcquired
 	if acquired == "" {
-		acquired = "today"
+		acquired = "none"
 	}
 	fmt.Fprintf(&sb, "Acquired:   %s\n", acquired)
 	return sb.String()

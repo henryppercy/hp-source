@@ -72,7 +72,7 @@ func runCopyAdd(r *repo.Repo) error {
 		return err
 	}
 
-	in := &repo.CopyInput{ShelfStatus: "shelf", SecondHand: true}
+	in := &repo.CopyInput{ShelfStatus: "shelf", SecondHand: true, DateAcquired: today()}
 	if err := forms.CopyForm(in, translators, bookTitle, book.OriginalLanguage); err != nil {
 		return err
 	}

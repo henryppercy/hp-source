@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/henryppercy/hp-source/internal/forms"
 	"github.com/henryppercy/hp-source/internal/repo"
@@ -40,6 +41,11 @@ func newBookEditCmd(a *app) *cobra.Command {
 	}
 }
 
+// today is the current date as YYYY-MM-DD, the default acquisition date.
+func today() string {
+	return time.Now().Format("2006-01-02")
+}
+
 func runBookAdd(r *repo.Repo) error {
 	genres, err := r.ListGenres()
 	if err != nil {
@@ -70,7 +76,7 @@ func runBookAdd(r *repo.Repo) error {
 
 	var firstCopy *repo.CopyInput
 	if addCopy {
-		firstCopy = &repo.CopyInput{ShelfStatus: "shelf", SecondHand: true}
+		firstCopy = &repo.CopyInput{ShelfStatus: "shelf", SecondHand: true, DateAcquired: today()}
 		if err := forms.CopyForm(firstCopy, translators, input.Title, input.OriginalLanguage); err != nil {
 			return err
 		}
