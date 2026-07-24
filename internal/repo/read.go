@@ -109,7 +109,7 @@ func (r *Repo) ListBooksAvailableToRead() ([]BookSummary, error) {
 
 func (r *Repo) ListActiveReads() ([]ActiveRead, error) {
 	rows, err := r.db.Query(
-		`SELECT rd.id, b.title, a.name, bc.format
+		`SELECT rd.id, COALESCE(bc.title, b.title), a.name, bc.format
          FROM read rd
          JOIN book b ON b.id = rd.book_id
          LEFT JOIN book_author ba ON ba.book_id = b.id AND ba.role = 'author'
@@ -145,7 +145,7 @@ func (r *Repo) ListActiveReads() ([]ActiveRead, error) {
 // first. The site groups them by status.
 func (r *Repo) ListReads() ([]ReadEntry, error) {
 	rows, err := r.db.Query(
-		`SELECT b.title, a.name, bc.cover_image, g.name, b.type, bc.format, bc.source, bc.second_hand,
+		`SELECT COALESCE(bc.title, b.title), a.name, bc.cover_image, g.name, b.type, bc.format, bc.source, bc.second_hand,
                 rd.status, rd.rating, bc.page_count,
                 (SELECT rl.page FROM read_log rl
                  WHERE rl.read_id = rd.id AND rl.page IS NOT NULL
@@ -208,19 +208,20 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 	return entries, rows.Err()
 }
 
-// ListShelf returns owned books with no read yet, newest acquisition first.
+// ListShelf returns shelved copies not yet read, newest acquisition first. It is
+// per copy: a book owned in two languages shows as two entries.
 func (r *Repo) ListShelf() ([]ShelfEntry, error) {
 	rows, err := r.db.Query(
-		`SELECT b.title, a.name, MAX(bc.cover_image), g.name, MAX(bc.format),
-                MAX(bc.page_count), MAX(bc.date_acquired)
-         FROM book b
-         JOIN book_copy bc ON bc.book_id = b.id
+		`SELECT COALESCE(bc.title, b.title), a.name, bc.cover_image, g.name, bc.format,
+                bc.page_count, bc.date_acquired
+         FROM book_copy bc
+         JOIN book b ON b.id = bc.book_id
          JOIN genre g ON g.id = b.genre_id
          LEFT JOIN book_author ba ON ba.book_id = b.id AND ba.role = 'author'
          LEFT JOIN author a ON a.id = ba.author_id
-         WHERE NOT EXISTS (SELECT 1 FROM read r WHERE r.book_id = b.id)
-         GROUP BY b.id
-         ORDER BY MAX(bc.date_acquired) DESC`,
+         WHERE bc.shelf_status = 'shelf'
+         AND NOT EXISTS (SELECT 1 FROM read r WHERE r.copy_id = bc.id)
+         ORDER BY bc.date_acquired DESC`,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list shelf: %w", err)
@@ -307,7 +308,7 @@ type EditReadInput struct {
 // ListReadsForEdit returns every read with its current values, newest first.
 func (r *Repo) ListReadsForEdit() ([]ReadDetail, error) {
 	rows, err := r.db.Query(
-		`SELECT rd.id, b.title, a.name, bc.format,
+		`SELECT rd.id, COALESCE(bc.title, b.title), a.name, bc.format,
                 rd.status, rd.rating, rd.date_started, rd.date_finished
          FROM read rd
          JOIN book b ON b.id = rd.book_id

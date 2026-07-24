@@ -15,7 +15,7 @@ func newBookCmd(a *app) *cobra.Command {
 	}
 	cmd.AddCommand(
 		newBookAddCmd(a),
-		newBookUpdateCmd(a),
+		newBookEditCmd(a),
 	)
 	return cmd
 }
@@ -30,45 +30,14 @@ func newBookAddCmd(a *app) *cobra.Command {
 	}
 }
 
-func newBookUpdateCmd(a *app) *cobra.Command {
+func newBookEditCmd(a *app) *cobra.Command {
 	return &cobra.Command{
-		Use:   "update",
-		Short: "Update a book's copy details",
+		Use:   "edit",
+		Short: "Edit a book's work details",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runBookUpdate(a.repo)
+			return runBookEdit(a.repo)
 		},
 	}
-}
-
-func runBookUpdate(r *repo.Repo) error {
-	books, err := r.ListBooks(true)
-	if err != nil {
-		return err
-	}
-	if len(books) == 0 {
-		fmt.Println("No books with copies to update.")
-		return nil
-	}
-
-	var bookID, copyID int
-	if err := forms.SelectCopy(books, r.ListCopies, &bookID, &copyID); err != nil {
-		return err
-	}
-
-	detail, err := r.GetCopy(copyID)
-	if err != nil {
-		return err
-	}
-	if err := forms.EditCopy(detail); err != nil {
-		return err
-	}
-
-	if err := r.UpdateCopy(copyID, detail); err != nil {
-		return err
-	}
-
-	fmt.Println("Copy updated.")
-	return nil
 }
 
 func runBookAdd(r *repo.Repo) error {
@@ -88,11 +57,60 @@ func runBookAdd(r *repo.Repo) error {
 	if err != nil {
 		return err
 	}
-
-	input := &repo.BookInput{}
-	if err := forms.AddBook(input, genres, authors, tags, series); err != nil {
+	translators, err := r.ListTranslators()
+	if err != nil {
 		return err
 	}
 
-	return r.AddBook(input)
+	input := &repo.BookInput{}
+	addCopy, err := forms.AddBook(input, genres, authors, tags, series)
+	if err != nil {
+		return err
+	}
+
+	var firstCopy *repo.CopyInput
+	if addCopy {
+		firstCopy = &repo.CopyInput{ShelfStatus: "shelf", SecondHand: true}
+		if err := forms.CopyForm(firstCopy, translators, input.Title, input.OriginalLanguage); err != nil {
+			return err
+		}
+	}
+
+	return r.AddBook(input, firstCopy)
+}
+
+func runBookEdit(r *repo.Repo) error {
+	books, err := r.ListBooks(false)
+	if err != nil {
+		return err
+	}
+	if len(books) == 0 {
+		fmt.Println("No books to edit.")
+		return nil
+	}
+
+	var bookID int
+	if err := forms.SelectBook(books, &bookID); err != nil {
+		return err
+	}
+
+	detail, err := r.GetBook(bookID)
+	if err != nil {
+		return err
+	}
+
+	genres, err := r.ListGenres()
+	if err != nil {
+		return err
+	}
+	if err := forms.EditBook(detail, genres); err != nil {
+		return err
+	}
+
+	if err := r.UpdateBook(bookID, detail); err != nil {
+		return err
+	}
+
+	fmt.Println("Book updated.")
+	return nil
 }

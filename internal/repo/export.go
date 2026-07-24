@@ -40,7 +40,7 @@ type ExportRead struct {
 func (r *Repo) ListExportReads() ([]ExportRead, error) {
 	rows, err := r.db.Query(
 		`SELECT rd.id, rd.book_id, rd.status, rd.rating, rd.date_started, rd.date_finished,
-                b.title, b.headline, b.type, b.date_published, b.original_language, b.url,
+                COALESCE(bc.title, b.title), bc.headline, b.type, b.date_published, b.original_language, b.url,
                 b.series_id, b.series_position,
                 g.name,
                 bc.format, bc.language, bc.page_count, bc.cover_image

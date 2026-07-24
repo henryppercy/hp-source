@@ -10,21 +10,24 @@ import (
 	"github.com/henryppercy/hp-source/internal/text"
 )
 
+// AddBook collects a work's details, returning whether the user wants to add a
+// copy. Authors, series and tags are selected from existing records; create them
+// first with author/series/tag add.
 func AddBook(
 	input *repo.BookInput,
 	genres []repo.Genre,
 	authors []repo.Author,
 	tags []repo.Tag,
 	seriesList []repo.Series,
-) error {
+) (bool, error) {
 	genreOptions := make([]huh.Option[int], len(genres))
 	for i, g := range genres {
 		genreOptions[i] = huh.NewOption(g.Name, g.ID)
 	}
 
-	authorOptions := []huh.Option[int]{huh.NewOption("+ Add new author", 0)}
-	for _, a := range authors {
-		authorOptions = append(authorOptions, huh.NewOption(a.Name, a.ID))
+	authorOptions := make([]huh.Option[int], len(authors))
+	for i, a := range authors {
+		authorOptions[i] = huh.NewOption(a.Name, a.ID)
 	}
 
 	tagOptions := make([]huh.Option[int], len(tags))
@@ -32,30 +35,25 @@ func AddBook(
 		tagOptions[i] = huh.NewOption(t.Name, t.ID)
 	}
 
-	seriesOptions := []huh.Option[int]{huh.NewOption("+ Add new series", 0)}
-	for _, s := range seriesList {
-		seriesOptions = append(seriesOptions, huh.NewOption(s.Name, s.ID))
+	seriesOptions := make([]huh.Option[int], len(seriesList))
+	for i, s := range seriesList {
+		seriesOptions[i] = huh.NewOption(s.Name, s.ID)
 	}
 
 	var (
-		selectedAuthorID int
-		authorName       string
-		authorSortName   string
-		selectedSeriesID int
-		newSeriesName    string
-		seriesPosition   string
-		addSeries        bool
-		addTags          bool
-		pageCountStr     string
+		selectedAuthorIDs []int
+		selectedSeriesID  int
+		seriesPosition    string
+		addSeries         bool
+		addTags           bool
+		addCopy           bool
 	)
-
-	input.SecondHand = true
 
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewNote().
 				Title("Add Book").
-				Description("Add a new book to your collection.").
+				Description("Add a new work to your collection.").
 				Next(true).
 				NextLabel("Next"),
 		),
@@ -66,10 +64,6 @@ func AddBook(
 				Placeholder("required").
 				Validate(huh.ValidateNotEmpty()).
 				Value(&input.Title),
-			huh.NewInput().
-				Title("Headline").
-				Placeholder("optional").
-				Value(&input.Headline),
 			huh.NewSelect[string]().
 				Title("Type").
 				Options(huh.NewOptions("fiction", "non-fiction")...).
@@ -98,28 +92,18 @@ func AddBook(
 		),
 
 		huh.NewGroup(
-			huh.NewSelect[int]().
-				Title("Author").
+			huh.NewMultiSelect[int]().
+				Title("Authors").
 				Height(15).
 				Options(authorOptions...).
-				Value(&selectedAuthorID),
+				Validate(func(ids []int) error {
+					if len(ids) == 0 {
+						return fmt.Errorf("select at least one author")
+					}
+					return nil
+				}).
+				Value(&selectedAuthorIDs),
 		),
-
-		huh.NewGroup(
-			huh.NewInput().
-				Title("Author Name").
-				Placeholder("required").
-				Validate(huh.ValidateNotEmpty()).
-				Value(&authorName),
-			huh.NewInput().
-				Title("Author Sort Name").
-				PlaceholderFunc(func() string {
-					return sortName(authorName)
-				}, &authorName).
-				Value(&authorSortName),
-		).WithHideFunc(func() bool {
-			return selectedAuthorID != 0
-		}),
 
 		huh.NewGroup(
 			huh.NewConfirm().
@@ -134,21 +118,6 @@ func AddBook(
 				Title("Series").
 				Options(seriesOptions...).
 				Value(&selectedSeriesID),
-		).WithHideFunc(func() bool {
-			return !addSeries
-		}),
-
-		huh.NewGroup(
-			huh.NewInput().
-				Title("Series Name").
-				Placeholder("required").
-				Validate(huh.ValidateNotEmpty()).
-				Value(&newSeriesName),
-		).WithHideFunc(func() bool {
-			return !addSeries || selectedSeriesID != 0
-		}),
-
-		huh.NewGroup(
 			huh.NewInput().
 				Title("Series Position").
 				Placeholder("e.g. 1, 1.5").
@@ -178,211 +147,37 @@ func AddBook(
 		}),
 
 		huh.NewGroup(
-			huh.NewSelect[string]().
-				Title("Shelf Status").
-				Options(
-					huh.NewOption("On my shelf", "shelf"),
-					huh.NewOption("Wishlist", "wishlist"),
-					huh.NewOption("None", ""),
-				).
-				Value(&input.ShelfStatus),
-		),
-
-		huh.NewGroup(
-			huh.NewSelect[string]().
-				Title("Format").
-				Options(huh.NewOptions("hardback", "paperback", "ebook", "audiobook")...).
-				Value(&input.Format),
-			huh.NewInput().
-				Title("Page Count").
-				Placeholder("optional").
-				Value(&pageCountStr),
-			huh.NewInput().
-				Title("Language").
-				PlaceholderFunc(func() string {
-					if input.OriginalLanguage != "" {
-						return input.OriginalLanguage
-					}
-					return "english"
-				}, &input.OriginalLanguage).
-				Value(&input.Language),
-			huh.NewInput().
-				Title("ISBN").
-				Placeholder("optional").
-				Value(&input.ISBN),
-		).WithHideFunc(func() bool {
-			return input.ShelfStatus != "shelf"
-		}),
-
-		huh.NewGroup(
-			huh.NewInput().
-				Title("Cover Image").
-				PlaceholderFunc(func() string {
-					name := coverImageName(input.Title)
-					if name == "" {
-						return "optional"
-					}
-					return name
-				}, &input.Title).
-				Value(&input.CoverImage),
-			huh.NewSelect[string]().
-				Title("Source").
-				Options(
-					huh.NewOption("Bought", "bought"),
-					huh.NewOption("Gifted", "gifted"),
-					huh.NewOption("Borrowed", "borrowed"),
-					huh.NewOption("Library", "library"),
-				).
-				Value(&input.Source),
-			huh.NewConfirm().
-				Title("Second-hand?").
-				Affirmative("Yes").
-				Negative("No").
-				Value(&input.SecondHand),
-			huh.NewInput().
-				Title("Date Acquired").
-				Placeholder("today").
-				Value(&input.DateAcquired),
-		).WithHideFunc(func() bool {
-			return input.ShelfStatus != "shelf"
-		}),
-
-		huh.NewGroup(
 			huh.NewNote().
 				Title("Confirm Book Details").
 				DescriptionFunc(func() string {
-					var sb strings.Builder
-
-					fmt.Fprintf(&sb, "Title:      %s\n", input.Title)
-					if input.Headline != "" {
-						fmt.Fprintf(&sb, "Headline:   %s\n", input.Headline)
-					}
-					fmt.Fprintf(&sb, "Type:       %s\n", input.BookType)
-
-					for _, g := range genres {
-						if g.ID == input.GenreID {
-							fmt.Fprintf(&sb, "Genre:      %s\n", g.Name)
-							break
-						}
-					}
-
-					fmt.Fprintf(&sb, "Published:  %s\n", input.DatePublished)
-
-					lang := input.OriginalLanguage
-					if lang == "" {
-						lang = "english"
-					}
-					fmt.Fprintf(&sb, "Language:   %s\n", lang)
-
-					if input.URL != "" {
-						fmt.Fprintf(&sb, "URL:        %s\n", input.URL)
-					}
-
-					fmt.Fprintf(&sb, "\n")
-					if selectedAuthorID != 0 {
-						for _, a := range authors {
-							if a.ID == selectedAuthorID {
-								fmt.Fprintf(&sb, "Author:     %s\n", a.Name)
-								break
-							}
-						}
-					} else {
-						sort := authorSortName
-						if sort == "" {
-							sort = sortName(authorName)
-						}
-						fmt.Fprintf(&sb, "Author:     %s (%s) (new)\n", authorName, sort)
-					}
-
-					if addSeries {
-						fmt.Fprintf(&sb, "\n")
-						if selectedSeriesID != 0 {
-							for _, s := range seriesList {
-								if s.ID == selectedSeriesID {
-									fmt.Fprintf(&sb, "Series:     %s (#%s)\n", s.Name, seriesPosition)
-									break
-								}
-							}
-						} else {
-							fmt.Fprintf(&sb, "Series:     %s (#%s) (new)\n", newSeriesName, seriesPosition)
-						}
-					}
-
-					if len(input.TagIDs) > 0 {
-						fmt.Fprintf(&sb, "\n")
-						var tagNames []string
-						for _, id := range input.TagIDs {
-							for _, t := range tags {
-								if t.ID == id {
-									tagNames = append(tagNames, t.Name)
-									break
-								}
-							}
-						}
-						fmt.Fprintf(&sb, "Tags:       %s\n", strings.Join(tagNames, ", "))
-					}
-
-					fmt.Fprintf(&sb, "\n")
-					status := input.ShelfStatus
-					if status == "" {
-						status = "none"
-					}
-					fmt.Fprintf(&sb, "Shelf:      %s\n", status)
-
-					if input.ShelfStatus == "shelf" {
-						fmt.Fprintf(&sb, "\nFormat:     %s\n", input.Format)
-						if pageCountStr != "" {
-							fmt.Fprintf(&sb, "Pages:      %s\n", pageCountStr)
-						}
-						copyLang := input.Language
-						if copyLang == "" {
-							if input.OriginalLanguage != "" {
-								copyLang = input.OriginalLanguage
-							} else {
-								copyLang = "english"
-							}
-						}
-						fmt.Fprintf(&sb, "Copy Lang:  %s\n", copyLang)
-						if input.ISBN != "" {
-							fmt.Fprintf(&sb, "ISBN:       %s\n", input.ISBN)
-						}
-						cover := input.CoverImage
-						if cover == "" {
-							cover = coverImageName(input.Title)
-						}
-						if cover != "" {
-							fmt.Fprintf(&sb, "Cover:      %s\n", cover)
-						}
-						if input.Source != "" {
-							fmt.Fprintf(&sb, "Source:     %s\n", input.Source)
-						}
-						fmt.Fprintf(&sb, "Second-hand: %s\n", yesNo(input.SecondHand))
-						acquired := input.DateAcquired
-						if acquired == "" {
-							acquired = "today"
-						}
-						fmt.Fprintf(&sb, "Acquired:   %s\n", acquired)
-					}
-
-					return sb.String()
-				}, &input.ShelfStatus).
+					return bookSummary(input, genres, authors, seriesList, tags,
+						selectedAuthorIDs, addSeries, selectedSeriesID, seriesPosition)
+				}, &input.Title).
 				Next(true).
-				NextLabel("Save"),
+				NextLabel("Next"),
+		),
+
+		huh.NewGroup(
+			huh.NewConfirm().
+				Title("Add a copy now?").
+				Description("A copy is an edition you own or want.").
+				Affirmative("Yes").
+				Negative("No").
+				Value(&addCopy),
 		),
 	)
 
-	err := form.Run()
-	if err != nil {
-		return err
+	if err := form.Run(); err != nil {
+		return false, err
 	}
 
 	if input.OriginalLanguage == "" {
 		input.OriginalLanguage = "english"
 	}
 
-	if selectedAuthorID != 0 {
+	for _, id := range selectedAuthorIDs {
 		for _, a := range authors {
-			if a.ID == selectedAuthorID {
+			if a.ID == id {
 				input.Authors = append(input.Authors, repo.AuthorInput{
 					ID:   a.ID,
 					Name: a.Name,
@@ -391,62 +186,172 @@ func AddBook(
 				break
 			}
 		}
-	} else {
-		if authorSortName == "" {
-			authorSortName = sortName(authorName)
+	}
+
+	if addSeries && selectedSeriesID != 0 {
+		pos, _ := strconv.ParseFloat(seriesPosition, 64)
+		input.Series = &repo.SeriesInput{
+			ID:       selectedSeriesID,
+			Position: pos,
 		}
-		input.Authors = append(input.Authors, repo.AuthorInput{
-			Name:     authorName,
-			SortName: authorSortName,
-			Role:     "author",
-		})
+	}
+
+	return addCopy, nil
+}
+
+func bookSummary(
+	input *repo.BookInput,
+	genres []repo.Genre,
+	authors []repo.Author,
+	seriesList []repo.Series,
+	tags []repo.Tag,
+	selectedAuthorIDs []int,
+	addSeries bool,
+	selectedSeriesID int,
+	seriesPosition string,
+) string {
+	var sb strings.Builder
+
+	fmt.Fprintf(&sb, "Title:      %s\n", input.Title)
+	fmt.Fprintf(&sb, "Type:       %s\n", input.BookType)
+
+	for _, g := range genres {
+		if g.ID == input.GenreID {
+			fmt.Fprintf(&sb, "Genre:      %s\n", g.Name)
+			break
+		}
+	}
+
+	fmt.Fprintf(&sb, "Published:  %s\n", input.DatePublished)
+
+	lang := input.OriginalLanguage
+	if lang == "" {
+		lang = "english"
+	}
+	fmt.Fprintf(&sb, "Language:   %s\n", lang)
+
+	if input.URL != "" {
+		fmt.Fprintf(&sb, "URL:        %s\n", input.URL)
+	}
+
+	fmt.Fprintf(&sb, "\n")
+	for _, id := range selectedAuthorIDs {
+		for _, a := range authors {
+			if a.ID == id {
+				fmt.Fprintf(&sb, "Author:     %s\n", a.Name)
+				break
+			}
+		}
 	}
 
 	if addSeries {
-		pos, _ := strconv.ParseFloat(seriesPosition, 64)
-		if selectedSeriesID != 0 {
-			input.Series = &repo.SeriesInput{
-				ID:       selectedSeriesID,
-				Position: pos,
-			}
-		} else {
-			input.Series = &repo.SeriesInput{
-				Name:     newSeriesName,
-				Position: pos,
+		for _, s := range seriesList {
+			if s.ID == selectedSeriesID {
+				fmt.Fprintf(&sb, "\nSeries:     %s (#%s)\n", s.Name, seriesPosition)
+				break
 			}
 		}
 	}
 
-	if pageCountStr != "" {
-		if n, err := strconv.Atoi(pageCountStr); err == nil {
-			input.PageCount = n
+	if len(input.TagIDs) > 0 {
+		fmt.Fprintf(&sb, "\n")
+		var tagNames []string
+		for _, id := range input.TagIDs {
+			for _, t := range tags {
+				if t.ID == id {
+					tagNames = append(tagNames, t.Name)
+					break
+				}
+			}
 		}
+		fmt.Fprintf(&sb, "Tags:       %s\n", strings.Join(tagNames, ", "))
 	}
 
-	if input.CoverImage == "" {
-		input.CoverImage = coverImageName(input.Title)
-	}
-
-	if input.Language == "" {
-		if input.OriginalLanguage != "" {
-			input.Language = input.OriginalLanguage
-		} else {
-			input.Language = "english"
-		}
-	}
-
-	return nil
+	return sb.String()
 }
 
-func sortName(authorName string) string {
-	parts := strings.Fields(authorName)
+// EditBook edits a work's fields, prefilled from its current values.
+func EditBook(in *repo.BookEdit, genres []repo.Genre) error {
+	genreOptions := make([]huh.Option[int], len(genres))
+	for i, g := range genres {
+		genreOptions[i] = huh.NewOption(g.Name, g.ID)
+	}
+
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewNote().
+				Title("Edit Book").
+				Next(true).
+				NextLabel("Next"),
+		),
+
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Title").
+				Validate(huh.ValidateNotEmpty()).
+				Value(&in.Title),
+			huh.NewSelect[string]().
+				Title("Type").
+				Options(huh.NewOptions("fiction", "non-fiction")...).
+				Value(&in.BookType),
+			huh.NewSelect[int]().
+				Title("Genre").
+				Height(15).
+				Options(genreOptions...).
+				Value(&in.GenreID),
+		),
+
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Date Published").
+				Validate(validateDateOrYear).
+				Value(&in.DatePublished),
+			huh.NewInput().
+				Title("Original Language").
+				Validate(huh.ValidateNotEmpty()).
+				Value(&in.OriginalLanguage),
+			huh.NewInput().
+				Title("URL").
+				Placeholder("optional").
+				Value(&in.URL),
+		),
+
+		huh.NewGroup(
+			huh.NewNote().
+				Title("Confirm Book").
+				DescriptionFunc(func() string {
+					var sb strings.Builder
+					fmt.Fprintf(&sb, "Title:      %s\n", in.Title)
+					fmt.Fprintf(&sb, "Type:       %s\n", in.BookType)
+					for _, g := range genres {
+						if g.ID == in.GenreID {
+							fmt.Fprintf(&sb, "Genre:      %s\n", g.Name)
+							break
+						}
+					}
+					fmt.Fprintf(&sb, "Published:  %s\n", in.DatePublished)
+					fmt.Fprintf(&sb, "Language:   %s\n", in.OriginalLanguage)
+					if in.URL != "" {
+						fmt.Fprintf(&sb, "URL:        %s\n", in.URL)
+					}
+					return sb.String()
+				}, &in.Title).
+				Next(true).
+				NextLabel("Save"),
+		),
+	)
+
+	return form.Run()
+}
+
+func sortName(name string) string {
+	parts := strings.Fields(name)
 	if len(parts) >= 2 {
 		last := parts[len(parts)-1]
 		rest := strings.Join(parts[:len(parts)-1], " ")
 		return last + ", " + rest
-	} else {
-		return authorName
 	}
+	return name
 }
 
 func yesNo(b bool) string {

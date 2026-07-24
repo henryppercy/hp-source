@@ -4,29 +4,19 @@ import "fmt"
 
 type BookInput struct {
 	Title            string
-	Headline         string
 	BookType         string
 	GenreID          int
 	DatePublished    string
 	OriginalLanguage string
 	URL              string
-	ShelfStatus      string
 
 	Authors []AuthorInput
 	Series  *SeriesInput
 	TagIDs  []int
-
-	Format       string
-	PageCount    int
-	Language     string
-	ISBN         string
-	CoverImage   string
-	Source       string
-	DateAcquired string
-	SecondHand   bool
 }
 
-func (r *Repo) AddBook(input *BookInput) error {
+// AddBook creates a work and, when firstCopy is non-nil, its first copy.
+func (r *Repo) AddBook(input *BookInput, firstCopy *CopyInput) error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -48,17 +38,15 @@ func (r *Repo) AddBook(input *BookInput) error {
 	}
 
 	result, err := tx.Exec(
-		`INSERT INTO book (title, headline, date_published, original_language, type, genre_id, series_id, series_position, shelf_status, url)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		`INSERT INTO book (title, date_published, original_language, type, genre_id, series_id, series_position, url)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
 		input.Title,
-		nullable(input.Headline),
 		input.DatePublished,
 		input.OriginalLanguage,
 		input.BookType,
 		input.GenreID,
 		seriesID,
 		seriesPosition,
-		nullable(input.ShelfStatus),
 		nullable(input.URL),
 	)
 	if err != nil {
@@ -88,19 +76,46 @@ func (r *Repo) AddBook(input *BookInput) error {
 		}
 	}
 
-	if input.ShelfStatus == "shelf" {
-		_, err := createCopy(
-			tx, int(bookID), input.Format,
-			nullableInt(input.PageCount),
-			input.Language, input.ISBN, input.CoverImage,
-			input.Source, input.DateAcquired, input.SecondHand,
-		)
-		if err != nil {
+	if firstCopy != nil {
+		if _, err := createCopy(tx, int(bookID), firstCopy); err != nil {
 			return fmt.Errorf("failed to create copy: %w", err)
 		}
 	}
 
 	return tx.Commit()
+}
+
+// BookEdit is a work's editable fields, without copies, authors or tags.
+type BookEdit struct {
+	Title            string
+	BookType         string
+	GenreID          int
+	DatePublished    string
+	OriginalLanguage string
+	URL              string
+}
+
+func (r *Repo) GetBook(bookID int) (*BookEdit, error) {
+	var b BookEdit
+	var url *string
+	err := r.db.QueryRow(
+		"SELECT title, type, genre_id, date_published, original_language, url FROM book WHERE id = ?",
+		bookID,
+	).Scan(&b.Title, &b.BookType, &b.GenreID, &b.DatePublished, &b.OriginalLanguage, &url)
+	if err != nil {
+		return nil, err
+	}
+	b.URL = deref(url)
+	return &b, nil
+}
+
+func (r *Repo) UpdateBook(bookID int, in *BookEdit) error {
+	_, err := r.db.Exec(
+		`UPDATE book SET title = ?, type = ?, genre_id = ?, date_published = ?, original_language = ?, url = ?
+         WHERE id = ?`,
+		in.Title, in.BookType, in.GenreID, in.DatePublished, in.OriginalLanguage, nullable(in.URL), bookID,
+	)
+	return err
 }
 
 type BookSummary struct {
