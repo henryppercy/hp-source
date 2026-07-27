@@ -16,11 +16,11 @@ templ location(city, code, coords string) {
 
 // datelineBase is the shared look of the hung marginal date: a serif italic in
 // muted grey, stacked above the card until a breakpoint pulls it into the left
-// margin. datelineHang is that pull; datelineHangWide defers it to 2xl for the
-// broad home grid, whose margin only clears the date past that width.
+// margin. datelineHang is that pull; datelineHangWide defers it to xl, where the
+// home grid opens its dateline rail and the margin clears the date.
 const datelineBase = "block whitespace-nowrap font-serif italic text-muted tabular-nums leading-none mb-3"
 const datelineHang = "lg:absolute lg:right-full lg:mr-8 lg:mb-0"
-const datelineHangWide = "3xl:absolute 3xl:right-full 3xl:mr-8 3xl:mb-0"
+const datelineHangWide = "xl:absolute xl:right-full xl:mr-8 xl:mb-0"
 
 // datelineHangClass picks the hang breakpoint; the caller's top-offset must match.
 func datelineHangClass(wide bool) string {

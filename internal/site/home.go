@@ -167,10 +167,10 @@ func colophonStats(
 	total int,
 ) []templates.Stat {
 	return []templates.Stat{
-		{Label: "books read", Value: fmt.Sprintf("%d", countStatus(reads, "finished"))},
-		{Label: "spanish hours logged", Value: fmt.Sprintf("%d", total/3600)},
 		{Label: "articles filed", Value: fmt.Sprintf("%d", len(articles))},
 		{Label: "notes made", Value: fmt.Sprintf("%d", len(notes))},
+		{Label: "books read", Value: fmt.Sprintf("%d", countStatus(reads, "finished"))},
+		{Label: "spanish hours logged", Value: fmt.Sprintf("%d", total/3600)},
 	}
 }
 

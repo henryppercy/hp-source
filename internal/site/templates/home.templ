@@ -11,11 +11,11 @@ templ Home(v HomeView) {
 			@homeNameplate(v.Copy)
 			@homeDispatch(v.Dispatch, v.Copy)
 			<p class="mx-auto mb-16 max-w-measure font-serif text-lead text-muted leading-relaxed">{ v.Copy.StreamIntro }</p>
-			<div class="grid gap-x-10 gap-y-12 lg:grid-cols-[2fr_1fr] lg:items-start">
-				<div class="min-w-0">
+			<div class="grid gap-x-10 gap-y-12 mx-auto max-w-measure xl:max-w-none xl:grid-cols-[var(--spacing-rail)_var(--spacing-measure)_1fr] xl:items-start">
+				<div class="min-w-0 xl:col-start-2">
 					@homeStream(v.Stream)
 				</div>
-				<aside class="space-y-8">
+				<aside class="space-y-8 xl:col-start-3">
 					@factCard("By the numbers", v.Stats)
 					@subjectsCard(v.Subjects)
 					@homeIndexCard(v.Index)
@@ -85,11 +85,11 @@ templ dispatchBody(c DispatchCell) {
 templ homeStream(entries []FeedEntry) {
 	if len(entries) > 0 {
 		<section>
-			@sectionHead("Filed entries", "newest first")
+			@sectionHead("All entries", "newest first")
 			<div class="space-y-6">
 				for _, e := range entries {
 					<div class="relative">
-						@dateline(fmtDate(e.Date), "", "3xl:top-5", true)
+						@dateline(fmtDate(e.Date), "", "xl:top-5", true)
 						@streamCard(e)
 					</div>
 				}
