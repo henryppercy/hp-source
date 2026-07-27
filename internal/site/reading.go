@@ -19,15 +19,6 @@ const (
 	yearStandfirst    = "A year in books; goodreads not invited."
 )
 
-func booksReadInYear(reads []repo.ReadEntry, year int) int {
-	count := 0
-	for _, e := range reads {
-		if e.Status == "finished" && parseDate(e.DateFinished).Year() == year {
-			count++
-		}
-	}
-	return count
-}
 
 // readingHub assembles the /reading hub: the desk, this year's almanac and log,
 // the year nav, and a shelf summary.

@@ -65,7 +65,7 @@ func homeView(
 		Stats:    colophonStats(reads, articles, notes, total),
 		Subjects: topicCounts(posts),
 		Stream:   lifeStream(articles, notes, reads, spanishMilestones(days, total)),
-		Index:    indexRows(articles, notes, reads, days, now),
+		Index:    indexRows(articles, notes, reads, total),
 	}
 }
 
@@ -242,10 +242,15 @@ func spanishMilestones(days []spanishDay, total int) []templates.FeedEntry {
 	var out []templates.FeedEntry
 	for step := 50; step <= total/3600; step += 50 {
 		date := crossingDate(days, step)
+		segDays := daysBetween(prev, date)
+		meta := fmt.Sprintf("50h in %d days", segDays)
+		if segDays > 0 {
+			meta += fmt.Sprintf("; %s avg per day", durShort(50*3600/segDays))
+		}
 		out = append(out, templates.FeedEntry{
 			Kind: "milestone", Kicker: "Spanish", Date: date,
 			Title: fmt.Sprintf("%s hours", commaNum(step)), URL: "/spanish",
-			Meta: fmt.Sprintf("day %d; 50h in %d days", daysBetween(start, date), daysBetween(prev, date)),
+			Meta: meta,
 		})
 		prev = date
 	}
@@ -257,33 +262,32 @@ func indexRows(
 	articles []templates.PostListItem,
 	notes []templates.SliceItem,
 	reads []repo.ReadEntry,
-	days []spanishDay,
-	now time.Time,
+	total int,
 ) []templates.IndexRow {
 	return []templates.IndexRow{
 		{Num: "02", Label: "Posts", URL: "/posts", Note: fmt.Sprintf("%d filed", len(articles))},
 		{Num: "03", Label: "Slices", URL: "/slices", Note: fmt.Sprintf("%d notes", len(notes))},
-		{Num: "04", Label: "Reading", URL: "/reading", Note: readingNote(reads, now.Year())},
-		{Num: "05", Label: "Spanish", URL: "/spanish", Note: spanishIndexNote(days, now)},
+		{Num: "04", Label: "Reading", URL: "/reading", Note: readingNote(reads)},
+		{Num: "05", Label: "Spanish", URL: "/spanish", Note: spanishIndexNote(total)},
 	}
 }
 
-// readingNote is the reading line's count: books open now and finished this year.
-func readingNote(reads []repo.ReadEntry, year int) string {
+// readingNote is the reading line's count: books open now and finished all-time.
+func readingNote(reads []repo.ReadEntry) string {
 	open := len(currentReads(reads))
-	read := booksReadInYear(reads, year)
+	read := countStatus(reads, "finished")
 	if open > 0 {
-		return fmt.Sprintf("%d open; %d this year", open, read)
+		return fmt.Sprintf("%d open; %d read", open, read)
 	}
-	return fmt.Sprintf("%d this year", read)
+	return fmt.Sprintf("%d read", read)
 }
 
-// spanishIndexNote is the Spanish line's count: the current day of input.
-func spanishIndexNote(days []spanishDay, now time.Time) string {
-	if len(days) == 0 {
+// spanishIndexNote is the Spanish line's count: total hours of input logged.
+func spanishIndexNote(total int) string {
+	if total <= 0 {
 		return "not started"
 	}
-	return fmt.Sprintf("day %d", spanishDayCount(days, now))
+	return fmt.Sprintf("%dh logged", total/3600)
 }
 
 // tagStrip matches HTML tags for reducing rendered markup to plain text.

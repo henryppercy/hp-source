@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"fmt"
 	"html/template"
 	"strconv"
 	"time"
@@ -244,9 +245,8 @@ type BandView struct {
 // PacePoints are SVG polyline coordinates in a 720x240 box.
 type GoalView struct {
 	Head         string // "800 hours by December 2026"
-	Verdict      string // "14h ahead" | "reached"
-	Delta        string // compact form for the stat cell: "+14h" | "-6h" | "on 800h"
-	Pace         string // "1h 40m a day to finish on time"
+	Verdict      string // finish vs deadline: "est. 4mo early" | "est. on time" | "reached" | "stalled"
+	Pace         string // "1h 3m a day lately, 54m a day needed"
 	Reached      bool
 	ActualPoints string
 	PacePoints   string
@@ -380,6 +380,24 @@ var monthInitials = [12]string{"J", "F", "M", "A", "M", "J", "J", "A", "S", "O",
 // monthNames are the density strip's hover labels, January to December.
 var monthNames = [12]string{"January", "February", "March", "April", "May", "June",
 	"July", "August", "September", "October", "November", "December"}
+
+// hoursLabel renders seconds as hours and minutes for a hover label, e.g.
+// "12h 30m", "45m", "0m".
+func hoursLabel(sec int) string {
+	h, m := sec/3600, (sec%3600+30)/60
+	if m == 60 {
+		h++
+		m = 0
+	}
+	switch {
+	case h > 0 && m > 0:
+		return fmt.Sprintf("%dh %dm", h, m)
+	case h > 0:
+		return fmt.Sprintf("%dh", h)
+	default:
+		return fmt.Sprintf("%dm", m)
+	}
+}
 
 // barPct is a month's height in the density strip as a percent of the peak
 // month, with a floor so a non-zero month still shows.

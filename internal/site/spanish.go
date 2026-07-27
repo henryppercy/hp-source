@@ -18,10 +18,14 @@ var dsLevels = []int{0, 50, 150, 300, 600, 1000, 1500}
 // The current goal: reach spanishGoalHours by the end of the given month and
 // year. Change these three and the figure updates everywhere on the page.
 const (
-	spanishGoalHours = 800
-	spanishGoalYear  = 2026
-	spanishGoalMonth = time.December
+	spanishGoalHours = 1000
+	spanishGoalYear  = 2028
+	spanishGoalMonth = time.January
 )
+
+// spanishGoalWindow is the trailing span, in days, whose average pace projects
+// the finish date. Long enough to smooth out quiet weeks and ignore old gaps.
+const spanishGoalWindow = 90
 
 const spanishStandfirst = "The stats and trends which map my journey to functional " +
 	"Spanish fluency. Currently learning via Comprehensible Input."
@@ -79,7 +83,7 @@ func spanishView(
 		Articles:   articles,
 	}
 	v.Band = spanishBand(total)
-	v.Stats = spanishStats(days, total, dayCount, now, v.Goal.Delta)
+	v.Stats = spanishStats(days, now)
 	v.Months, v.PeakMonth = spanishMonths(days, now.Year())
 	v.PeakLabel = peakMonthLabel(v.Months, v.PeakMonth)
 	return v
@@ -124,12 +128,17 @@ func spanishBand(total int) templates.BandView {
 	}
 }
 
-// spanishStats are the six frontispiece figures: recent volume, streaks, the
-// year's total and where it stands against the goal.
-func spanishStats(days []spanishDay, total, dayCount int, now time.Time, goalDelta string) []templates.Stat {
-	cur, longest := streaks(days, dateOnly(now))
-	monthSec, yearSec := 0, 0
+// spanishStats are the six frontispiece figures, all leaning on the current year
+// and recent momentum: the week, month and year totals to date, this year's
+// daily average, the trailing pace and the live streak.
+func spanishStats(days []spanishDay, now time.Time) []templates.Stat {
+	cur, _ := streaks(days, dateOnly(now))
+	weekStart := dateOnly(now).AddDate(0, 0, -((int(now.Weekday()) + 6) % 7)) // back to Monday
+	weekSec, monthSec, yearSec := 0, 0, 0
 	for _, d := range days {
+		if !d.date.Before(weekStart) {
+			weekSec += d.sec
+		}
 		if d.date.Year() == now.Year() {
 			yearSec += d.sec
 			if d.date.Month() == now.Month() {
@@ -138,12 +147,12 @@ func spanishStats(days []spanishDay, total, dayCount int, now time.Time, goalDel
 		}
 	}
 	return []templates.Stat{
+		{Label: "this week", Value: durShort(weekSec)},
 		{Label: "this month", Value: hoursShort(monthSec)},
-		{Label: "daily average", Value: durShort(total / dayCount)},
-		{Label: "current streak", Value: fmt.Sprintf("%dd", cur)},
-		{Label: "longest streak", Value: fmt.Sprintf("%dd", longest)},
 		{Label: "this year", Value: hoursShort(yearSec)},
-		{Label: fmt.Sprintf("%dh goal", spanishGoalHours), Value: goalDelta},
+		{Label: fmt.Sprintf("daily avg, %d", now.Year()), Value: durShort(yearSec / now.YearDay())},
+		{Label: fmt.Sprintf("recent pace, %dd", spanishGoalWindow), Value: durShort(trailingPerDay(days, now, spanishGoalWindow))},
+		{Label: "current streak", Value: fmt.Sprintf("%dd", cur)},
 	}
 }
 
@@ -202,10 +211,7 @@ func spanishGoal(days []spanishDay, total int, start, now time.Time) templates.G
 	}
 
 	totalHours := float64(total) / 3600
-	elapsed := now.Sub(start).Hours() / 24
-	remaining := deadline.Sub(now).Hours() / 24
-	expected := target * elapsed / (span / 24)
-	ahead := totalHours - expected
+	remaining := deadline.Sub(now).Hours() / 24 // days left to the deadline
 
 	g := templates.GoalView{
 		Head:         fmt.Sprintf("%d hours by %s %d", spanishGoalHours, spanishGoalMonth, spanishGoalYear),
@@ -217,22 +223,59 @@ func spanishGoal(days []spanishDay, total int, start, now time.Time) templates.G
 	}
 	if g.Reached {
 		g.Verdict = "reached"
-		g.Delta = fmt.Sprintf("on %dh", spanishGoalHours)
 		g.Pace = fmt.Sprintf("%.0f hours in, target cleared", totalHours)
 		return g
 	}
-	if ahead >= 0 {
-		g.Verdict = fmt.Sprintf("%.0fh ahead", ahead)
-		g.Delta = fmt.Sprintf("+%.0fh", ahead)
-	} else {
-		g.Verdict = fmt.Sprintf("%.0fh behind", -ahead)
-		g.Delta = fmt.Sprintf("-%.0fh", -ahead)
-	}
+
+	needed := 0
 	if remaining > 0 {
-		perDay := (target - totalHours) / remaining * 3600
-		g.Pace = fmt.Sprintf("%s a day to finish on time, %s so far", durShort(int(perDay)), g.Verdict)
+		needed = int((target - totalHours) / remaining * 3600)
 	}
+	recent := trailingPerDay(days, now, spanishGoalWindow)
+	if recent <= 0 {
+		g.Verdict = "stalled"
+		g.Pace = fmt.Sprintf("%s a day from here to finish on time", durShort(needed))
+		return g
+	}
+
+	toGo := (target - totalHours) * 3600 / float64(recent) // days at the recent pace
+	finish := dateOnly(now).AddDate(0, 0, int(math.Ceil(toGo)))
+	g.Verdict = paceVerdict(deadline.Sub(finish).Hours() / 24)
+	g.Pace = fmt.Sprintf("%s a day lately, %s a day needed", durShort(recent), durShort(needed))
 	return g
+}
+
+// paceVerdict frames a projected finish against the deadline; days > 0 means the
+// projection lands that many days early, negative means late.
+func paceVerdict(days float64) string {
+	d := int(math.Round(math.Abs(days)))
+	if d < 14 {
+		return "est. on time"
+	}
+	word := "early"
+	if days < 0 {
+		word = "late"
+	}
+	if d < 60 {
+		return fmt.Sprintf("est. %dw %s", d/7, word)
+	}
+	return fmt.Sprintf("est. %dmo %s", d/30, word)
+}
+
+// trailingPerDay is the mean seconds logged per calendar day over the last window
+// days ending today, the recent pace the finish projection extrapolates from.
+func trailingPerDay(days []spanishDay, now time.Time, window int) int {
+	if window <= 0 {
+		return 0
+	}
+	cutoff := dateOnly(now).AddDate(0, 0, -(window - 1))
+	sum := 0
+	for _, d := range days {
+		if !d.date.Before(cutoff) {
+			sum += d.sec
+		}
+	}
+	return sum / window
 }
 
 // spanishCalendar builds the weekly heatmap columns from start to today, plus a

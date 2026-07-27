@@ -82,8 +82,8 @@ templ spanishFrontispiece(v SpanishView) {
 					<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ v.PeakLabel }</span>
 				</div>
 				<div class="flex items-end gap-1.5 border-b border-rule">
-					for _, sec := range v.Months {
-						<div class="flex-1">
+					for i, sec := range v.Months {
+						<div class="flex-1" title={ fmt.Sprintf("%s: %s", monthNames[i], hoursLabel(sec)) }>
 							<div class="flex h-16 items-end">
 								if sec > 0 {
 									<div class="w-full bg-accent" style={ fmt.Sprintf("height:%d%%", barPct(sec, v.PeakMonth)) }></div>
