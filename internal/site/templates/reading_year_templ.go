@@ -87,7 +87,7 @@ func ReadingYear(v YearView) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books))).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = logSection(v.Year, v.SetAside, fmt.Sprintf("The log; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books))).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -116,7 +116,7 @@ func ReadingYear(v YearView) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books))).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = logSection(v.Year, v.SetAside, fmt.Sprintf("The log; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books))).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

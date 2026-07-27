@@ -251,7 +251,7 @@ func spanishCalendar(secByDate map[string]int, start, today time.Time) templates
 			week.Days[i] = templates.CalDay{
 				InRange: true,
 				Class:   calClass(sec),
-				Title:   fmt.Sprintf("%s ; %s", fmtDay(d), durShort(sec)),
+				Title:   fmt.Sprintf("%s; %s", fmtDay(d), durShort(sec)),
 			}
 		}
 		cal.Weeks = append(cal.Weeks, week)

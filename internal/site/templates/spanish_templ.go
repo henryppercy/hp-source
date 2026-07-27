@@ -282,14 +282,14 @@ func spanishFrontispiece(v SpanishView) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if v.PeakMonth > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<div class=\"border-t border-fg px-5 pb-4 pt-5\"><div class=\"mb-4 flex items-baseline justify-between\"><span class=\"font-mono text-kicker tracking-kicker uppercase text-fainter\">by month ; ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<div class=\"border-t border-fg px-5 pb-4 pt-5\"><div class=\"mb-4 flex items-baseline justify-between\"><span class=\"font-mono text-kicker tracking-kicker uppercase text-fainter\">by month; ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", v.Year))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/spanish.templ`, Line: 81, Col: 118}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/spanish.templ`, Line: 81, Col: 117}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {

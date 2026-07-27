@@ -109,7 +109,7 @@ func dispatchCells(
 		r := cr[0]
 		meta := fmt.Sprintf("%d%%", r.Percent)
 		if r.DayCount > 0 {
-			meta += fmt.Sprintf(" ; day %d", r.DayCount)
+			meta += fmt.Sprintf("; day %d", r.DayCount)
 		}
 		cells = append(cells, templates.DispatchCell{
 			Kicker: "Open on the desk",
@@ -125,7 +125,7 @@ func dispatchCells(
 		dayCount := spanishDayCount(days, now)
 		meta := fmt.Sprintf("%dh logged", total/3600)
 		if cur > 0 {
-			meta += fmt.Sprintf(" ; %dd streak", cur)
+			meta += fmt.Sprintf("; %dd streak", cur)
 		}
 		cells = append(cells, templates.DispatchCell{
 			Kicker: "Spanish",
@@ -227,7 +227,7 @@ func bookMeta(e repo.ReadEntry) string {
 	if d := daysBetween(parseDate(e.DateStarted), parseDate(e.DateFinished)); d > 0 {
 		parts = append(parts, fmt.Sprintf("%d days", d))
 	}
-	return strings.Join(parts, " ; ")
+	return strings.Join(parts, "; ")
 }
 
 // spanishMilestones marks every 50 hours of Spanish input crossed, dated by the
@@ -245,7 +245,7 @@ func spanishMilestones(days []spanishDay, total int) []templates.FeedEntry {
 		out = append(out, templates.FeedEntry{
 			Kind: "milestone", Kicker: "Spanish", Date: date,
 			Title: fmt.Sprintf("%s hours", commaNum(step)), URL: "/spanish",
-			Meta: fmt.Sprintf("day %d ; 50h in %d days", daysBetween(start, date), daysBetween(prev, date)),
+			Meta: fmt.Sprintf("day %d; 50h in %d days", daysBetween(start, date), daysBetween(prev, date)),
 		})
 		prev = date
 	}
@@ -273,7 +273,7 @@ func readingNote(reads []repo.ReadEntry, year int) string {
 	open := len(currentReads(reads))
 	read := booksReadInYear(reads, year)
 	if open > 0 {
-		return fmt.Sprintf("%d open ; %d this year", open, read)
+		return fmt.Sprintf("%d open; %d this year", open, read)
 	}
 	return fmt.Sprintf("%d this year", read)
 }

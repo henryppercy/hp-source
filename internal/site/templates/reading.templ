@@ -22,7 +22,7 @@ templ Reading(v ReadingView) {
 			if v.Shelf.Total > 0 || hasInsights(v.Insights) {
 				<div class="mt-16 grid gap-x-10 gap-y-12 lg:grid-cols-[2fr_1fr] lg:items-start">
 					<div class="min-w-0">
-						@logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books)))
+						@logSection(v.Year, v.SetAside, fmt.Sprintf("The log; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books)))
 					</div>
 					<aside class="min-w-0 space-y-8">
 						@shelfGlance(v.Shelf)
@@ -33,7 +33,7 @@ templ Reading(v ReadingView) {
 				</div>
 			} else {
 				<section class="mt-16">
-					@logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books)))
+					@logSection(v.Year, v.SetAside, fmt.Sprintf("The log; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books)))
 				</section>
 			}
 		</div>
@@ -154,7 +154,7 @@ templ deskBook(r CurrentRead) {
 						<span>since { fmtDate(r.StartedAt) }</span>
 					}
 					if !r.StartedAt.IsZero() && r.DayCount > 0 {
-						<span class="text-ghost">;</span>
+						<span class="text-ghost -ml-3">;</span>
 					}
 					if r.DayCount > 0 {
 						<span>day { fmt.Sprintf("%d", r.DayCount) }</span>

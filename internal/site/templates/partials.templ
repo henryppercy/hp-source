@@ -8,7 +8,7 @@ templ location(city, code, coords string) {
 			<span class="font-mono text-meta text-accent">{ code }</span>
 		}
 		if coords != "" {
-			<span class="font-mono text-meta text-ghost">;</span>
+			<span class="font-mono text-meta text-ghost -ml-2">;</span>
 			<span class="font-mono text-kicker text-fainter tabular-nums whitespace-nowrap">{ coords }</span>
 		}
 	</span>
@@ -76,7 +76,7 @@ templ postRow(p PostListItem) {
 		<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
 			<span>{ readLabel(p.ReadMinutes) }</span>
 			if p.Location.Name != "" {
-				<span class="text-ghost">;</span>
+				<span class="text-ghost -ml-3">;</span>
 				<span>{ p.Location.Name }</span>
 			}
 		</div>
@@ -98,11 +98,11 @@ templ sliceCard(s SliceItem, permalink bool) {
 			<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
 				<time>{ fmtDateTime(s.PublishedAt) }</time>
 				if s.Location.Name != "" {
-					<span class="text-ghost">;</span>
+					<span class="text-ghost -ml-3">;</span>
 					<span>{ s.Location.Name }</span>
 				}
 				if permalink {
-					<span class="text-ghost">;</span>
+					<span class="text-ghost -ml-3">;</span>
 					<a href={ s.URL + "/" } class="hover:text-accent">permalink</a>
 				}
 			</div>

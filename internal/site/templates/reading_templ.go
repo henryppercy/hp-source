@@ -80,7 +80,7 @@ func Reading(v ReadingView) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books))).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = logSection(v.Year, v.SetAside, fmt.Sprintf("The log; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books))).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -113,7 +113,7 @@ func Reading(v ReadingView) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = logSection(v.Year, v.SetAside, fmt.Sprintf("The log ; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books))).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = logSection(v.Year, v.SetAside, fmt.Sprintf("The log; %d", v.Almanac.Year), fmt.Sprintf("%d books", len(v.Year.Books))).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -655,7 +655,7 @@ func deskBook(r CurrentRead) templ.Component {
 			}
 		}
 		if !r.StartedAt.IsZero() && r.DayCount > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span class=\"text-ghost\">;</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span class=\"text-ghost -ml-3\">;</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

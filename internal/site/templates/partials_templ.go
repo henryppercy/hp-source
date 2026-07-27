@@ -67,7 +67,7 @@ func location(city, code, coords string) templ.Component {
 			}
 		}
 		if coords != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span class=\"font-mono text-meta text-ghost\">;</span> <span class=\"font-mono text-kicker text-fainter tabular-nums whitespace-nowrap\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span class=\"font-mono text-meta text-ghost -ml-2\">;</span> <span class=\"font-mono text-kicker text-fainter tabular-nums whitespace-nowrap\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -492,7 +492,7 @@ func postRow(p PostListItem) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if p.Location.Name != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<span class=\"text-ghost\">;</span> <span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<span class=\"text-ghost -ml-3\">;</span> <span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -576,7 +576,7 @@ func sliceCard(s SliceItem, permalink bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if s.Location.Name != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"text-ghost\">;</span> <span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"text-ghost -ml-3\">;</span> <span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -595,7 +595,7 @@ func sliceCard(s SliceItem, permalink bool) templ.Component {
 			}
 		}
 		if permalink {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span class=\"text-ghost\">;</span> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span class=\"text-ghost -ml-3\">;</span> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
