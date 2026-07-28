@@ -153,11 +153,18 @@ func countStatus(reads []repo.ReadEntry, status string) int {
 }
 
 func currentReads(reads []repo.ReadEntry) []templates.CurrentRead {
-	var out []templates.CurrentRead
+	var reading []repo.ReadEntry
 	for _, e := range reads {
-		if e.Status != "reading" {
-			continue
+		if e.Status == "reading" {
+			reading = append(reading, e)
 		}
+	}
+	// Most recently logged first, so the book last picked up is the featured one.
+	sort.SliceStable(reading, func(i, j int) bool {
+		return reading[i].LastLoggedAt > reading[j].LastLoggedAt
+	})
+	out := make([]templates.CurrentRead, 0, len(reading))
+	for _, e := range reading {
 		started := parseDate(e.DateStarted)
 		out = append(out, templates.CurrentRead{
 			Title:       e.Title,

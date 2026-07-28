@@ -148,11 +148,13 @@ type TopicCount struct {
 }
 
 // DispatchCell is one cell of the dispatch strip: a freshest-fact pull from a
-// single feed. Italic sets the lead in serif italic (for a book title). URL,
-// when set, makes the cell a link into its section.
+// single feed. Italic sets the lead in serif italic (for a book title). Sub is
+// an optional muted line under the lead. URL, when set, makes the cell a link
+// into its section.
 type DispatchCell struct {
 	Kicker string
 	Lead   string
+	Sub    string
 	Italic bool
 	Meta   string
 	URL    string

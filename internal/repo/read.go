@@ -34,6 +34,7 @@ type ReadEntry struct {
 	CurrentPage  int
 	DateStarted  string
 	DateFinished string
+	LastLoggedAt string
 }
 
 // ShelfEntry is an owned book with no read yet: the antilibrary.
@@ -154,7 +155,10 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
                 (SELECT rl.page FROM read_log rl
                  WHERE rl.read_id = rd.id AND rl.page IS NOT NULL
                  ORDER BY rl.id DESC LIMIT 1),
-                rd.date_started, rd.date_finished
+                rd.date_started, rd.date_finished,
+                (SELECT rl.created_at FROM read_log rl
+                 WHERE rl.read_id = rd.id
+                 ORDER BY rl.id DESC LIMIT 1)
          FROM read rd
          JOIN book b ON b.id = rd.book_id
          JOIN genre g ON g.id = b.genre_id
@@ -171,11 +175,11 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 	var entries []ReadEntry
 	for rows.Next() {
 		var e ReadEntry
-		var author, coverImage, format, source, dateStarted, dateFinished *string
+		var author, coverImage, format, source, dateStarted, dateFinished, lastLogged *string
 		var rating, pageCount, currentPage, secondHand *int
 		if err := rows.Scan(
 			&e.Title, &author, &coverImage, &e.Genre, &e.BookType, &format, &source, &secondHand,
-			&e.Status, &rating, &pageCount, &currentPage, &dateStarted, &dateFinished,
+			&e.Status, &rating, &pageCount, &currentPage, &dateStarted, &dateFinished, &lastLogged,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan read: %w", err)
 		}
@@ -206,6 +210,9 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 		}
 		if dateFinished != nil {
 			e.DateFinished = *dateFinished
+		}
+		if lastLogged != nil {
+			e.LastLoggedAt = *lastLogged
 		}
 		entries = append(entries, e)
 	}

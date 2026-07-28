@@ -74,6 +74,9 @@ templ dispatchCell(c DispatchCell, span bool) {
 
 templ dispatchBody(c DispatchCell) {
 	<p class={ "font-serif text-body text-fg-body leading-snug group-hover:text-accent", templ.KV("italic", c.Italic) }>{ c.Lead }</p>
+	if c.Sub != "" {
+		<p class="mt-1 font-sans text-meta text-muted">{ c.Sub }</p>
+	}
 	if c.Meta != "" {
 		<span class="mt-auto pt-3 font-mono text-meta text-faint tabular-nums">{ c.Meta }</span>
 	}

@@ -52,9 +52,12 @@ templ logSection(y FinishedYear, aside []FinishedBook, head, note string) {
 templ frontispiece(v ReadingView) {
 	<div class="border border-fg">
 		<div class="grid lg:grid-cols-[2fr_3fr]">
-			<div class="border-b border-fg p-6 lg:border-b-0 lg:border-r">
+			<div class="flex flex-col border-b border-fg p-6 lg:border-b-0 lg:border-r">
 				if len(v.Reading) > 0 {
-					@deskBook(v.Reading[0])
+					<div class="grow">
+						@deskBook(v.Reading[0])
+					</div>
+					@deskCompanions(v.Reading)
 				} else {
 					<div class="flex h-full min-h-[11rem] items-center">
 						<p class="font-serif italic text-muted">{ v.DeskEmpty }</p>
@@ -162,6 +165,39 @@ templ deskBook(r CurrentRead) {
 				</div>
 			</div>
 		</div>
+	</div>
+}
+
+// deskCompanions lists the other open books beneath the desk book: up to two as
+// bare lines with their progress, any beyond that folded into a count.
+templ deskCompanions(reads []CurrentRead) {
+	if len(reads) > 1 {
+		<ul class="mt-3 space-y-1 border-t border-rule pt-3">
+			for i, r := range reads[1:] {
+				if i < 2 {
+					<li>
+						@companionLine(r)
+					</li>
+				}
+			}
+			if len(reads) > 3 {
+				<li class="font-mono text-meta text-faint">{ fmt.Sprintf("+%d more", len(reads)-3) }</li>
+			}
+		</ul>
+	}
+}
+
+// companionLine is a secondary open book on a single line: title and author left
+// together as on the shelf, its progress percent pushed to the right.
+templ companionLine(r CurrentRead) {
+	<div class="flex items-baseline justify-between gap-x-2">
+		<div class="min-w-0 truncate">
+			<span class="font-serif italic text-body text-fg">{ r.Title }</span>
+			<span class="ml-2 font-sans text-label text-muted">{ r.Author }</span>
+		</div>
+		if r.Percent > 0 {
+			<span class="shrink-0 font-mono text-meta text-faint tabular-nums">{ fmt.Sprintf("%d%%", r.Percent) }</span>
+		}
 	</div>
 }
 

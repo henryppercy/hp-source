@@ -111,9 +111,16 @@ func dispatchCells(
 		if r.DayCount > 0 {
 			meta += fmt.Sprintf("; day %d", r.DayCount)
 		}
+		kicker := "Open on the desk"
+		var sub string
+		if n := len(cr) - 1; n > 0 {
+			kicker += fmt.Sprintf("; %d", len(cr))
+			sub = fmt.Sprintf("+%d more open", n)
+		}
 		cells = append(cells, templates.DispatchCell{
-			Kicker: "Open on the desk",
+			Kicker: kicker,
 			Lead:   r.Title + ", " + r.Author,
+			Sub:    sub,
 			Italic: true,
 			Meta:   meta,
 			URL:    "/reading",
