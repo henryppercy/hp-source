@@ -723,7 +723,7 @@ func deskCompanions(reads []CurrentRead) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(reads) > 1 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<ul class=\"mt-3 space-y-1 border-t border-rule pt-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<ul class=\"mt-5 space-y-1 border-t border-rule pt-5\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
