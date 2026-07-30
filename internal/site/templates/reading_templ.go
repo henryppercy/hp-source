@@ -197,7 +197,7 @@ func frontispiece(v ReadingView) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"border border-fg\"><div class=\"grid lg:grid-cols-[2fr_3fr]\"><div class=\"flex flex-col border-b border-fg p-6 lg:border-b-0 lg:border-r\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"border border-fg\"><div class=\"grid lg:grid-cols-[2fr_3fr]\"><div class=\"flex min-w-0 flex-col border-b border-fg p-6 lg:border-b-0 lg:border-r\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -237,12 +237,12 @@ func frontispiece(v ReadingView) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div><div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div><div class=\"min-w-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if v.Almanac.Books > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<dl class=\"grid h-full auto-rows-fr grid-cols-3 gap-px bg-rule-soft\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<dl class=\"grid h-full auto-rows-fr grid-cols-2 gap-px bg-rule-soft sm:grid-cols-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -314,7 +314,7 @@ func readingPlate(a AlmanacView) templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"border border-fg\"><dl class=\"grid grid-cols-3 gap-px bg-rule-soft lg:grid-cols-6\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"border border-fg\"><dl class=\"grid grid-cols-2 gap-px bg-rule-soft sm:grid-cols-3 lg:grid-cols-6\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
