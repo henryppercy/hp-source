@@ -18,8 +18,8 @@ var dsLevels = []int{0, 50, 150, 300, 600, 1000, 1500}
 // The current goal: reach spanishGoalHours by the end of the given month and
 // year. Change these three and the figure updates everywhere on the page.
 const (
-	spanishGoalHours = 1500
-	spanishGoalYear  = 2028
+	spanishGoalHours = 800
+	spanishGoalYear  = 2027
 	spanishGoalMonth = time.January
 )
 
