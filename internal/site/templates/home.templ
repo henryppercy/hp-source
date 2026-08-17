@@ -16,9 +16,10 @@ templ Home(v HomeView) {
 					@homeStream(v.Stream)
 				</div>
 				<aside class="space-y-8 xl:col-start-3">
-					@factCard("By the numbers", v.Stats)
-					@subjectsCard(v.Subjects)
+					@recentReadsCard(v.Reads)
+					@spanishLevelsCard(v.Levels)
 					@homeIndexCard(v.Index)
+					@subjectsCard(v.Subjects)
 				</aside>
 			</div>
 		</div>
@@ -46,11 +47,13 @@ templ homeNameplate(c HomeCopy) {
 templ homeDispatch(cells []DispatchCell, c HomeCopy) {
 	if len(cells) > 0 {
 		<section class="mb-16 border border-fg">
-			<div class={ "grid grid-cols-2 gap-px bg-rule-soft",
+			<div
+				class={ "grid grid-cols-2 gap-px bg-rule-soft",
 				templ.KV("lg:grid-cols-5", len(cells) == 5),
 				templ.KV("lg:grid-cols-4", len(cells) == 4),
 				templ.KV("lg:grid-cols-3", len(cells) == 3),
-				templ.KV("lg:grid-cols-2", len(cells) <= 2) }>
+				templ.KV("lg:grid-cols-2", len(cells) <= 2) }
+			>
 				for i, c := range cells {
 					@dispatchCell(c, i == 0 && len(cells)%2 == 1)
 				}
@@ -169,6 +172,85 @@ templ streamCard(e FeedEntry) {
 	}
 }
 
+// recentReadsCard is the rail's shelf: a grid of the most recent covers, each
+// linking into the reading section with its detail on hover.
+templ recentReadsCard(reads []RecentRead) {
+	if len(reads) > 0 {
+		<div class="border border-rule-soft p-5">
+			<header class="mb-4 border-b border-rule pb-3">
+				<h3 class="font-mono text-kicker tracking-kicker uppercase text-fg">Recently read</h3>
+			</header>
+			<ul class="grid grid-cols-4 gap-2.5">
+				for _, r := range reads {
+					<li>
+						<a href={ r.URL } title={ r.Meta } class="block">
+							if r.ImageURL != "" {
+								<img src={ r.ImageURL } alt={ r.Title } class="aspect-[2/3] w-full object-cover"/>
+							} else {
+								<div class="flex aspect-[2/3] w-full items-center justify-center border border-rule bg-surface p-1.5">
+									<span class="font-serif italic text-meta text-muted leading-tight">{ r.Title }</span>
+								</div>
+							}
+						</a>
+					</li>
+				}
+			</ul>
+		</div>
+	}
+}
+
+// spanishLevelsCard is the rail's Dreaming Spanish roadmap: the running total at
+// the head over the hour milestones, each reached mark dated and linked to its
+// post, unreached ones faint and showing the hours still to go.
+templ spanishLevelsCard(v DSLevelsView) {
+	if len(v.Levels) > 0 {
+		<div class="border border-rule-soft p-5">
+			<header class="mb-4 flex items-baseline justify-between gap-3 border-b border-rule pb-3 text-fg">
+				<h3 class="font-mono text-kicker tracking-kicker uppercase">{ v.Head }</h3>
+				<span class="font-mono text-meta tabular-nums">{ v.Figure }</span>
+			</header>
+			<ul class="space-y-2.5">
+				for _, l := range v.Levels {
+					<li>
+						@levelRow(l)
+					</li>
+				}
+			</ul>
+		</div>
+	}
+}
+
+// levelRow is one milestone line: the hour mark left, a dotted leader carrying
+// the eye across to its date or the hours still to go on the right. Reached marks
+// with a post link the whole row through to it.
+templ levelRow(l DSLevel) {
+	if l.Reached && l.URL != "" {
+		<a href={ l.URL } class="group flex items-baseline">
+			<span class="shrink-0 font-mono text-label text-fg tabular-nums group-hover:text-accent">{ l.Label }</span>
+			<span class="mx-3 grow border-b border-dotted border-rule"></span>
+			<span class="shrink-0 font-mono text-meta text-muted tabular-nums group-hover:text-accent">{ l.Date }</span>
+		</a>
+	} else if l.Reached {
+		<div class="flex items-baseline">
+			<span class="shrink-0 font-mono text-label text-fg tabular-nums">{ l.Label }</span>
+			<span class="mx-3 grow border-b border-dotted border-rule"></span>
+			<span class="shrink-0 font-mono text-meta text-muted tabular-nums">{ l.Date }</span>
+		</div>
+	} else {
+		<div class="flex items-baseline">
+			<span
+				class={ "shrink-0 font-mono text-label tabular-nums",
+				templ.KV("text-faint", l.Next), templ.KV("text-ghost", !l.Next) }
+			>{ l.Label }</span>
+			<span class="mx-3 grow border-b border-dotted border-rule"></span>
+			<span
+				class={ "shrink-0 font-mono text-meta tabular-nums",
+				templ.KV("text-faint", l.Next), templ.KV("text-ghost", !l.Next) }
+			>{ l.ToGo }</span>
+		</div>
+	}
+}
+
 // subjectsCard is the margin's list of subjects, most-written first, each
 // linking to its topic feed.
 templ subjectsCard(topics []TopicCount) {
@@ -181,8 +263,9 @@ templ subjectsCard(topics []TopicCount) {
 				for _, t := range topics {
 					<li>
 						<a href={ t.URL } class="group flex items-baseline gap-3">
-							<span class="grow font-serif text-body text-fg group-hover:text-accent">{ t.Name }</span>
-							<span class="font-mono text-label text-muted tabular-nums">{ fmt.Sprintf("%d", t.Count) }</span>
+							<span class="font-sans text-label text-fg group-hover:text-accent">{ t.Name }</span>
+							<span class="grow border-b border-dotted border-rule"></span>
+							<span class="font-mono text-meta text-faint tabular-nums">{ fmt.Sprintf("%d", t.Count) }</span>
 						</a>
 					</li>
 				}
@@ -204,13 +287,15 @@ templ homeIndexCard(rows []IndexRow) {
 					if r.URL != "" {
 						<a href={ r.URL } class="group flex items-baseline gap-3">
 							<span class="font-mono text-meta text-fainter tabular-nums">{ r.Num }</span>
-							<span class="grow font-sans text-label text-fg group-hover:text-accent">{ r.Label }</span>
+							<span class="font-sans text-label text-fg group-hover:text-accent">{ r.Label }</span>
+							<span class="grow border-b border-dotted border-rule"></span>
 							<span class="font-mono text-meta text-faint tabular-nums">{ r.Note }</span>
 						</a>
 					} else {
 						<div class="flex items-baseline gap-3">
 							<span class="font-mono text-meta text-ghost tabular-nums">{ r.Num }</span>
-							<span class="grow font-sans text-label text-ghost">{ r.Label }</span>
+							<span class="font-sans text-label text-ghost">{ r.Label }</span>
+							<span class="grow border-b border-dotted border-rule-soft"></span>
 							<span class="font-mono text-meta text-ghost tabular-nums">{ r.Note }</span>
 						</div>
 					}

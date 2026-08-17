@@ -17,6 +17,9 @@ import (
 // homeStreamLimit caps the merged stream on the frontispiece.
 const homeStreamLimit = 6
 
+// homeShelfLimit caps the recently-read cover shelf in the rail
+const homeShelfLimit = 12
+
 // homeCurrently is the free-text "what I'm up to" line in the dispatch strip.
 const homeCurrently = "Celebrating 500 hours of Spanish input."
 
@@ -62,7 +65,8 @@ func homeView(
 	return templates.HomeView{
 		Copy:     homeCopy,
 		Dispatch: dispatchCells(reads, days, total, articles, notes, now),
-		Stats:    colophonStats(reads, articles, notes, total),
+		Reads:    recentReads(reads, homeShelfLimit),
+		Levels:   spanishLevels(days, total, articles),
 		Subjects: topicCounts(posts),
 		Stream:   lifeStream(articles, notes, reads, spanishMilestones(days, total)),
 		Index:    indexRows(articles, notes, reads, total),
@@ -166,19 +170,83 @@ func dispatchCells(
 	return cells
 }
 
-// colophonStats are the figures summing up the whole notebook.
-func colophonStats(
-	reads []repo.ReadEntry,
-	articles []templates.PostListItem,
-	notes []templates.SliceItem,
-	total int,
-) []templates.Stat {
-	return []templates.Stat{
-		{Label: "articles filed", Value: fmt.Sprintf("%d", len(articles))},
-		{Label: "notes made", Value: fmt.Sprintf("%d", len(notes))},
-		{Label: "books read", Value: fmt.Sprintf("%d", countStatus(reads, "finished"))},
-		{Label: "spanish hours logged", Value: fmt.Sprintf("%d", total/3600)},
+// recentReads are the last n finished books for the rail's cover shelf, newest
+// finish first.
+func recentReads(reads []repo.ReadEntry, n int) []templates.RecentRead {
+	var fin []repo.ReadEntry
+	for _, e := range reads {
+		if e.Status == "finished" {
+			fin = append(fin, e)
+		}
 	}
+	sort.SliceStable(fin, func(i, j int) bool {
+		return parseDate(fin[i].DateFinished).After(parseDate(fin[j].DateFinished))
+	})
+	if len(fin) > n {
+		fin = fin[:n]
+	}
+	out := make([]templates.RecentRead, 0, len(fin))
+	for _, e := range fin {
+		meta := e.Title
+		if e.Author != "" {
+			meta += ", " + e.Author
+		}
+		if e.Rating > 0 {
+			meta += fmt.Sprintf("; %g/5", float64(e.Rating)/2)
+		}
+		if df := parseDate(e.DateFinished); !df.IsZero() {
+			meta += "; finished " + df.Format("2 Jan 2006")
+		}
+		out = append(out, templates.RecentRead{
+			Title:    e.Title,
+			ImageURL: coverURL(e.CoverImage),
+			URL:      "/reading",
+			Meta:     meta,
+		})
+	}
+	return out
+}
+
+// spanishLevels is the rail's Dreaming Spanish: each hour milestone with
+// the date it was reached and a link to its post, or the hours still to go.
+func spanishLevels(days []spanishDay, total int, articles []templates.PostListItem) templates.DSLevelsView {
+	if len(days) == 0 {
+		return templates.DSLevelsView{}
+	}
+	totalHours := total / 3600
+	v := templates.DSLevelsView{
+		Head:   "Spanish Milestones",
+		Figure: fmt.Sprintf("%dh", totalHours),
+	}
+	nextMarked := false
+	for _, t := range dsLevels {
+		lvl := templates.DSLevel{Label: fmt.Sprintf("%dh", t)}
+		if totalHours >= t {
+			lvl.Reached = true
+			lvl.Date = crossingDate(days, t).Format("02 Jan 2006")
+			lvl.URL = milestonePost(articles, t)
+		} else if !nextMarked {
+			nextMarked = true
+			lvl.Next = true
+			lvl.ToGo = fmt.Sprintf("in %dh", t-totalHours)
+		} else {
+			lvl.ToGo = fmt.Sprintf("%dh", t-totalHours)
+		}
+		v.Levels = append(v.Levels, lvl)
+	}
+	return v
+}
+
+// milestonePost finds the article marking an hour milestone by the "-{hours}-hours"
+// slug convention, returning its link or "" when none exists.
+func milestonePost(articles []templates.PostListItem, hours int) string {
+	suffix := fmt.Sprintf("-%d-hours", hours)
+	for _, a := range articles {
+		if strings.HasSuffix(a.Slug, suffix) {
+			return a.URL + "/"
+		}
+	}
+	return ""
 }
 
 // lifeStream folds the feeds into one reverse-chronological stream: articles,

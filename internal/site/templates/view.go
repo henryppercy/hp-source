@@ -127,16 +127,47 @@ type PostListItem struct {
 	Location    Place
 }
 
-// HomeView is the frontispiece: the dispatch strip's live cells, the colophon
-// stat cells, the merged stream of everything, and the section index. The
-// nameplate and bio prose are static and live in the template.
+// HomeView is the frontispiece: the dispatch strip's live cells, the margin's
+// recently-read shelf and Spanish streak ribbon, the merged stream of
+// everything, and the section index. The nameplate and bio prose are static and
+// live in the template.
 type HomeView struct {
 	Copy     HomeCopy
 	Dispatch []DispatchCell
-	Stats    []Stat
+	Reads    []RecentRead
+	Levels   DSLevelsView
 	Subjects []TopicCount
 	Stream   []FeedEntry
 	Index    []IndexRow
+}
+
+// RecentRead is one cover in the home rail's recently-read shelf. Meta is the
+// hover detail (title, author, pace); URL links into the reading section.
+type RecentRead struct {
+	Title    string
+	ImageURL string
+	URL      string
+	Meta     string
+}
+
+// DSLevelsView is the rail's Dreaming Spanish roadmap: the running total over a
+// list of hour milestones, each dated when reached or pending.
+type DSLevelsView struct {
+	Head   string
+	Figure string
+	Levels []DSLevel
+}
+
+// DSLevel is one milestone in the roadmap: its hour threshold, and either the
+// date it was reached (with a link to the related post, where one exists) or the
+// hours still to go. Next marks the immediate target, kept in solid weight.
+type DSLevel struct {
+	Label   string // "600h"
+	Reached bool
+	Date    string // "14 Mar 2024" when reached
+	URL     string // related post, reached milestones only
+	ToGo    string // "600h to go" for every unreached milestone
+	Next    bool   // the immediate next target: kept solid, the rest ghosted
 }
 
 // TopicCount is one subject in the margin's subjects card: a topic, its feed,
