@@ -401,6 +401,27 @@ func hoursLabel(sec int) string {
 	}
 }
 
+// commas groups a whole number with thousands separators, e.g. 2312 -> "2,312".
+func commas(n int) string {
+	s := strconv.Itoa(n)
+	neg := ""
+	if n < 0 {
+		neg, s = "-", s[1:]
+	}
+	for i := len(s) - 3; i > 0; i -= 3 {
+		s = s[:i] + "," + s[i:]
+	}
+	return neg + s
+}
+
+// plural returns "book" or "books" to match the count.
+func plural(n int, word string) string {
+	if n == 1 {
+		return word
+	}
+	return word + "s"
+}
+
 // barPct is a month's height in the density strip as a percent of the peak
 // month, with a floor so a non-zero month still shows.
 func barPct(count, peak int) int {
@@ -414,8 +435,8 @@ func barPct(count, peak int) int {
 }
 
 // AlmanacView is the year's reading tally for the frontispiece. AvgRating and
-// AvgPace are display-ready, "—" when there is nothing to average. Months holds
-// a per-month finished count for the density strip, indexed January to December.
+// AvgPace are display-ready, "—" when there is nothing to average. MonthsPages
+// holds per-month pages read for the density strip, indexed January to December.
 type AlmanacView struct {
 	Year           int
 	Books          int
@@ -427,8 +448,9 @@ type AlmanacView struct {
 	SecondHandPct  string // percent that came second-hand
 	SecondHandNote string
 	Abandoned      int
-	Months         [12]int
-	PeakMonth      int
+	MonthsPages    [12]int // pages read per month
+	MonthsBooks    [12]int // books finished per month
+	PeakMonth      int     // pages in the busiest month, for scaling the bars
 }
 
 // CurrentRead is a book open on the desk now. DayCount is days since started;

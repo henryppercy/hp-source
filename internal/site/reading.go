@@ -313,9 +313,10 @@ func almanac(reads []repo.ReadEntry, year int) templates.AlmanacView {
 		a.Books++
 		a.Pages += e.PageCount
 		m := int(finished.Month()) - 1
-		a.Months[m]++
-		if a.Months[m] > a.PeakMonth {
-			a.PeakMonth = a.Months[m]
+		a.MonthsPages[m] += e.PageCount
+		a.MonthsBooks[m]++
+		if a.MonthsPages[m] > a.PeakMonth {
+			a.PeakMonth = a.MonthsPages[m]
 		}
 		if e.BookType == "fiction" {
 			fiction++

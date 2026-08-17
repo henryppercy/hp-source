@@ -410,32 +410,32 @@ func monthStrip(a AlmanacView) templ.Component {
 			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div class=\"border-t border-fg px-5 pb-4 pt-5\"><div class=\"mb-4 flex items-baseline justify-between\"><span class=\"font-mono text-kicker tracking-kicker uppercase text-fainter\">by month</span> <span class=\"font-mono text-kicker tracking-kicker uppercase text-fainter\">peak ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div class=\"border-t border-fg px-5 pb-4 pt-5\"><div class=\"mb-4 flex items-baseline justify-between\"><span class=\"font-mono text-kicker tracking-kicker uppercase text-fainter\">pages by month</span> <span class=\"font-mono text-kicker tracking-kicker uppercase text-fainter\">peak ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", a.PeakMonth))
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(commas(a.PeakMonth))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 111, Col: 115}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 111, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</span></div><div class=\"flex items-end gap-1.5 border-b border-rule\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, " pages</span></div><div class=\"flex items-end gap-1.5 border-b border-rule\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for i, c := range a.Months {
+		for i, c := range a.MonthsPages {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"flex-1\" title=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%s: %d", monthNames[i], c))
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%s pages, %d %s", commas(c), a.MonthsBooks[i], plural(a.MonthsBooks[i], "book")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 115, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 115, Col: 125}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 			if templ_7745c5c3_Err != nil {
@@ -473,7 +473,7 @@ func monthStrip(a AlmanacView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for i := range a.Months {
+		for i := range a.MonthsPages {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"flex-1 text-center font-mono text-kicker text-fainter\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
