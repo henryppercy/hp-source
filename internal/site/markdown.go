@@ -16,7 +16,9 @@ import (
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
+	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/text"
+	"github.com/yuin/goldmark/util"
 )
 
 // imageBase is where local images are served from. Content references bare
@@ -64,6 +66,7 @@ func newMarkdown(engine *kazari.Engine) goldmark.Markdown {
 		goldmark.WithExtensions(
 			extension.GFM,
 			extension.Footnote,
+			figureExt{},
 			kazarimd.New(engine),
 		),
 		goldmark.WithParserOptions(
@@ -97,6 +100,80 @@ func resolveImages(doc ast.Node) {
 		}
 		return ast.WalkContinue, nil
 	})
+}
+
+// figureNode wraps an image that is the sole content of a paragraph, so it
+// renders as <figure> with its alt text as a visible <figcaption>. Inline images
+// are untouched.
+type figureNode struct {
+	ast.BaseBlock
+}
+
+var kindFigure = ast.NewNodeKind("Figure")
+
+func (*figureNode) Kind() ast.NodeKind { return kindFigure }
+
+func (n *figureNode) Dump(source []byte, level int) { ast.DumpHelper(n, source, level, nil, nil) }
+
+// figureExt wires the figure transformer and renderer into goldmark.
+type figureExt struct{}
+
+func (figureExt) Extend(m goldmark.Markdown) {
+	m.Parser().AddOptions(parser.WithASTTransformers(
+		util.Prioritized(figureTransformer{}, 500),
+	))
+	m.Renderer().AddOptions(renderer.WithNodeRenderers(
+		util.Prioritized(figureRenderer{}, 500),
+	))
+}
+
+// figureTransformer replaces each paragraph holding a single image with a figure
+// node, lifting the image out of the <p> that would otherwise wrap it.
+type figureTransformer struct{}
+
+func (figureTransformer) Transform(doc *ast.Document, _ text.Reader, _ parser.Context) {
+	var paras []*ast.Paragraph
+	ast.Walk(doc, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
+		if p, ok := n.(*ast.Paragraph); entering && ok && loneImage(p) {
+			paras = append(paras, p)
+		}
+		return ast.WalkContinue, nil
+	})
+	for _, p := range paras {
+		fig := &figureNode{}
+		fig.AppendChild(fig, p.FirstChild())
+		p.Parent().ReplaceChild(p.Parent(), p, fig)
+	}
+}
+
+func loneImage(p *ast.Paragraph) bool {
+	_, ok := p.FirstChild().(*ast.Image)
+	return ok && p.ChildCount() == 1
+}
+
+// figureRenderer emits <figure><img><figcaption>alt</figcaption></figure>. The
+// inner image renders via goldmark's default (carrying the alt attribute); the
+// caption repeats that alt text as visible copy.
+type figureRenderer struct{}
+
+func (r figureRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
+	reg.Register(kindFigure, r.render)
+}
+
+func (figureRenderer) render(w util.BufWriter, source []byte, n ast.Node, entering bool) (ast.WalkStatus, error) {
+	if entering {
+		w.WriteString("<figure>\n")
+		return ast.WalkContinue, nil
+	}
+	if img, ok := n.FirstChild().(*ast.Image); ok {
+		if caption := nodeText(img, source); caption != "" {
+			w.WriteString("<figcaption>")
+			w.Write(util.EscapeHTML([]byte(caption)))
+			w.WriteString("</figcaption>\n")
+		}
+	}
+	w.WriteString("</figure>\n")
+	return ast.WalkContinue, nil
 }
 
 func imageURL(dest string) string {
