@@ -163,9 +163,6 @@ func loadImageConfig() {
 	if p := os.Getenv("HP_IMAGE_PATTERN"); p != "" {
 		imagePattern = p
 	}
-	if d := os.Getenv("HP_IMAGE_DEFAULTS"); d != "" {
-		imageDefaults = strings.Split(d, ",")
-	}
 }
 
 // sliceItem renders one slice post into a timeline item, shared by the feed and
