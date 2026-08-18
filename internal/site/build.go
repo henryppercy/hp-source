@@ -48,6 +48,7 @@ func (b *builder) Build() error {
 		return fmt.Errorf("failed to clear output directory: %w", err)
 	}
 	templates.Chrome = chrome
+	loadImageConfig()
 
 	posts, err := b.repo.ListPublishedPosts()
 	if err != nil {
@@ -154,6 +155,17 @@ func (b *builder) Build() error {
 		return err
 	}
 	return b.writeCodeCSS()
+}
+
+// loadImageConfig overrides the image URL pattern and default transforms from
+// the environment, so images can be repointed without a rebuild.
+func loadImageConfig() {
+	if p := os.Getenv("HP_IMAGE_PATTERN"); p != "" {
+		imagePattern = p
+	}
+	if d := os.Getenv("HP_IMAGE_DEFAULTS"); d != "" {
+		imageDefaults = strings.Split(d, ",")
+	}
 }
 
 // sliceItem renders one slice post into a timeline item, shared by the feed and

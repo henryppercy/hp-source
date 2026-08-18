@@ -35,7 +35,7 @@ func coverURL(file string) string {
 	if file == "" {
 		return ""
 	}
-	return imageBase + "/" + file
+	return imageURL(file)
 }
 
 func titleCase(s string) string {

@@ -21,10 +21,13 @@ import (
 	"github.com/yuin/goldmark/util"
 )
 
-// imageBase is where local images are served from. Content references bare
-// filenames (glasto.jpg); resolveImages and coverURL prepend this. Swap it for
-// a CDN host to relocate every image without touching content.
-const imageBase = "/static/images"
+// imagePattern builds a content image URL from a bare name: {path} is the name,
+// {options} (optional) takes comma-joined transform directives. Swap it to
+// relocate or transform every image without touching content.
+var imagePattern = "/static/images/{path}"
+
+// imageDefaults are transform directives applied before any per-call options.
+var imageDefaults []string
 
 // codeTheme is the restrained syntax palette kazari resolves by name: keywords
 // in the accent, strings and numbers in one warm tone, comments and punctuation
@@ -90,7 +93,7 @@ func render(md goldmark.Markdown, source string) (template.HTML, []templates.TOC
 	return template.HTML(buf.String()), toc, nil
 }
 
-// resolveImages rewrites local image destinations under imageBase, so bodies
+// resolveImages rewrites local image destinations through imageURL, so bodies
 // can use bare filenames. Only image nodes are touched (links are left alone),
 // as are external (scheme/protocol-relative) and already-based URLs.
 func resolveImages(doc ast.Node) {
@@ -176,12 +179,15 @@ func (figureRenderer) render(w util.BufWriter, source []byte, n ast.Node, enteri
 	return ast.WalkContinue, nil
 }
 
-func imageURL(dest string) string {
-	if dest == "" || hasScheme(dest) ||
-		strings.HasPrefix(dest, "//") || strings.HasPrefix(dest, imageBase+"/") {
-		return dest
+// imageURL resolves a bare image name through imagePattern, prepending
+// imageDefaults to any per-call options. External URLs are returned untouched.
+func imageURL(name string, opts ...string) string {
+	if name == "" || hasScheme(name) || strings.HasPrefix(name, "//") {
+		return name
 	}
-	return imageBase + "/" + strings.TrimPrefix(dest, "/")
+	transforms := append(append([]string{}, imageDefaults...), opts...)
+	url := strings.ReplaceAll(imagePattern, "{path}", strings.TrimPrefix(name, "/"))
+	return strings.ReplaceAll(url, "{options}", strings.Join(transforms, ","))
 }
 
 // hasScheme reports whether dest carries a URL scheme (http:, data:, ...),
