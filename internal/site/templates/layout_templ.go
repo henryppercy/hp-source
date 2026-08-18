@@ -53,7 +53,7 @@ func Layout(title, active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"icon\" href=\"/static/images/favicon.svg\"><link rel=\"preload\" href=\"/static/fonts/hanken-grotesk-v12-latin-regular.woff2\" as=\"font\" type=\"font/woff2\" crossorigin><link rel=\"preload\" href=\"/static/fonts/newsreader-v26-latin-regular.woff2\" as=\"font\" type=\"font/woff2\" crossorigin><link rel=\"stylesheet\" href=\"/static/styles/app.css\"><link rel=\"stylesheet\" href=\"/static/styles/code.css\"></head><body><header class=\"m-4 md:m-gutter divide-y divide-fg border border-fg\"><div class=\"flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-4\"><a href=\"/\" class=\"font-sans font-bold text-h2 tracking-tightest text-fg leading-none\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"icon\" href=\"/static/favicon.svg\"><link rel=\"preload\" href=\"/static/fonts/hanken-grotesk-v12-latin-regular.woff2\" as=\"font\" type=\"font/woff2\" crossorigin><link rel=\"preload\" href=\"/static/fonts/newsreader-v26-latin-regular.woff2\" as=\"font\" type=\"font/woff2\" crossorigin><link rel=\"stylesheet\" href=\"/static/styles/app.css\"><link rel=\"stylesheet\" href=\"/static/styles/code.css\"></head><body><header class=\"m-4 md:m-gutter divide-y divide-fg border border-fg\"><div class=\"flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-4\"><a href=\"/\" class=\"font-sans font-bold text-h2 tracking-tightest text-fg leading-none\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

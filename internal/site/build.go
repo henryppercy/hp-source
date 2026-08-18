@@ -17,25 +17,32 @@ import (
 	"github.com/yuin/goldmark"
 )
 
+// imageDir is the asset tree served from the CDN, relative to the static root.
+const imageDir = "static/images"
+
 // Build renders the site into out from the repo using the embedded assets.
-func Build(r *repo.Repo, out string) error {
-	return newBuilder(r, embeddedAssets(), out).Build()
+// When images is false the local image tree is left out of the output, so it
+// can be served from the CDN instead.
+func Build(r *repo.Repo, out string, images bool) error {
+	return newBuilder(r, embeddedAssets(), out, images).Build()
 }
 
 type builder struct {
 	repo   *repo.Repo
 	assets fs.FS
 	out    string
+	images bool
 	engine *kazari.Engine
 	md     goldmark.Markdown
 }
 
-func newBuilder(r *repo.Repo, assets fs.FS, out string) *builder {
+func newBuilder(r *repo.Repo, assets fs.FS, out string, images bool) *builder {
 	engine := newCodeEngine()
 	return &builder{
 		repo:   r,
 		assets: assets,
 		out:    out,
+		images: images,
 		engine: engine,
 		md:     newMarkdown(engine),
 	}
@@ -318,6 +325,14 @@ func (b *builder) copyStatic() error {
 	return fs.WalkDir(b.assets, "static", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+		// Images are served from the CDN unless the build opts them in, so skip
+		// the whole tree; favicon lives at static/ root and is always copied.
+		if !b.images && (path == imageDir || strings.HasPrefix(path, imageDir+"/")) {
+			if d.IsDir() {
+				return fs.SkipDir
+			}
+			return nil
 		}
 		if d.IsDir() {
 			return nil

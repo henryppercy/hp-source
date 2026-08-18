@@ -25,7 +25,8 @@ func Serve(r *repo.Repo, out, addr string, watch bool) error {
 		assets = os.DirFS(devAssetDir)
 	}
 
-	b := newBuilder(r, assets, out)
+	// Local serving always includes images so the site works offline.
+	b := newBuilder(r, assets, out, true)
 	if err := b.Build(); err != nil {
 		return err
 	}
