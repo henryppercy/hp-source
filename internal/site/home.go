@@ -21,7 +21,7 @@ const homeStreamLimit = 6
 const homeShelfLimit = 12
 
 // homeCurrently is the free-text "what I'm up to" line in the dispatch strip.
-const homeCurrently = "Walking from Sheffield to Manchester, little by little."
+const homeCurrently = ""
 
 // The frontispiece prose. The standfirst says who I am, the bio what the site
 // is, so the two do not repeat each other.
@@ -166,7 +166,10 @@ func dispatchCells(
 		})
 	}
 
-	cells = append(cells, templates.DispatchCell{Kicker: "Currently", Lead: homeCurrently})
+	if homeCurrently != "" {
+		cells = append(cells, templates.DispatchCell{Kicker: "Currently", Lead: homeCurrently})
+	}
+
 	return cells
 }
 
