@@ -39,17 +39,21 @@
     --text-body: 1.125rem;
     --text-lead: 1.25rem;
     --text-h3: clamp(
-    1.375rem,
-    1.25rem + 0.55vw,
-    1.6875rem
-  );
+        1.375rem,
+        1.25rem + 0.55vw,
+        1.6875rem
+    );
     --text-h2: clamp(1.625rem, 1.4rem + 0.9vw, 2.125rem);
-    --text-h1: clamp(2rem, 1.5rem + 2.2vw, 3.25rem);
+    --text-h1: clamp(
+        2rem,
+        1.5rem + 2.2vw,
+        3.25rem
+    );
     --text-display: clamp(
-    2.125rem,
-    1.6rem + 2.3vw,
-    3.4375rem
-  );
+        2.125rem,
+        1.6rem + 2.3vw,
+        3.4375rem
+    );
     --text-mega: clamp(3.5rem, 1.9rem + 7vw, 7.5rem);
     --tracking-tightest: -0.038em;
     --tracking-kicker: 0.12em;
@@ -754,12 +758,6 @@
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
   }
-  .ml-\[3\.75rem\] {
-    margin-left: 3.75rem;
-  }
-  .ml-\[4\.25rem\] {
-    margin-left: 4.25rem;
-  }
   .block {
     display: block;
   }
@@ -939,9 +937,6 @@
   }
   .gap-0 {
     gap: 0;
-  }
-  .gap-0\.5 {
-    gap: calc(var(--spacing) * 0.5);
   }
   .gap-1 {
     gap: var(--spacing);
@@ -1461,20 +1456,6 @@
     outline-style: var(--tw-outline-style);
     outline-width: 1px;
   }
-  .group-hover\:border-accent {
-    &:is(:where(.group):hover *) {
-      @media (hover: hover) {
-        border-color: var(--color-accent);
-      }
-    }
-  }
-  .group-hover\:bg-accent {
-    &:is(:where(.group):hover *) {
-      @media (hover: hover) {
-        background-color: var(--color-accent);
-      }
-    }
-  }
   .group-hover\:text-accent {
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
@@ -1491,16 +1472,6 @@
     &:first-child {
       border-top-style: var(--tw-border-style);
       border-top-width: 0px;
-    }
-  }
-  .first\:pt-0 {
-    &:first-child {
-      padding-top: 0;
-    }
-  }
-  .last\:pb-0 {
-    &:last-child {
-      padding-bottom: 0;
     }
   }
   .hover\:border-fg {
@@ -2122,6 +2093,11 @@
 .prose del {
   color: var(--color-faint);
   text-decoration: line-through;
+}
+.prose mark {
+  color: #fff;
+  background-color: var(--color-accent);
+  padding: 0.02em 0.15em;
 }
 .prose blockquote {
   margin: 1.6em 0;
