@@ -72,6 +72,7 @@ func newMarkdown(engine *kazari.Engine) goldmark.Markdown {
 			extension.GFM,
 			extension.Footnote,
 			figureExt{},
+			Mark,
 			kazarimd.New(engine),
 		),
 		goldmark.WithParserOptions(

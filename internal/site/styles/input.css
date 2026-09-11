@@ -5,268 +5,276 @@
 /* Self-hosted fonts. Latin woff2, served from /static/fonts. swap avoids a
    blocking flash; the fallback stack in the font vars covers the swap window. */
 @font-face {
-  font-family: "Hanken Grotesk";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/static/fonts/hanken-grotesk-v12-latin-regular.woff2") format("woff2");
+    font-family: "Hanken Grotesk";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/static/fonts/hanken-grotesk-v12-latin-regular.woff2")
+        format("woff2");
 }
 @font-face {
-  font-family: "Hanken Grotesk";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/static/fonts/hanken-grotesk-v12-latin-500.woff2") format("woff2");
+    font-family: "Hanken Grotesk";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/static/fonts/hanken-grotesk-v12-latin-500.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Hanken Grotesk";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("/static/fonts/hanken-grotesk-v12-latin-600.woff2") format("woff2");
+    font-family: "Hanken Grotesk";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/static/fonts/hanken-grotesk-v12-latin-600.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Hanken Grotesk";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("/static/fonts/hanken-grotesk-v12-latin-700.woff2") format("woff2");
+    font-family: "Hanken Grotesk";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/static/fonts/hanken-grotesk-v12-latin-700.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Newsreader";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/static/fonts/newsreader-v26-latin-regular.woff2") format("woff2");
+    font-family: "Newsreader";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/static/fonts/newsreader-v26-latin-regular.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Newsreader";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/static/fonts/newsreader-v26-latin-500.woff2") format("woff2");
+    font-family: "Newsreader";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/static/fonts/newsreader-v26-latin-500.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Newsreader";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("/static/fonts/newsreader-v26-latin-600.woff2") format("woff2");
+    font-family: "Newsreader";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/static/fonts/newsreader-v26-latin-600.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Newsreader";
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/static/fonts/newsreader-v26-latin-italic.woff2") format("woff2");
+    font-family: "Newsreader";
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/static/fonts/newsreader-v26-latin-italic.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Newsreader";
-  font-style: italic;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/static/fonts/newsreader-v26-latin-500italic.woff2") format("woff2");
+    font-family: "Newsreader";
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/static/fonts/newsreader-v26-latin-500italic.woff2")
+        format("woff2");
 }
 @font-face {
-  font-family: "Newsreader";
-  font-style: italic;
-  font-weight: 600;
-  font-display: swap;
-  src: url("/static/fonts/newsreader-v26-latin-600italic.woff2") format("woff2");
+    font-family: "Newsreader";
+    font-style: italic;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/static/fonts/newsreader-v26-latin-600italic.woff2")
+        format("woff2");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/static/fonts/ibm-plex-mono-v20-latin-regular.woff2") format("woff2");
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/static/fonts/ibm-plex-mono-v20-latin-regular.woff2")
+        format("woff2");
 }
 @font-face {
-  font-family: "IBM Plex Mono";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/static/fonts/ibm-plex-mono-v20-latin-500.woff2") format("woff2");
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/static/fonts/ibm-plex-mono-v20-latin-500.woff2") format("woff2");
 }
 
 @theme {
-  /* Fonts */
-  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Newsreader", ui-serif, Georgia, serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+    /* Fonts */
+    --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --font-serif: "Newsreader", ui-serif, Georgia, serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
 
-  /* Foreground (text) */
-  --color-fg: #16181a; /* primary text, strong rules */
-  --color-fg-body: #1d2023; /* long-form body copy */
-  --color-muted: #54585b; /* secondary text, captions */
-  --color-faint: #8a8e91; /* tertiary / timestamps */
-  --color-fainter: #9c9f9d; /* mono labels, kickers */
-  --color-ghost: #c4c7c4; /* inactive nav numbers, dividers */
+    /* Foreground (text) */
+    --color-fg: #16181a; /* primary text, strong rules */
+    --color-fg-body: #1d2023; /* long-form body copy */
+    --color-muted: #54585b; /* secondary text, captions */
+    --color-faint: #8a8e91; /* tertiary / timestamps */
+    --color-fainter: #9c9f9d; /* mono labels, kickers */
+    --color-ghost: #c4c7c4; /* inactive nav numbers, dividers */
 
-  /* Accent (red) */
-  --color-accent: #b42318; /* the one accent, markers only */
-  --color-accent-tint: #fbe4e1; /* highlight behind text */
+    /* Accent (red) */
+    --color-accent: #b42318; /* the one accent, markers only */
+    --color-accent-tint: #fbe4e1; /* highlight behind text */
 
-  /* Surfaces */
-  --color-surface: #ffffff; /* page background */
-  --color-code: #fafafa; /* code block background */
-  --color-code-inline: #f3f3f1; /* inline code background */
+    /* Surfaces */
+    --color-surface: #ffffff; /* page background */
+    --color-code: #fafafa; /* code block background */
+    --color-code-inline: #f3f3f1; /* inline code background */
 
-  /* Rules / borders */
-  --color-rule: #e6e6e4; /* standard hairline between entries */
-  --color-rule-soft: #d6d7d5; /* boxed-off module border */
+    /* Rules / borders */
+    --color-rule: #e6e6e4; /* standard hairline between entries */
+    --color-rule-soft: #d6d7d5; /* boxed-off module border */
 
-  /* Type scale (display) */
-  --text-kicker: 0.625rem; /* 10px mono uppercase */
-  --text-meta: 0.6875rem; /* 11px mono */
-  --text-label: 0.8125rem; /* 13px nav / UI */
-  --text-body: 1.125rem; /* 18px serif body */
-  --text-lead: 1.25rem; /* 20px lead paragraph */
-  /* Display sizes are fluid: clamp(mobile-min, rem + vw, desktop-max). Reading
+    /* Type scale (display) */
+    --text-kicker: 0.625rem; /* 10px mono uppercase */
+    --text-meta: 0.6875rem; /* 11px mono */
+    --text-label: 0.8125rem; /* 13px nav / UI */
+    --text-body: 1.125rem; /* 18px serif body */
+    --text-lead: 1.25rem; /* 20px lead paragraph */
+    /* Display sizes are fluid: clamp(mobile-min, rem + vw, desktop-max). Reading
      and UI sizes above stay fixed. Set line-height/tracking. */
-  --text-h3: clamp(
-    1.375rem,
-    1.25rem + 0.55vw,
-    1.6875rem
-  ); /* 22px -> 27px section head */
-  --text-h2: clamp(1.625rem, 1.4rem + 0.9vw, 2.125rem); /* 26px -> 34px */
-  --text-h1: clamp(2rem, 1.5rem + 2.2vw, 3.25rem); /* 32px -> 52px page title */
-  --text-display: clamp(
-    2.125rem,
-    1.6rem + 2.3vw,
-    3.4375rem
-  ); /* 34px -> 55px post title */
-  --text-mega: clamp(3.5rem, 1.9rem + 7vw, 7.5rem); /* 56px -> 120px 404 */
+    --text-h3: clamp(
+        1.375rem,
+        1.25rem + 0.55vw,
+        1.6875rem
+    ); /* 22px -> 27px section head */
+    --text-h2: clamp(1.625rem, 1.4rem + 0.9vw, 2.125rem); /* 26px -> 34px */
+    --text-h1: clamp(
+        2rem,
+        1.5rem + 2.2vw,
+        3.25rem
+    ); /* 32px -> 52px page title */
+    --text-display: clamp(
+        2.125rem,
+        1.6rem + 2.3vw,
+        3.4375rem
+    ); /* 34px -> 55px post title */
+    --text-mega: clamp(3.5rem, 1.9rem + 7vw, 7.5rem); /* 56px -> 120px 404 */
 
-  /* Tracking */
-  --tracking-tightest: -0.038em; /* big display titles */
-  --tracking-tighter: -0.03em;
-  --tracking-tight: -0.02em;
-  --tracking-wide: 0.06em;
-  --tracking-kicker: 0.12em; /* mono uppercase labels */
-  --tracking-dateline: 0.16em; /* widest, datelines */
+    /* Tracking */
+    --tracking-tightest: -0.038em; /* big display titles */
+    --tracking-tighter: -0.03em;
+    --tracking-tight: -0.02em;
+    --tracking-wide: 0.06em;
+    --tracking-kicker: 0.12em; /* mono uppercase labels */
+    --tracking-dateline: 0.16em; /* widest, datelines */
 
-  /* Layout rhythm */
-  --spacing-gutter: 56px; /* page left/right padding */
-  --spacing-standfirst: 52ch; /* one-line page standfirst measure */
-  --spacing-measure: 720px; /* prose column max-width */
-  --spacing-rail: 128px; /* home stream dateline rail */
-  --spacing-wide: 980px; /* feature image / map max-width */
-  --spacing-broad: 1400px; /* near-full-width pages: indexes, grids */
+    /* Layout rhythm */
+    --spacing-gutter: 56px; /* page left/right padding */
+    --spacing-standfirst: 52ch; /* one-line page standfirst measure */
+    --spacing-measure: 720px; /* prose column max-width */
+    --spacing-rail: 128px; /* home stream dateline rail */
+    --spacing-wide: 980px; /* feature image / map max-width */
+    --spacing-broad: 1400px; /* near-full-width pages: indexes, grids */
 }
 
 /* Base resets that can't live in @theme */
 @layer base {
-  body {
-    background: var(--color-surface);
-    color: var(--color-fg);
-    font-family: var(--font-serif);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
-  ::selection {
-    background: var(--color-accent);
-    color: #fff;
-  }
+    body {
+        background: var(--color-surface);
+        color: var(--color-fg);
+        font-family: var(--font-serif);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+    ::selection {
+        background: var(--color-accent);
+        color: #fff;
+    }
 }
 
 /* kazari renders its own framed code blocks; keep Typography out of their
    internals (it still styles inline code and everything else). */
 .prose :where(.kazari-block) {
-  margin: 1.5em 0;
+    margin: 1.5em 0;
 }
 .prose :where(.kazari-block pre) {
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  overflow-x: auto;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    overflow-x: auto;
 }
 .prose :where(.kazari-block code) {
-  background: transparent;
-  font-weight: inherit;
+    background: transparent;
+    font-weight: inherit;
 }
 .prose :where(.kazari-block code)::before,
 .prose :where(.kazari-block code)::after {
-  content: none;
+    content: none;
 }
 
 /* Re-skin kazari's frame with our tokens by overriding its --kz-* variables.
    Blocks on the global theme are plain .kazari-block (no .kz-themed), and the
    frame reads these vars from :root, so the two-class selector here wins. */
 .prose .kazari-block {
-  --kz-radius: 0;
-  --kz-shadow: none;
-  --kz-border: 1px solid var(--color-fg);
-  --kz-editor-bg: var(--color-code);
-  --kz-editor-fg: var(--color-fg);
-  --kz-font-family: var(--font-mono);
-  --kz-ui-font-family: var(--font-mono);
-  --kz-line-height: 1.7;
-  --kz-code-padding-block: 1.35rem;
-  --kz-code-padding-inline: 1.35rem;
-  --kz-toolbar-padding: 0.5rem 1.35rem;
-  --kz-toolbar-bg: var(--color-code);
-  --kz-toolbar-border: var(--color-rule);
-  --kz-lang-fg: var(--color-fainter);
-  --kz-gutter-border-color: var(--color-rule);
-  --kz-ln-fg: var(--color-faint);
-  --kz-ln-highlight-fg: var(--color-fg);
-  --kz-mark-bg: var(--color-accent-tint);
-  --kz-mark-border: var(--color-accent);
+    --kz-radius: 0;
+    --kz-shadow: none;
+    --kz-border: 1px solid var(--color-fg);
+    --kz-editor-bg: var(--color-code);
+    --kz-editor-fg: var(--color-fg);
+    --kz-font-family: var(--font-mono);
+    --kz-ui-font-family: var(--font-mono);
+    --kz-line-height: 1.7;
+    --kz-code-padding-block: 1.35rem;
+    --kz-code-padding-inline: 1.35rem;
+    --kz-toolbar-padding: 0.5rem 1.35rem;
+    --kz-toolbar-bg: var(--color-code);
+    --kz-toolbar-border: var(--color-rule);
+    --kz-lang-fg: var(--color-fainter);
+    --kz-gutter-border-color: var(--color-rule);
+    --kz-ln-fg: var(--color-faint);
+    --kz-ln-highlight-fg: var(--color-fg);
+    --kz-mark-bg: var(--color-accent-tint);
+    --kz-mark-border: var(--color-accent);
 }
 
 /* Toolbar: filename on the left, language on the right. The left group is
    unwrapped (display:contents) so both labels become flex items the toolbar can
    space apart; the file icon and the empty right slot are dropped. */
 .prose .kazari-block .kz-toolbar-left {
-  display: contents;
+    display: contents;
 }
 .prose .kazari-block .kz-file-icon,
 .prose .kazari-block .kz-toolbar-right {
-  display: none;
+    display: none;
 }
 .prose .kazari-block .kz-toolbar .kz-title {
-  order: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-meta);
-  color: var(--color-fg);
+    order: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--color-fg);
 }
 .prose .kazari-block .kz-toolbar .kz-lang {
-  order: 1;
-  margin-left: auto;
-  padding: 0;
-  border: 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-kicker);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
-  color: var(--color-fainter);
+    order: 1;
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-kicker);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-fainter);
 }
 
 /* No traffic-light dots, even on author-set terminal frames. */
 .prose .kazari-block .kz-terminal-dots {
-  display: none;
+    display: none;
 }
 
 /* Inline code: a flat bordered chip, mono and slightly smaller than the
    surrounding text. Beats Typography's lower-specificity :where() rules. */
 .prose :not(pre) > code {
-  font-family: var(--font-mono);
-  font-size: 0.875em;
-  font-weight: inherit;
-  color: inherit;
-  background: var(--color-code-inline);
-  border: 1px solid var(--color-rule);
-  border-radius: 0;
-  padding: 0.1em 0.3em;
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    font-weight: inherit;
+    color: inherit;
+    background: var(--color-code-inline);
+    border: 1px solid var(--color-rule);
+    border-radius: 0;
+    padding: 0.1em 0.3em;
 }
 .prose :not(pre) > code::before,
 .prose :not(pre) > code::after {
-  content: none;
+    content: none;
 }
 
 /* ---------------------------------------------------------------------------
@@ -275,11 +283,11 @@
    refs). Element selectors sit at .prose > tag specificity to beat Typography's
    :where() defaults. Code blocks and inline code are styled above. */
 .prose {
-  max-width: var(--spacing-measure);
-  font-family: var(--font-serif);
-  font-size: var(--text-body);
-  line-height: 1.7;
-  color: var(--color-fg-body);
+    max-width: var(--spacing-measure);
+    font-family: var(--font-serif);
+    font-size: var(--text-body);
+    line-height: 1.7;
+    color: var(--color-fg-body);
 }
 
 /* Headings: grotesk ink, never accent. Space opens above a new section, closes
@@ -287,325 +295,330 @@
 .prose h2,
 .prose h3,
 .prose h4 {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--color-fg);
 }
 /* h1 is the post title (set on the template), not body flow; this backs it up if
    a body ever opens with one. */
 .prose h1 {
-  margin-bottom: 0.5em;
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: var(--text-display);
-  letter-spacing: var(--tracking-tightest);
-  color: var(--color-fg);
+    margin-bottom: 0.5em;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-display);
+    letter-spacing: var(--tracking-tightest);
+    color: var(--color-fg);
 }
 .prose h2 {
-  margin-top: 2.5em;
-  margin-bottom: 0.6em;
-  font-size: var(--text-h3);
-  letter-spacing: var(--tracking-tight);
+    margin-top: 2.5em;
+    margin-bottom: 0.6em;
+    font-size: var(--text-h3);
+    letter-spacing: var(--tracking-tight);
 }
 .prose h3 {
-  margin-top: 1.8em;
-  margin-bottom: 0.5em;
-  font-size: 1.2rem;
-  letter-spacing: var(--tracking-tight);
+    margin-top: 1.8em;
+    margin-bottom: 0.5em;
+    font-size: 1.2rem;
+    letter-spacing: var(--tracking-tight);
 }
 .prose h4 {
-  margin-top: 1.6em;
-  margin-bottom: 0.5em;
-  font-size: var(--text-label);
+    margin-top: 1.6em;
+    margin-bottom: 0.5em;
+    font-size: var(--text-label);
 }
 /* Deepest levels drop to a mono uppercase label. */
 .prose h5,
 .prose h6 {
-  margin-top: 1.4em;
-  margin-bottom: 0.4em;
-  font-family: var(--font-mono);
-  font-size: var(--text-kicker);
-  font-weight: 500;
-  letter-spacing: var(--tracking-kicker);
-  text-transform: uppercase;
-  color: var(--color-fg);
+    margin-top: 1.4em;
+    margin-bottom: 0.4em;
+    font-family: var(--font-mono);
+    font-size: var(--text-kicker);
+    font-weight: 500;
+    letter-spacing: var(--tracking-kicker);
+    text-transform: uppercase;
+    color: var(--color-fg);
 }
 
 /* Body: vertical rhythm only, no first-line indent. */
 .prose p {
-  margin: 0 0 1.15em;
+    margin: 0 0 1.15em;
 }
 
 /* Inline formatting. */
 .prose strong {
-  font-weight: 600;
-  color: var(--color-fg);
+    font-weight: 600;
+    color: var(--color-fg);
 }
 .prose em {
-  font-style: italic;
+    font-style: italic;
 }
 .prose a {
-  color: var(--color-accent);
-  text-decoration: underline;
-  text-decoration-color: var(--color-accent-tint);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent-tint);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
 }
 .prose a:hover {
-  text-decoration-color: var(--color-accent);
+    text-decoration-color: var(--color-accent);
 }
 .prose del {
-  color: var(--color-faint);
-  text-decoration: line-through;
+    color: var(--color-faint);
+    text-decoration: line-through;
+}
+.prose mark {
+    color: #fff;
+    background-color: var(--color-accent);
+    padding: 0.02em 0.15em;
 }
 
 /* Blockquote: an accent rule in the margin, larger serif italic, no glyphs. A
    nested attribution drops to a mono meta line. */
 .prose blockquote {
-  margin: 1.6em 0;
-  padding-left: 1.25rem;
-  border-left: 2px solid var(--color-accent);
-  font-style: italic;
-  font-size: 1.15em;
-  font-weight: 500;
-  color: var(--color-fg);
+    margin: 1.6em 0;
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--color-accent);
+    font-style: italic;
+    font-size: 1.15em;
+    font-weight: 500;
+    color: var(--color-fg);
 }
 .prose blockquote p {
-  margin: 0.4em 0;
+    margin: 0.4em 0;
 }
 .prose blockquote p:first-of-type::before,
 .prose blockquote p:last-of-type::after {
-  content: none;
+    content: none;
 }
 .prose blockquote cite {
-  display: block;
-  margin-top: 0.6em;
-  font-family: var(--font-mono);
-  font-size: var(--text-meta);
-  font-style: normal;
-  font-weight: 400;
-  color: var(--color-faint);
+    display: block;
+    margin-top: 0.6em;
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    font-style: normal;
+    font-weight: 400;
+    color: var(--color-faint);
 }
 
 /* Lists: custom markers set in a fixed gutter; accent at the top level, fainter
    as nesting deepens. */
 .prose ul,
 .prose ol {
-  margin: 1.15em 0;
-  padding-left: 0;
-  list-style: none;
+    margin: 1.15em 0;
+    padding-left: 0;
+    list-style: none;
 }
 .prose li {
-  position: relative;
-  margin: 0.4em 0;
-  padding-left: 2rem;
+    position: relative;
+    margin: 0.4em 0;
+    padding-left: 2rem;
 }
 .prose ul > li::before {
-  content: "—";
-  position: absolute;
-  left: 0;
-  font-family: var(--font-mono);
-  color: var(--color-accent);
+    content: "—";
+    position: absolute;
+    left: 0;
+    font-family: var(--font-mono);
+    color: var(--color-accent);
 }
 .prose ol {
-  counter-reset: list;
+    counter-reset: list;
 }
 .prose ol > li {
-  counter-increment: list;
+    counter-increment: list;
 }
 .prose ol > li::before {
-  content: counter(list, decimal-leading-zero);
-  position: absolute;
-  left: 0;
-  top: 0.15em;
-  font-family: var(--font-mono);
-  font-size: var(--text-meta);
-  color: var(--color-accent);
+    content: counter(list, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--color-accent);
 }
 .prose li > ul,
 .prose li > ol {
-  margin: 0.4em 0;
+    margin: 0.4em 0;
 }
 .prose li li::before {
-  font-size: 0.9em;
-  color: var(--color-fainter);
+    font-size: 0.9em;
+    color: var(--color-fainter);
 }
 
 /* Task lists: a square checkbox replaces the dash. */
 .prose li:has(> input[type="checkbox"])::before {
-  content: none;
+    content: none;
 }
 .prose input[type="checkbox"] {
-  position: absolute;
-  left: 0;
-  top: 0.35em;
-  width: 1em;
-  height: 1em;
-  appearance: none;
-  border: 1px solid var(--color-rule-soft);
-  border-radius: 0;
+    position: absolute;
+    left: 0;
+    top: 0.35em;
+    width: 1em;
+    height: 1em;
+    appearance: none;
+    border: 1px solid var(--color-rule-soft);
+    border-radius: 0;
 }
 .prose input[type="checkbox"]:checked {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
 }
 
 /* Horizontal rule: a single hairline across the measure, no ornament. */
 .prose hr {
-  margin: 2.5em 0;
-  border: 0;
-  border-top: 1px solid var(--color-rule);
+    margin: 2.5em 0;
+    border: 0;
+    border-top: 1px solid var(--color-rule);
 }
 
 /* Images: full measure, square, a hairline frame. An optional figcaption sits
    below in serif italic. */
 .prose img {
-  display: block;
-  max-width: 100%;
-  margin: 1.6em 0;
-  border: 1px solid var(--color-rule-soft);
-  border-radius: 0;
+    display: block;
+    max-width: 100%;
+    margin: 1.6em 0;
+    border: 1px solid var(--color-rule-soft);
+    border-radius: 0;
 }
 .prose figure {
-  margin: 1.6em 0;
+    margin: 1.6em 0;
 }
 .prose figure img {
-  margin: 0;
+    margin: 0;
 }
 .prose figcaption {
-  margin-top: 0.5em;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 0.9em;
-  color: var(--color-muted);
+    margin-top: 0.5em;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.9em;
+    color: var(--color-muted);
 }
 
 /* Tables: horizontal rules only. A fg rule under the mono uppercase header, a
    hairline between body rows. */
 .prose table {
-  width: 100%;
-  margin: 1.6em 0;
-  border-collapse: collapse;
-  font-size: 0.95em;
+    width: 100%;
+    margin: 1.6em 0;
+    border-collapse: collapse;
+    font-size: 0.95em;
 }
 .prose thead {
-  border-bottom: 1px solid var(--color-fg);
+    border-bottom: 1px solid var(--color-fg);
 }
 .prose th {
-  padding: 0.5em 0.9em;
-  font-family: var(--font-mono);
-  font-size: var(--text-kicker);
-  font-weight: 500;
-  letter-spacing: var(--tracking-kicker);
-  text-transform: uppercase;
-  text-align: left;
-  color: var(--color-fainter);
+    padding: 0.5em 0.9em;
+    font-family: var(--font-mono);
+    font-size: var(--text-kicker);
+    font-weight: 500;
+    letter-spacing: var(--tracking-kicker);
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--color-fainter);
 }
 .prose tbody tr {
-  border-bottom: 1px solid var(--color-rule);
+    border-bottom: 1px solid var(--color-rule);
 }
 .prose td {
-  padding: 0.6em 0.9em;
-  font-family: var(--font-serif);
-  color: var(--color-fg-body);
+    padding: 0.6em 0.9em;
+    font-family: var(--font-serif);
+    color: var(--color-fg-body);
 }
 
 /* Footnotes: superscript mono accent refs; the list sits above the footer behind
    a hairline, a step below body. */
 .prose .footnote-ref,
 .prose .footnote-backref {
-  font-family: var(--font-mono);
-  color: var(--color-accent);
-  text-decoration: none;
+    font-family: var(--font-mono);
+    color: var(--color-accent);
+    text-decoration: none;
 }
 .prose .footnotes {
-  margin-top: 2.5em;
-  padding-top: 1.5em;
-  border-top: 1px solid var(--color-rule);
-  font-size: 0.9em;
-  color: var(--color-muted);
+    margin-top: 2.5em;
+    padding-top: 1.5em;
+    border-top: 1px solid var(--color-rule);
+    font-size: 0.9em;
+    color: var(--color-muted);
 }
 .prose .footnotes hr {
-  display: none;
+    display: none;
 }
 
 /* Table of contents: a boxed module at the top of a post. Two levels: numbered
    h2 entries with their h3s nested beneath, aligned past the ordinal gutter. */
 .toc {
-  --toc-gutter: 2.25rem;
-  max-width: var(--spacing-measure);
-  margin: 2rem 0;
-  padding: 1.5rem;
-  border: 1px solid var(--color-rule-soft);
+    --toc-gutter: 2.25rem;
+    max-width: var(--spacing-measure);
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 1px solid var(--color-rule-soft);
 }
 .toc-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--color-rule);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--color-rule);
 }
 .toc-title {
-  font-family: var(--font-mono);
-  font-size: var(--text-kicker);
-  letter-spacing: var(--tracking-kicker);
-  text-transform: uppercase;
-  color: var(--color-fg);
+    font-family: var(--font-mono);
+    font-size: var(--text-kicker);
+    letter-spacing: var(--tracking-kicker);
+    text-transform: uppercase;
+    color: var(--color-fg);
 }
 .toc-count {
-  font-family: var(--font-mono);
-  font-size: var(--text-meta);
-  color: var(--color-fainter);
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--color-fainter);
 }
 .toc-list {
-  counter-reset: toc;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+    counter-reset: toc;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 .toc-list > li {
-  counter-increment: toc;
+    counter-increment: toc;
 }
 /* level 1 (h2): ordinal in a fixed gutter, heading in the text column */
 .toc-list > li > a {
-  display: grid;
-  grid-template-columns: var(--toc-gutter) 1fr;
-  align-items: baseline;
-  padding: 0.34rem 0;
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: var(--text-label);
-  color: var(--color-fg);
-  text-decoration: none;
+    display: grid;
+    grid-template-columns: var(--toc-gutter) 1fr;
+    align-items: baseline;
+    padding: 0.34rem 0;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--text-label);
+    color: var(--color-fg);
+    text-decoration: none;
 }
 .toc-list > li > a::before {
-  content: counter(toc, decimal-leading-zero);
-  font-family: var(--font-mono);
-  font-weight: 400;
-  font-size: var(--text-meta);
-  color: var(--color-accent);
+    content: counter(toc, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: var(--text-meta);
+    color: var(--color-accent);
 }
 /* level 2 (h3): indented to the parent text column, marker instead of ordinal */
 .toc-sub {
-  list-style: none;
-  margin: 0.05rem 0 0.4rem;
-  padding-left: var(--toc-gutter);
+    list-style: none;
+    margin: 0.05rem 0 0.4rem;
+    padding-left: var(--toc-gutter);
 }
 .toc-sub > li > a {
-  display: grid;
-  grid-template-columns: 1rem 1fr;
-  align-items: baseline;
-  padding: 0.24rem 0;
-  font-family: var(--font-sans);
-  font-size: var(--text-meta);
-  color: var(--color-muted);
-  text-decoration: none;
+    display: grid;
+    grid-template-columns: 1rem 1fr;
+    align-items: baseline;
+    padding: 0.24rem 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-meta);
+    color: var(--color-muted);
+    text-decoration: none;
 }
 .toc-sub > li > a::before {
-  content: "–";
-  color: var(--color-fainter);
+    content: "–";
+    color: var(--color-fainter);
 }
 .toc-list a:hover {
-  color: var(--color-accent);
+    color: var(--color-accent);
 }
