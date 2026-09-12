@@ -152,7 +152,7 @@ func dispatchCells(
 			Kicker: "Latest note",
 			Lead:   teaser(s.BodyHTML, 90),
 			Meta:   humanizeSince(s.PublishedAt),
-			URL:    s.URL + "/",
+			URL:    "/slices",
 		})
 	}
 

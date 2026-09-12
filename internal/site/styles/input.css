@@ -369,7 +369,7 @@
 .prose mark {
     color: #fff;
     background-color: var(--color-accent);
-    padding: 0.02em 0.15em;
+    padding: 0.18em 0.3em 0.1em;
 }
 
 /* Blockquote: an accent rule in the margin, larger serif italic, no glyphs. A
