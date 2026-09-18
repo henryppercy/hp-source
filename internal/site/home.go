@@ -21,7 +21,7 @@ const homeStreamLimit = 6
 const homeShelfLimit = 12
 
 // homeCurrently is the free-text "what I'm up to" line in the dispatch strip.
-const homeCurrently = ""
+const homeCurrently = "Spending the week camping on the cliffs outside Whitby."
 
 // The frontispiece prose. The standfirst says who I am, the bio what the site
 // is, so the two do not repeat each other.

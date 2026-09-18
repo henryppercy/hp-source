@@ -36,8 +36,8 @@ const spanishIntro = "I am currently learning Spanish using Comprehensible Input
 	"before incorporating reading and speaking."
 
 const spanishNote = "Right now I'm pretty consistenly hitting 1 hour of Spanish input per day. This is mostly though " +
-	"intermediate podcasts and native YouTube content. My most watched channels at the moment are Diegodoal and " +
-	"Luisito Comunica. I have also started reading my first book: Harry Potter y la piedra filosofal."
+	"intermediate podcasts and native YouTube content. I'm on a bit of a Mexican kick at the moment, mostly watching " +
+	"Robegrill and most recently ElMariana. I am also very very slowly reading Harry Potter y la piedra filosofal."
 
 // spanishGoalDeadline is the last moment of the goal month.
 func spanishGoalDeadline(loc *time.Location) time.Time {
