@@ -16,6 +16,7 @@ func newSiteCmd(a *app) *cobra.Command {
 		newSiteBuildCmd(a),
 		newSiteServeCmd(a),
 		newSiteUploadCmd(a),
+		newSiteBackupDBCmd(a),
 	)
 	return cmd
 }
@@ -77,6 +78,16 @@ func newSiteUploadCmd(a *app) *cobra.Command {
 		Short: "Sync local images to the R2 bucket",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return site.UploadImages()
+		},
+	}
+}
+
+func newSiteBackupDBCmd(a *app) *cobra.Command {
+	return &cobra.Command{
+		Use:   "backup-db",
+		Short: "Snapshot the database and upload it to the R2 backup bucket",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return site.BackupDatabase(a.db)
 		},
 	}
 }
