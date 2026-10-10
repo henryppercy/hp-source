@@ -1,5 +1,6 @@
 TAILWIND ?= ./bin/tailwindcss
 TAILWIND_VERSION := v4.3.1
+INSTALL_DIR ?= $(HOME)/.local/bin
 CSS_IN := internal/site/styles/input.css
 CSS_OUT := internal/site/static/styles/app.css
 
@@ -16,6 +17,7 @@ generate:
 
 build: css generate
 	go build -o bin/hp .
+	install -Dm755 bin/hp $(INSTALL_DIR)/hp
 
 # dev runs air: regenerate templ, rebuild, and restart the server on .go/.templ
 # edits. Run `make css-watch` in a separate terminal for CSS (Tailwind's watcher
