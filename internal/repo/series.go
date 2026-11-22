@@ -1,16 +1,20 @@
 package repo
 
+// Series is a named sequence of works.
 type Series struct {
 	ID   int
 	Name string
 }
 
+// SeriesInput is a work's series membership, with Position its place in the
+// sequence.
 type SeriesInput struct {
 	ID       int
 	Name     string
 	Position float64
 }
 
+// ListSeries returns every series ordered by name.
 func (r *Repo) ListSeries() ([]Series, error) {
 	return listSeries(r.db)
 }
@@ -33,6 +37,7 @@ func listSeries(tx TX) ([]Series, error) {
 	return series, nil
 }
 
+// CreateSeries inserts a series and returns its new id.
 func (r *Repo) CreateSeries(name string) (int, error) {
 	return createSeries(r.db, name)
 }

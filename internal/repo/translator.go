@@ -1,17 +1,21 @@
 package repo
 
+// Translator is a translator credited on copies.
 type Translator struct {
 	ID       int
 	Name     string
 	SortName string
 }
 
+// TranslatorInput is a translator's editable fields. A zero ID creates the
+// translator on link.
 type TranslatorInput struct {
 	ID       int
 	Name     string
 	SortName string
 }
 
+// ListTranslators returns every translator ordered by sort name.
 func (r *Repo) ListTranslators() ([]Translator, error) {
 	rows, err := r.db.Query("SELECT id, name, sort_name FROM translator ORDER BY sort_name")
 	if err != nil {
@@ -30,6 +34,7 @@ func (r *Repo) ListTranslators() ([]Translator, error) {
 	return translators, nil
 }
 
+// CreateTranslator inserts a translator and returns its new id.
 func (r *Repo) CreateTranslator(name, sortName string) (int, error) {
 	return createTranslator(r.db, name, sortName)
 }
@@ -54,8 +59,7 @@ func linkCopyTranslator(tx TX, copyID, translatorID int) error {
 	return err
 }
 
-// loadCopyTranslators returns the translators linked to a copy, for prefilling
-// the edit form.
+// loadCopyTranslators returns the translators linked to a copy.
 func loadCopyTranslators(tx TX, copyID int) ([]TranslatorInput, error) {
 	rows, err := tx.Query(
 		`SELECT t.id, t.name, t.sort_name FROM translator t
@@ -79,8 +83,8 @@ func loadCopyTranslators(tx TX, copyID int) ([]TranslatorInput, error) {
 	return translators, nil
 }
 
-// linkTranslators resolves each input to a translator id (creating new ones) and
-// links them to the copy.
+// linkTranslators resolves each input to a translator id, creating new ones,
+// and links them to the copy.
 func linkTranslators(tx TX, copyID int, translators []TranslatorInput) error {
 	for _, t := range translators {
 		id := t.ID

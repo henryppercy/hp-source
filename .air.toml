@@ -2,7 +2,7 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-  # Regenerate templ components, then build, before each run.
+  # Regenerate templ components then build.
   cmd = "go tool templ generate && go build -o ./tmp/main ."
   bin = "./tmp/main"
   full_bin = "./tmp/main site serve --watch --addr :8080"

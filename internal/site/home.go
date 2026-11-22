@@ -14,17 +14,18 @@ import (
 	"github.com/henryppercy/hp-source/internal/text"
 )
 
-// homeStreamLimit caps the merged stream on the frontispiece.
+// homeStreamLimit caps the merged stream on the homepage.
 const homeStreamLimit = 6
 
-// homeShelfLimit caps the recently-read cover shelf in the rail
+// homeShelfLimit caps the recently-read cover shelf in the rail.
 const homeShelfLimit = 12
 
-// homeCurrently is the free-text "what I'm up to" line in the dispatch strip.
+// homeCurrently is the free-text "what I'm up to" line in the latest-activity
+// strip.
 const homeCurrently = ""
 
-// The frontispiece prose. The standfirst says who I am, the bio what the site
-// is, so the two do not repeat each other.
+// Homepage prose. The standfirst says who I am and the bio what the site is,
+// so the two do not repeat each other.
 const (
 	homeKicker     = "Field notebook"
 	homeHero       = "I like to keep a record."
@@ -36,7 +37,7 @@ const (
 		"being outputted in the reverse order that they came in."
 )
 
-// homeCopy is the frontispiece prose, gathered for the view.
+// homeCopy is the homepage prose.
 var homeCopy = templates.HomeCopy{
 	Kicker:      homeKicker,
 	Hero:        homeHero,
@@ -45,7 +46,7 @@ var homeCopy = templates.HomeCopy{
 	StreamIntro: homeStreamIntro,
 }
 
-// homeView assembles the frontispiece: the dispatch strip, the colophon stats,
+// homeView assembles the homepage from the latest-activity strip, the stats,
 // the merged stream, and the section index.
 func homeView(
 	posts []repo.Post,
@@ -73,8 +74,8 @@ func homeView(
 	}
 }
 
-// topicCounts ranks the subjects across all posts by how many carry each, most
-// first.
+// topicCounts ranks the subjects across all posts by how many
+// carry each, most first.
 func topicCounts(posts []repo.Post) []templates.TopicCount {
 	counts := map[string]int{}
 	var order []string
@@ -98,7 +99,7 @@ func topicCounts(posts []repo.Post) []templates.TopicCount {
 	return out
 }
 
-// dispatchCells build the dispatch strip: the freshest fact from each feed.
+// dispatchCells builds the cells holding the freshest fact from each feed.
 func dispatchCells(
 	reads []repo.ReadEntry,
 	days []spanishDay,
@@ -173,8 +174,8 @@ func dispatchCells(
 	return cells
 }
 
-// recentReads are the last n finished books for the rail's cover shelf, newest
-// finish first.
+// recentReads are the last n finished books for the rail's cover shelf,
+// newest finish first.
 func recentReads(reads []repo.ReadEntry, n int) []templates.RecentRead {
 	var fin []repo.ReadEntry
 	for _, e := range reads {
@@ -210,8 +211,9 @@ func recentReads(reads []repo.ReadEntry, n int) []templates.RecentRead {
 	return out
 }
 
-// spanishLevels is the rail's Dreaming Spanish: each hour milestone with
-// the date it was reached and a link to its post, or the hours still to go.
+// spanishLevels is the rail's Dreaming Spanish roadmap. Each hour milestone
+// carries the date it was reached and a link to its post, or the hours still to
+// go.
 func spanishLevels(days []spanishDay, total int, articles []templates.PostListItem) templates.DSLevelsView {
 	if len(days) == 0 {
 		return templates.DSLevelsView{}
@@ -252,8 +254,8 @@ func milestonePost(articles []templates.PostListItem, hours int) string {
 	return ""
 }
 
-// lifeStream folds the feeds into one reverse-chronological stream: articles,
-// notes, finished books and crossed Spanish milestones, newest first.
+// lifeStream folds articles, notes, finished books and crossed Spanish
+// milestones into one reverse-chronological stream, newest first.
 func lifeStream(
 	articles []templates.PostListItem,
 	notes []templates.SliceItem,
@@ -292,8 +294,8 @@ func lifeStream(
 	return out
 }
 
-// bookMeta is a finished book's stream caption: genre, page count and how long
-// it took, the parts that are known joined by semicolons.
+// bookMeta is a finished book's stream caption, joining the known parts of
+// genre, page count and reading time with semicolons.
 func bookMeta(e repo.ReadEntry) string {
 	var parts []string
 	if e.Genre != "" {
@@ -335,7 +337,7 @@ func spanishMilestones(days []spanishDay, total int) []templates.FeedEntry {
 	return out
 }
 
-// indexRows build the section directory with a live count against each line.
+// indexRows builds the section directory with a live count against each line.
 func indexRows(
 	articles []templates.PostListItem,
 	notes []templates.SliceItem,
@@ -350,7 +352,8 @@ func indexRows(
 	}
 }
 
-// readingNote is the reading line's count: books open now and finished all-time.
+// readingNote is the reading line's count, books open now and finished
+// all-time.
 func readingNote(reads []repo.ReadEntry) string {
 	open := len(currentReads(reads))
 	read := countStatus(reads, "finished")
@@ -360,7 +363,7 @@ func readingNote(reads []repo.ReadEntry) string {
 	return fmt.Sprintf("%d read", read)
 }
 
-// spanishIndexNote is the Spanish line's count: total hours of input logged.
+// spanishIndexNote is the Spanish line's count, total hours of input logged.
 func spanishIndexNote(total int) string {
 	if total <= 0 {
 		return "not started"

@@ -238,8 +238,6 @@ func topicIDs(topics []repo.Topic) []int {
 	return ids
 }
 
-// pickPost lists posts via list and asks the user to choose one with pick,
-// returning the chosen post or nil when there are none to act on.
 func pickPost(list func() ([]repo.Post, error), pick func([]repo.Post) (int, error)) (*repo.Post, error) {
 	posts, err := list()
 	if err != nil {
@@ -261,8 +259,6 @@ func pickPost(list func() ([]repo.Post, error), pick func([]repo.Post) (int, err
 	return nil, nil
 }
 
-// editBody opens initial in $EDITOR (a temp *.md file) and returns the saved
-// contents.
 func editBody(initial string) (string, error) {
 	f, err := os.CreateTemp("", "hp-post-*.md")
 	if err != nil {

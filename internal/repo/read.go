@@ -2,6 +2,7 @@ package repo
 
 import "fmt"
 
+// ReadInput is a read's fields at creation.
 type ReadInput struct {
 	BookID       int
 	CopyID       int
@@ -11,6 +12,7 @@ type ReadInput struct {
 	DateFinished string
 }
 
+// ActiveRead is a read in progress with the book detail the forms need.
 type ActiveRead struct {
 	ReadID    int
 	BookTitle string
@@ -37,7 +39,7 @@ type ReadEntry struct {
 	LastLoggedAt string
 }
 
-// ShelfEntry is an owned book with no read yet: the antilibrary.
+// ShelfEntry is an owned book with no read yet.
 type ShelfEntry struct {
 	Title          string
 	Author         string
@@ -52,12 +54,14 @@ type ShelfEntry struct {
 	DateAcquired   string
 }
 
+// StartReadInput is the detail needed to start a read.
 type StartReadInput struct {
 	BookID      int
 	CopyID      int
 	DateStarted string
 }
 
+// FinishReadInput is the detail recorded when finishing a read.
 type FinishReadInput struct {
 	ReadID       int
 	Status       string
@@ -65,6 +69,7 @@ type FinishReadInput struct {
 	DateFinished string
 }
 
+// AddRead inserts a read.
 func (r *Repo) AddRead(input *ReadInput) error {
 	_, err := r.db.Exec(
 		`INSERT INTO read (book_id, copy_id, status, rating, date_started, date_finished)
@@ -82,6 +87,8 @@ func (r *Repo) AddRead(input *ReadInput) error {
 	return nil
 }
 
+// ListBooksAvailableToRead returns owned books with no read in progress, by
+// title.
 func (r *Repo) ListBooksAvailableToRead() ([]BookSummary, error) {
 	rows, err := r.db.Query(
 		`SELECT b.id, b.title, a.name
@@ -112,6 +119,7 @@ func (r *Repo) ListBooksAvailableToRead() ([]BookSummary, error) {
 	return books, nil
 }
 
+// ListActiveReads returns reads in progress, most recently started first.
 func (r *Repo) ListActiveReads() ([]ActiveRead, error) {
 	rows, err := r.db.Query(
 		`SELECT rd.id, COALESCE(bc.title, b.title), a.name, bc.format
@@ -146,8 +154,7 @@ func (r *Repo) ListActiveReads() ([]ActiveRead, error) {
 	return reads, nil
 }
 
-// ListReads returns all reads with book detail for the site, newest finished
-// first. The site groups them by status.
+// ListReads returns all reads with book detail, newest finished first.
 func (r *Repo) ListReads() ([]ReadEntry, error) {
 	rows, err := r.db.Query(
 		`SELECT COALESCE(bc.title, b.title), a.name, bc.cover_image, g.name, b.type, bc.format, bc.source, bc.second_hand,
@@ -219,8 +226,8 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 	return entries, rows.Err()
 }
 
-// ListShelf returns shelved copies not yet read, newest acquisition first. It is
-// per copy: a book owned in two languages shows as two entries.
+// ListShelf returns shelved copies not yet read, newest acquisition first. It
+// is per copy so a book owned in two languages shows as two entries.
 func (r *Repo) ListShelf() ([]ShelfEntry, error) {
 	rows, err := r.db.Query(
 		`SELECT COALESCE(bc.title, b.title), a.name, bc.cover_image, g.name, bc.format,
@@ -280,12 +287,14 @@ func (r *Repo) ListShelf() ([]ShelfEntry, error) {
 	return entries, rows.Err()
 }
 
+// ReadLogInput is a progress entry against a read.
 type ReadLogInput struct {
 	ReadID int
 	Page   int
 	Note   string
 }
 
+// AddReadLog inserts a progress entry against a read.
 func (r *Repo) AddReadLog(in *ReadLogInput) error {
 	_, err := r.db.Exec(
 		`INSERT INTO read_log (read_id, page, note) VALUES (?, ?, ?)`,
@@ -297,6 +306,7 @@ func (r *Repo) AddReadLog(in *ReadLogInput) error {
 	return nil
 }
 
+// StartRead opens a read on a copy with status reading.
 func (r *Repo) StartRead(bookID, copyID int, dateStarted string) error {
 	_, err := r.db.Exec(
 		`INSERT INTO read (book_id, copy_id, status, date_started)
@@ -309,7 +319,8 @@ func (r *Repo) StartRead(bookID, copyID int, dateStarted string) error {
 	return nil
 }
 
-// ReadDetail is an existing read with the current values the edit form prefills.
+// ReadDetail is an existing read with the current values the edit form
+// prefills.
 type ReadDetail struct {
 	ReadID       int
 	BookTitle    string
@@ -321,6 +332,7 @@ type ReadDetail struct {
 	DateFinished string
 }
 
+// EditReadInput is a read's editable fields.
 type EditReadInput struct {
 	ReadID       int
 	Status       string
@@ -377,6 +389,7 @@ func (r *Repo) ListReadsForEdit() ([]ReadDetail, error) {
 	return reads, rows.Err()
 }
 
+// UpdateRead replaces a read's fields.
 func (r *Repo) UpdateRead(in *EditReadInput) error {
 	_, err := r.db.Exec(
 		`UPDATE read SET status = ?, rating = ?, date_started = ?, date_finished = ?
@@ -393,6 +406,7 @@ func (r *Repo) UpdateRead(in *EditReadInput) error {
 	return nil
 }
 
+// FinishRead closes a read with a final status, rating, and finish date.
 func (r *Repo) FinishRead(readID int, status string, rating int, dateFinished string) error {
 	_, err := r.db.Exec(
 		`UPDATE read SET status = ?, rating = ?, date_finished = ?

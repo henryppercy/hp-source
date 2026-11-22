@@ -2,9 +2,9 @@ package templates
 
 import "fmt"
 
-// Home is the frontispiece: a nameplate, the live dispatch strip, then a
-// notebook body with the merged stream in the main column and the figures and
-// index crammed into the margin.
+// Home is the homepage, a nameplate and the live latest-activity strip above
+// a notebook body with the merged stream in the main column and the figures
+// and index crammed into the margin.
 templ Home(v HomeView) {
 	@Layout(docTitle(""), "/") {
 		<div class="mx-auto max-w-broad">
@@ -26,8 +26,8 @@ templ Home(v HomeView) {
 	}
 }
 
-// homeNameplate is the opening statement: a kicker, a mega line, the standfirst
-// and bio set to a readable measure, and the filed-from stamp.
+// homeNameplate is the opening statement, a kicker, a mega line, the
+// standfirst and bio set to a readable measure, and the filed-from stamp.
 templ homeNameplate(c HomeCopy) {
 	<header class="pb-14">
 		<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ c.Kicker }</span>
@@ -42,8 +42,8 @@ templ homeNameplate(c HomeCopy) {
 	</header>
 }
 
-// homeDispatch is the dispatch plate: a header strip over a row of live cells,
-// each the freshest fact from one feed.
+// homeDispatch is the latest-activity plate, a header strip over a row of
+// live cells, each the freshest fact from one feed.
 templ homeDispatch(cells []DispatchCell, c HomeCopy) {
 	if len(cells) > 0 {
 		<section class="mb-16 border border-fg">
@@ -85,9 +85,9 @@ templ dispatchBody(c DispatchCell) {
 	}
 }
 
-// homeStream is the merged feed in the main column: boxed cards hung from a
-// dateline in the margin, each card sized and enriched to its kind so none reads
-// as an empty frame.
+// homeStream is the merged feed in the main column, boxed cards hung from
+// a dateline in the margin, each card sized and enriched to its kind so none
+// reads as an empty frame.
 templ homeStream(entries []FeedEntry) {
 	if len(entries) > 0 {
 		<section>
@@ -172,8 +172,8 @@ templ streamCard(e FeedEntry) {
 	}
 }
 
-// recentReadsCard is the rail's shelf: a grid of the most recent covers, each
-// linking into the reading section with its detail on hover.
+// recentReadsCard is the rail's shelf, a grid of the most recent covers,
+// each linking into the reading section with its detail on hover.
 templ recentReadsCard(reads []RecentRead) {
 	if len(reads) > 0 {
 		<div class="border border-rule-soft p-5">
@@ -199,9 +199,9 @@ templ recentReadsCard(reads []RecentRead) {
 	}
 }
 
-// spanishLevelsCard is the rail's Dreaming Spanish roadmap: the running total at
-// the head over the hour milestones, each reached mark dated and linked to its
-// post, unreached ones faint and showing the hours still to go.
+// spanishLevelsCard is the rail's Dreaming Spanish roadmap, the running
+// total at the head over the hour milestones, each reached mark dated and
+// linked to its post, unreached ones faint and showing the hours still to go.
 templ spanishLevelsCard(v DSLevelsView) {
 	if len(v.Levels) > 0 {
 		<div class="border border-rule-soft p-5">
@@ -220,9 +220,9 @@ templ spanishLevelsCard(v DSLevelsView) {
 	}
 }
 
-// levelRow is one milestone line: the hour mark left, a dotted leader carrying
-// the eye across to its date or the hours still to go on the right. Reached marks
-// with a post link the whole row through to it.
+// levelRow is one milestone line, the hour mark left, a dotted leader
+// carrying the eye across to its date or the hours still to go on the right.
+// Reached marks with a post link the whole row through to it.
 templ levelRow(l DSLevel) {
 	if l.Reached && l.URL != "" {
 		<a href={ l.URL } class="group flex items-baseline">
@@ -274,8 +274,8 @@ templ subjectsCard(topics []TopicCount) {
 	}
 }
 
-// homeIndexCard is the section directory as a margin card: a numbered line per
-// section with its live count, unbuilt sections ghosted.
+// homeIndexCard is the section directory as a margin card, a numbered
+// line per section with its live count, unbuilt sections ghosted.
 templ homeIndexCard(rows []IndexRow) {
 	<div class="border border-rule-soft p-5">
 		<header class="mb-4 border-b border-rule pb-3">

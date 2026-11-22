@@ -9,7 +9,7 @@ import (
 	"github.com/henryppercy/hp-source/internal/repo"
 )
 
-// LogProgress records a page, a note, or both against an active read.
+// LogProgress collects a page, a note, or both against a read into input.
 func LogProgress(input *repo.ReadLogInput, reads []repo.ActiveRead) error {
 	readOptions := make([]huh.Option[int], len(reads))
 	for i, rd := range reads {
@@ -80,16 +80,5 @@ func LogProgress(input *repo.ReadLogInput, reads []repo.ActiveRead) error {
 		return fmt.Errorf("nothing to log: give a page, a note, or both")
 	}
 
-	return nil
-}
-
-func validateOptionalPage(s string) error {
-	if s == "" {
-		return nil
-	}
-	n, err := strconv.Atoi(s)
-	if err != nil || n <= 0 {
-		return fmt.Errorf("must be a positive page number")
-	}
 	return nil
 }

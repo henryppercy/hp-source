@@ -2,12 +2,12 @@ package forms
 
 import huh "charm.land/huh/v2"
 
-// AddAuthor collects a new author's name and sort name.
+// AddAuthor collects an author's details into name and sort.
 func AddAuthor(name, sort *string) error {
 	return personForm("Add Author", name, sort)
 }
 
-// AddTranslator collects a new translator's name and sort name.
+// AddTranslator collects a translator's details into name and sort.
 func AddTranslator(name, sort *string) error {
 	return personForm("Add Translator", name, sort)
 }
@@ -40,7 +40,7 @@ func personForm(title string, name, sort *string) error {
 	return nil
 }
 
-// AddSeries collects a new series name.
+// AddSeries collects a series name into name.
 func AddSeries(name *string) error {
 	form := huh.NewForm(
 		huh.NewGroup(

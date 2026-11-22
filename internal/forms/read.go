@@ -18,6 +18,8 @@ func ratingHuhOptions() []huh.Option[int] {
 	return opts
 }
 
+// LogRead collects a read's details into input, fetching copies per book with
+// fetchCopies.
 func LogRead(input *repo.ReadInput, books []repo.BookSummary, fetchCopies func(int) ([]repo.Copy, error)) error {
 	bookOptions := make([]huh.Option[int], len(books))
 	for i, b := range books {
@@ -155,6 +157,8 @@ func LogRead(input *repo.ReadInput, books []repo.BookSummary, fetchCopies func(i
 	return nil
 }
 
+// StartRead collects the detail to start a read into input, fetching copies
+// per book with fetchCopies.
 func StartRead(input *repo.StartReadInput, books []repo.BookSummary, fetchCopies func(int) ([]repo.Copy, error)) error {
 	bookOptions := make([]huh.Option[int], len(books))
 	for i, b := range books {
@@ -262,6 +266,7 @@ func StartRead(input *repo.StartReadInput, books []repo.BookSummary, fetchCopies
 	return nil
 }
 
+// EditRead collects changes to a read into input.
 func EditRead(input *repo.EditReadInput, reads []repo.ReadDetail) error {
 	readOptions := make([]huh.Option[int], len(reads))
 	for i, r := range reads {
@@ -371,6 +376,7 @@ func EditRead(input *repo.EditReadInput, reads []repo.ReadDetail) error {
 	return form.Run()
 }
 
+// FinishRead collects the finishing details of a read into input.
 func FinishRead(input *repo.FinishReadInput, reads []repo.ActiveRead) error {
 	readOptions := make([]huh.Option[int], len(reads))
 	for i, r := range reads {

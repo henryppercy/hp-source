@@ -11,7 +11,8 @@ import (
 	"github.com/henryppercy/hp-source/internal/site/templates"
 )
 
-// Reading copy for the hub, the year recaps and the shelf. Edit the wording here.
+// Copy for the reading hub, the year recaps and the shelf. Edit the wording
+// here.
 const (
 	readingStandfirst = "The book I'm currently reading, the books I've read, and what books are on the shelf to be read."
 	readingDeskEmpty  = "Nothing open on the desk right now."
@@ -20,8 +21,8 @@ const (
 )
 
 
-// readingHub assembles the /reading hub: the desk, this year's almanac and log,
-// the year nav, and a shelf summary.
+// readingHub assembles the /reading hub from the desk, this year's almanac
+// and log, the year nav, and a shelf summary.
 func readingHub(reads []repo.ReadEntry, shelf []repo.ShelfEntry, year int) templates.ReadingView {
 	log := finishedLog(reads)
 	return templates.ReadingView{
@@ -43,8 +44,8 @@ type yearPage struct {
 	View templates.YearView
 }
 
-// readingYearPages builds a recap page for each past year with finished books;
-// the current year lives on the hub, not its own page.
+// readingYearPages builds a recap page for each past year with finished
+// books. The current year lives on the hub, not its own page.
 func readingYearPages(reads []repo.ReadEntry, current int) []yearPage {
 	log := finishedLog(reads)
 	years := logYears(log)
@@ -91,8 +92,8 @@ func logYears(log []templates.FinishedYear) []int {
 	return years
 }
 
-// yearLinks builds the year nav from the years that have a page plus the current
-// year. current routes to /reading; active marks the page being viewed.
+// yearLinks builds the year nav from the years that have a page plus the
+// current year. current routes to /reading. active marks the page being viewed.
 func yearLinks(years []int, current, active int) []templates.YearLink {
 	seen := map[int]bool{current: true}
 	all := []int{current}
@@ -252,8 +253,8 @@ func finishedBook(e repo.ReadEntry) templates.FinishedBook {
 	}
 }
 
-// shelfBooks orders the antilibrary by how long each book has waited, longest
-// first; undated acquisitions sink to the end.
+// shelfBooks orders the antilibrary by how long each book has waited,
+// longest first. Undated acquisitions sink to the end.
 func shelfBooks(shelf []repo.ShelfEntry) []templates.ShelfBook {
 	var out []templates.ShelfBook
 	for _, e := range shelf {
@@ -295,8 +296,8 @@ func seriesLabel(name string, pos *float64) string {
 	return fmt.Sprintf("%s #%s", name, strconv.FormatFloat(*pos, 'f', -1, 64))
 }
 
-// almanac tallies the year's finished reads: counts, pages, mean rating (in
-// stars), mean pace, and the fiction and second-hand splits. Abandoned is an
+// almanac tallies the year's finished reads into counts, pages, mean rating
+// in stars, mean pace, and the fiction and second-hand splits. Abandoned is an
 // all-time count.
 func almanac(reads []repo.ReadEntry, year int) templates.AlmanacView {
 	a := templates.AlmanacView{Year: year, AvgRating: "—", AvgPace: "—"}
@@ -372,14 +373,15 @@ func countNote(n, total int) string {
 }
 
 // minStandoutBooks is the fewest finished books a year needs before standouts
-// and superlatives say anything; below it the comparisons are just noise.
+// and superlatives say anything. Below it the comparisons are just noise.
 const minStandoutBooks = 4
 
 // topTallyN caps the top-genres and top-authors lists.
 const topTallyN = 3
 
-// yearInsights derives the rail highlights for a year: standout books and the
-// top genres and authors, each empty when the year is too thin to be worth it.
+// yearInsights derives the rail highlights for a year, standout books and
+// the top genres and authors, each empty when the year is too thin to be worth
+// it.
 func yearInsights(reads []repo.ReadEntry, year int) templates.Insights {
 	var books []repo.ReadEntry
 	for _, e := range reads {

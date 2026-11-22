@@ -42,9 +42,10 @@ func (r *Repo) ListSpanishLog() ([]SpanishLogEntry, error) {
 	return entries, rows.Err()
 }
 
-// ReplaceDreamingSpanish swaps every synced Dreaming Spanish row for the given
-// days in one transaction. Delete-and-replace keeps sync idempotent and matches
-// DS even when it corrects past days; manually logged rows are left untouched.
+// ReplaceDreamingSpanish swaps every synced Dreaming Spanish row for the
+// given days in one transaction. Delete-and-replace keeps sync idempotent and
+// matches DS even when it corrects past days. Manually logged rows are left
+// untouched.
 func (r *Repo) ReplaceDreamingSpanish(days []DreamingSpanishDay) error {
 	tx, err := r.db.Begin()
 	if err != nil {

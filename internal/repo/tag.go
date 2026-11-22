@@ -1,10 +1,12 @@
 package repo
 
+// Tag is a label for works.
 type Tag struct {
 	ID   int
 	Name string
 }
 
+// ListTags returns every tag ordered by name.
 func (r *Repo) ListTags() ([]Tag, error) {
 	return listTags(r.db)
 }

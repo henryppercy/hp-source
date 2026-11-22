@@ -38,8 +38,9 @@ func wordLabel(n int) string {
 	return s + " words"
 }
 
-// BuildInfo is the colophon shown in the header and footer: when the site was
-// built, on what, and the place it was filed from. The builder sets LastBuild.
+// BuildInfo is the build stamp shown in the header and footer, recording when
+// the site was built, on what, and the place it was filed from. The builder
+// sets LastBuild.
 type BuildInfo struct {
 	Date     time.Time
 	Go       string
@@ -61,8 +62,9 @@ func buildStamp(t time.Time) string {
 }
 
 // editedLater reports whether updated falls on a later calendar day than
-// published: the signal that a post was genuinely revised after going public,
-// rather than just created and published (which bump updated_at the same day).
+// published. That is the signal that a post was genuinely revised after going
+// public rather than just created and published, which bumps updated_at the
+// same day.
 func editedLater(published, updated time.Time) bool {
 	if published.IsZero() || updated.IsZero() {
 		return false
@@ -96,19 +98,19 @@ type PostView struct {
 }
 
 // Place is a location stamp for the location component. Coords is preformatted
-// (e.g. "53.22°N 1.28°W"); Code and Coords are optional.
+// (e.g. "53.22°N 1.28°W"). Code and Coords are optional.
 type Place struct {
 	Name   string
 	Code   string
 	Coords string
 }
 
-// HomeLocation is the site's filed-from place, shown in the header, footer and
-// home nameplate. The builder sets it from the database; the default keeps a
-// standalone render sensible.
+// HomeLocation is the site's filed-from place, shown in the header, footer
+// and home nameplate. The builder sets it from the database. The default keeps
+// a standalone render sensible.
 var HomeLocation = Place{Name: "Sheffield", Code: "GB", Coords: "53.22°N 1.28°W"}
 
-// TOCEntry is a table-of-contents node; Children holds nested sub-headings.
+// TOCEntry is a table-of-contents node. Children holds nested sub-headings.
 type TOCEntry struct {
 	Title    string
 	Anchor   string
@@ -127,10 +129,10 @@ type PostListItem struct {
 	Location    Place
 }
 
-// HomeView is the frontispiece: the dispatch strip's live cells, the margin's
-// recently-read shelf and Spanish streak ribbon, the merged stream of
-// everything, and the section index. The nameplate and bio prose are static and
-// live in the template.
+// HomeView is the homepage, from the latest-activity cells and the margin's
+// recently-read shelf and Spanish streak ribbon to the merged stream and the
+// section index. The nameplate and bio prose are static and live in the
+// template.
 type HomeView struct {
 	Copy     HomeCopy
 	Dispatch []DispatchCell
@@ -141,8 +143,9 @@ type HomeView struct {
 	Index    []IndexRow
 }
 
-// RecentRead is one cover in the home rail's recently-read shelf. Meta is the
-// hover detail (title, author, pace); URL links into the reading section.
+// RecentRead is one cover in the home rail's recently-read shelf. Meta is
+// the hover detail, the title, author and pace. URL links into the reading
+// section.
 type RecentRead struct {
 	Title    string
 	ImageURL string
@@ -150,17 +153,18 @@ type RecentRead struct {
 	Meta     string
 }
 
-// DSLevelsView is the rail's Dreaming Spanish roadmap: the running total over a
-// list of hour milestones, each dated when reached or pending.
+// DSLevelsView is the rail's Dreaming Spanish roadmap, the running total
+// over a list of hour milestones, each dated when reached or pending.
 type DSLevelsView struct {
 	Head   string
 	Figure string
 	Levels []DSLevel
 }
 
-// DSLevel is one milestone in the roadmap: its hour threshold, and either the
-// date it was reached (with a link to the related post, where one exists) or the
-// hours still to go. Next marks the immediate target, kept in solid weight.
+// DSLevel is one milestone in the roadmap, its hour threshold, and either
+// the date it was reached (with a link to the related post, where one exists)
+// or the hours still to go. Next marks the immediate target, kept in solid
+// weight.
 type DSLevel struct {
 	Label   string // "600h"
 	Reached bool
@@ -170,18 +174,18 @@ type DSLevel struct {
 	Next    bool   // the immediate next target: kept solid, the rest ghosted
 }
 
-// TopicCount is one subject in the margin's subjects card: a topic, its feed,
-// and how many posts carry it.
+// TopicCount is one subject in the margin's subjects card, a topic, its
+// feed, and how many posts carry it.
 type TopicCount struct {
 	Name  string
 	URL   string
 	Count int
 }
 
-// DispatchCell is one cell of the dispatch strip: a freshest-fact pull from a
-// single feed. Italic sets the lead in serif italic (for a book title). Sub is
-// an optional muted line under the lead. URL, when set, makes the cell a link
-// into its section.
+// DispatchCell is one cell of the homepage's latest-activity strip, a
+// freshest-fact pull from a single feed. Italic sets the lead in serif italic,
+// for a book title. Sub is an optional muted line under the lead. URL, when
+// set, makes the cell a link into its section.
 type DispatchCell struct {
 	Kicker string
 	Lead   string
@@ -191,11 +195,11 @@ type DispatchCell struct {
 	URL    string
 }
 
-// FeedEntry is one item in the home stream, a union over the feeds. Kind selects
-// how it renders; only the fields that kind needs are set. Note carries the
-// author (book) or headline (post); Rating is the book's 0-10 score; ImageURL
-// its cover and Meta its "genre ; pages ; days" line; BodyHTML is the rendered
-// note; Topics tag a post or note.
+// FeedEntry is one item in the home stream, a union over the feeds. Kind
+// selects how it renders, and only the fields that kind needs are set. Note
+// carries the author (book) or headline (post). Rating is the book's 0-10
+// score. ImageURL is its cover and Meta its genre, pages and days line.
+// BodyHTML is the rendered note. Topics tag a post or note.
 type FeedEntry struct {
 	Kind     string // "post" | "note" | "book" | "milestone"
 	Kicker   string
@@ -210,8 +214,8 @@ type FeedEntry struct {
 	Topics   []TopicLink
 }
 
-// IndexRow is one line of the section index: a numbered directory entry with a
-// live count. URL is empty for a section that is not built yet.
+// IndexRow is one line of the section index, a numbered directory entry
+// with a live count. URL is empty for a section that is not built yet.
 type IndexRow struct {
 	Num   string
 	Label string
@@ -227,8 +231,8 @@ type PostListView struct {
 	Posts      []PostListItem
 }
 
-// TopicFeedView is a topic page (/topics/{topic} and /spanish): a list of
-// articles and a timeline of slices, each rendered only when non-empty.
+// TopicFeedView is a topic page such as /topics/{topic} and /spanish, a
+// list of articles and a timeline of slices, each rendered only when non-empty.
 type TopicFeedView struct {
 	Heading    string
 	Standfirst string
@@ -237,7 +241,8 @@ type TopicFeedView struct {
 	Slices     []SliceItem
 }
 
-// SpanishView is the /spanish page: the input dashboard above the writing feed.
+// SpanishView is the /spanish page, the input dashboard above the writing
+// feed.
 type SpanishView struct {
 	Total      string // lifetime hours, e.g. "472"
 	Standfirst string // the page lead under the title
@@ -278,7 +283,7 @@ type BandView struct {
 // PacePoints are SVG polyline coordinates in a 720x240 box.
 type GoalView struct {
 	Head         string // "800 hours by December 2026"
-	Verdict      string // finish vs deadline: "est. 4mo early" | "est. on time" | "reached" | "stalled"
+	Verdict      string // finish vs deadline, one of "est. 4mo early", "est. on time", "reached", "stalled"
 	Pace         string // "1h 3m a day lately, 54m a day needed"
 	Reached      bool
 	ActualPoints string
@@ -294,8 +299,8 @@ type CalendarView struct {
 	Years []YearSpan
 }
 
-// YearSpan is a year marker above the heatmap; Weeks is how many columns it
-// covers, used to size its label.
+// YearSpan is a year marker above the heatmap. Weeks is how many columns
+// it covers, used to size its label.
 type YearSpan struct {
 	Label string
 	Weeks int
@@ -306,8 +311,8 @@ type CalWeek struct {
 	Days [7]CalDay
 }
 
-// CalDay is one cell: InRange is false for padding before the first day or after
-// today. Class is the shade for its logged time, Title the hover label.
+// CalDay is one cell. InRange is false for padding before the first day or
+// after today. Class is the shade for its logged time, Title the hover label.
 type CalDay struct {
 	InRange bool
 	Class   string
@@ -333,8 +338,8 @@ type SliceFeedView struct {
 	Slices     []SliceItem
 }
 
-// ReadingView is the /reading hub: what's open now, this year's almanac and log,
-// links to earlier years, the rail insights, and a shelf summary.
+// ReadingView is the /reading hub, what's open now, this year's almanac
+// and log, links to earlier years, the rail insights, and a shelf summary.
 type ReadingView struct {
 	Standfirst string
 	DeskEmpty  string // shown when nothing is currently being read
@@ -347,8 +352,8 @@ type ReadingView struct {
 	Shelf      ShelfSummary
 }
 
-// YearView is a /reading/{year} recap: that year's almanac, log and insights,
-// with the year nav to move between years.
+// YearView is a /reading/{year} recap, that year's almanac, log and
+// insights, with the year nav to move between years.
 type YearView struct {
 	Standfirst string
 	Almanac    AlmanacView
@@ -358,7 +363,7 @@ type YearView struct {
 	Nav        []YearLink
 }
 
-// Insights are a year's rail highlights: standout books and the most-read
+// Insights are a year's rail highlights, standout books and the most-read
 // genres and authors. Slices are empty when there is too little to be useful.
 type Insights struct {
 	Standouts  []Superlative
@@ -392,8 +397,8 @@ type ShelfView struct {
 	Books      []ShelfBook
 }
 
-// ShelfSummary is the hub's glance at the shelf: a count, the longest wait, and
-// the few books that have waited longest.
+// ShelfSummary is the hub's glance at the shelf, a count, the longest
+// wait, and the few books that have waited longest.
 type ShelfSummary struct {
 	Total       int
 	LongestWait string
@@ -465,7 +470,7 @@ func barPct(count, peak int) int {
 	return 12
 }
 
-// AlmanacView is the year's reading tally for the frontispiece. AvgRating and
+// AlmanacView is the year's reading tally for the hub plate. AvgRating and
 // AvgPace are display-ready, "—" when there is nothing to average. MonthsPages
 // holds per-month pages read for the density strip, indexed January to December.
 type AlmanacView struct {
@@ -484,9 +489,9 @@ type AlmanacView struct {
 	PeakMonth      int     // pages in the busiest month, for scaling the bars
 }
 
-// CurrentRead is a book open on the desk now. DayCount is days since started;
-// Percent is progress through the book; CurrentPage over Pages is that progress
-// in pages.
+// CurrentRead is a book open on the desk now. DayCount is days since
+// started. Percent is progress through the book. CurrentPage over Pages is
+// that progress in pages.
 type CurrentRead struct {
 	Title       string
 	Author      string
@@ -522,7 +527,8 @@ type FinishedYear struct {
 	Books []FinishedBook
 }
 
-// ShelfBook is an owned, unread book: the antilibrary still waiting. Waiting is
+// ShelfBook is an owned, unread book, the antilibrary still waiting.
+// Waiting is
 // how long it has sat unread, "" when the acquisition date is unknown. Series is
 // preformatted with its position, e.g. "Wolf Hall #2".
 type ShelfBook struct {
@@ -539,7 +545,7 @@ type ShelfBook struct {
 	Waiting    string
 }
 
-// Pip is one mark in a rating meter: empty, half or full.
+// Pip is one mark in a rating meter, empty, half or full.
 type Pip int
 
 const (

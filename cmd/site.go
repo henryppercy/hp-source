@@ -41,12 +41,10 @@ func newSiteBuildCmd(a *app) *cobra.Command {
 	}
 	cmd.Flags().String("out", "./dist", "Output directory for the built site")
 	cmd.Flags().String("from", site.HomeSlug, "Location slug the build is filed from")
-	cmd.Flags().Bool("images", false, "Copy local images into the output (default: when HP_IMAGE_PATTERN is unset)")
+	cmd.Flags().Bool("images", false, "Copy local images into the output (default false, unless HP_IMAGE_PATTERN is unset)")
 	return cmd
 }
 
-// includeImages honours an explicit --images flag, otherwise copies images only
-// when they are served locally, i.e. no CDN pattern is configured.
 func includeImages(cmd *cobra.Command) bool {
 	if cmd.Flags().Changed("images") {
 		v, _ := cmd.Flags().GetBool("images")

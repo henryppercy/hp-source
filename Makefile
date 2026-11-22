@@ -19,9 +19,7 @@ build: css generate
 	go build -o bin/hp .
 	install -Dm755 bin/hp $(INSTALL_DIR)/hp
 
-# dev runs air: regenerate templ, rebuild, and restart the server on .go/.templ
-# edits. Run `make css-watch` in a separate terminal for CSS (Tailwind's watcher
-# must stay in the foreground, so it can't be backgrounded here).
+# runs air (see .air.toml)
 dev:
 	go tool air
 

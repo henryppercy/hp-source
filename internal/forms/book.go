@@ -10,9 +10,8 @@ import (
 	"github.com/henryppercy/hp-source/internal/text"
 )
 
-// AddBook collects a work's details, returning whether the user wants to add a
-// copy. Authors, series and tags are selected from existing records; create them
-// first with author/series/tag add.
+// AddBook collects a work's details, returning whether the user wants to add a copy.
+// Authors, series and tags must be created first with author/series/tag add.
 func AddBook(
 	input *repo.BookInput,
 	genres []repo.Genre,

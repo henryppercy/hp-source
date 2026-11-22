@@ -2,6 +2,8 @@ package repo
 
 import "fmt"
 
+// CopyInput is a copy's editable fields. Empty strings and zero values are
+// stored as NULL.
 type CopyInput struct {
 	Title        string
 	Headline     string
@@ -58,6 +60,8 @@ func (r *Repo) AddCopy(bookID int, in *CopyInput) error {
 	return tx.Commit()
 }
 
+// GetCopy returns a copy's current values for the edit form, including its
+// translators.
 func (r *Repo) GetCopy(copyID int) (*CopyInput, error) {
 	var in CopyInput
 	var pageCount, secondHand *int
@@ -90,6 +94,7 @@ func (r *Repo) GetCopy(copyID int) (*CopyInput, error) {
 	return &in, nil
 }
 
+// UpdateCopy replaces a copy's fields and re-links its translators.
 func (r *Repo) UpdateCopy(copyID int, in *CopyInput) error {
 	tx, err := r.db.Begin()
 	if err != nil {
@@ -127,6 +132,7 @@ func (r *Repo) UpdateCopy(copyID int, in *CopyInput) error {
 	return tx.Commit()
 }
 
+// Copy is a single edition of a work.
 type Copy struct {
 	ID       int
 	Title    string
@@ -134,6 +140,7 @@ type Copy struct {
 	Language string
 }
 
+// ListCopies returns a work's copies in insertion order.
 func (r *Repo) ListCopies(bookID int) ([]Copy, error) {
 	rows, err := r.db.Query(
 		"SELECT id, title, format, language FROM book_copy WHERE book_id = ? ORDER BY id",

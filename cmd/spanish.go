@@ -51,8 +51,6 @@ func runSpanishSync(r *repo.Repo) error {
 	return nil
 }
 
-// fetchDreamingSpanish returns every day with logged time, dropping empty days
-// since zero rows are derivable from the calendar at render time.
 func fetchDreamingSpanish(token string) ([]repo.DreamingSpanishDay, error) {
 	req, err := http.NewRequest(http.MethodGet, dreamingSpanishURL, nil)
 	if err != nil {

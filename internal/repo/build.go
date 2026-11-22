@@ -2,6 +2,7 @@ package repo
 
 import "fmt"
 
+// BuildInput is a build's details as recorded at build time.
 type BuildInput struct {
 	LocationID int
 	GoVersion  string
@@ -25,6 +26,7 @@ func (r *Repo) AddBuild(in *BuildInput) (int, error) {
 	return int(id), nil
 }
 
+// MarkBuildSuccess flips a pending build row to successful.
 func (r *Repo) MarkBuildSuccess(id int) error {
 	if _, err := r.db.Exec(`UPDATE build SET success = 1 WHERE id = ?`, id); err != nil {
 		return fmt.Errorf("failed to mark build success: %w", err)

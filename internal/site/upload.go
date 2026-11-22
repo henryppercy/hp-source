@@ -70,7 +70,7 @@ func BackupDatabase(db *sql.DB) error {
 // not blocked while the snapshot is taken. dest must not already exist.
 func snapshotDatabase(db *sql.DB, dest string) error {
 	// The destination is passed as a SQL string literal with single quotes
-	// doubled; VACUUM INTO does not accept bound parameters.
+	// doubled. VACUUM INTO does not accept bound parameters.
 	dest = strings.ReplaceAll(dest, "'", "''")
 	if _, err := db.ExecContext(context.Background(), "VACUUM INTO '"+dest+"'"); err != nil {
 		return fmt.Errorf("failed to snapshot database: %w", err)

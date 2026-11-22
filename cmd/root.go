@@ -100,6 +100,7 @@ func newRootCmd() *cobra.Command {
 	return root
 }
 
+// Execute runs the root command and exits non-zero on error.
 func Execute() {
 	if err := newRootCmd().Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)

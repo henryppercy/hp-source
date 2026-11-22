@@ -7,6 +7,8 @@ import (
 	"github.com/henryppercy/hp-source/internal/text"
 )
 
+// Location is a place posts and builds are filed from. Lat and Lng are nil
+// when coordinates were not recorded.
 type Location struct {
 	ID   int
 	Slug string
@@ -16,6 +18,7 @@ type Location struct {
 	Lng  *float64
 }
 
+// LocationInput is a location's editable fields.
 type LocationInput struct {
 	Name string
 	Code string
@@ -24,6 +27,7 @@ type LocationInput struct {
 	Lng  *float64
 }
 
+// ListLocations returns every location ordered by name.
 func (r *Repo) ListLocations() ([]Location, error) {
 	rows, err := r.db.Query(
 		`SELECT id, slug, name, country_code, lat, lng FROM location ORDER BY name`,
@@ -44,6 +48,8 @@ func (r *Repo) ListLocations() ([]Location, error) {
 	return locations, rows.Err()
 }
 
+// GetLocationBySlug returns the location with the given slug, erroring when
+// none exists.
 func (r *Repo) GetLocationBySlug(slug string) (*Location, error) {
 	rows, err := r.db.Query(
 		`SELECT id, slug, name, country_code, lat, lng FROM location WHERE slug = ?`,
@@ -64,6 +70,8 @@ func (r *Repo) GetLocationBySlug(slug string) (*Location, error) {
 	return &l, nil
 }
 
+// CreateLocation inserts a location, deriving the slug from the name when not
+// given.
 func (r *Repo) CreateLocation(in *LocationInput) error {
 	slug := text.Slug(in.Slug)
 	if slug == "" {

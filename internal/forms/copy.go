@@ -83,8 +83,6 @@ func copyLabel(c repo.Copy) string {
 }
 
 // CopyForm edits a copy's details, shared by book add, copy add and copy edit.
-// defaultTitle prefills a blank title (the work's title); originalLanguage seeds
-// the language placeholder.
 func CopyForm(in *repo.CopyInput, translators []repo.Translator, defaultTitle, originalLanguage string) error {
 	if in.Title == "" {
 		in.Title = defaultTitle

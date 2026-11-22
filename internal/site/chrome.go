@@ -2,9 +2,7 @@ package site
 
 import "github.com/henryppercy/hp-source/internal/site/templates"
 
-// chrome is the copy shared by every page's shell: the wordmark, the masthead
-// nav, and the footer colophon. Edit the site's chrome wording here; the builder
-// pushes it into the templates layer (see Build).
+// chrome is the copy shared by every page's shell.
 var chrome = templates.ChromeCopy{
 	SiteName:  "Henry Percy",
 	FiledFrom: "filed from",

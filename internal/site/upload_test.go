@@ -72,9 +72,10 @@ func TestSnapshotDatabaseQuotedPath(t *testing.T) {
 	}
 }
 
-// TestR2ConfigFromEnv verifies credential resolution: required variables must
-// be set, the endpoint defaults to the global R2 endpoint, and endpoint/region
-// overrides are honoured (needed for buckets in a jurisdiction such as the EU).
+// TestR2ConfigFromEnv verifies credential resolution. Required variables must
+// be set, the endpoint defaults to the global R2 endpoint, and endpoint and
+// region overrides are honoured, which is needed for buckets in a jurisdiction
+// such as the EU.
 func TestR2ConfigFromEnv(t *testing.T) {
 	names := r2EnvNames{
 		account:  "TEST_R2_ACCOUNT",

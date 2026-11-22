@@ -2,8 +2,8 @@ package templates
 
 import "fmt"
 
-// Spanish is the /spanish page: the input dashboard (the count, the goal burn-up
-// and the daily heatmap) above the Spanish writing feed.
+// Spanish is the /spanish page, the input dashboard with the count, the
+// goal burn-up and the daily heatmap above the Spanish writing feed.
 templ Spanish(v SpanishView) {
 	@Layout(docTitle("Spanish"), "/spanish") {
 		<div class="mx-auto max-w-broad">
@@ -46,8 +46,9 @@ templ Spanish(v SpanishView) {
 	}
 }
 
-// spanishFrontispiece is the hub plate: the lifetime count and level on the left,
-// the headline figures on the right, the year's hours by month across the foot.
+// spanishFrontispiece is the hub plate, the lifetime count and level on
+// the left, the headline figures on the right, the year's hours by month across
+// the foot.
 templ spanishFrontispiece(v SpanishView) {
 	<div class="border border-fg">
 		<div class="grid lg:grid-cols-[2fr_3fr]">
@@ -102,8 +103,8 @@ templ spanishFrontispiece(v SpanishView) {
 	</div>
 }
 
-// goalCard is the rail's burn-up toward the target: the running total against a
-// dashed pace line, small, with the pace note beneath.
+// goalCard is the rail's burn-up toward the target, the running total
+// against a dashed pace line, small, with the pace note beneath.
 templ goalCard(g GoalView) {
 	<div class="border border-rule-soft p-5">
 		<header class="mb-4 flex items-baseline justify-between gap-3 border-b border-rule pb-3">

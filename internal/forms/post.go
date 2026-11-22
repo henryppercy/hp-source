@@ -10,16 +10,16 @@ import (
 	"github.com/henryppercy/hp-source/internal/text"
 )
 
+// AddPost collects a new article's details into in.
 func AddPost(in *repo.PostInput, topics []repo.Topic, locations []repo.Location) error {
 	return postForm(in, topics, locations, "Add Post", "Create")
 }
+
+// EditPost collects changes to an article's details into in.
 func EditPost(in *repo.PostInput, topics []repo.Topic, locations []repo.Location) error {
 	return postForm(in, topics, locations, "Edit Post", "Save")
 }
 
-// postForm collects an article's metadata, location and topics. Slices use
-// sliceForm. The slug is finalised by the repo (override, else title), so the
-// form just collects the raw optional override.
 func postForm(in *repo.PostInput, topics []repo.Topic, locations []repo.Location, heading, saveLabel string) error {
 	form := huh.NewForm(
 		huh.NewGroup(
@@ -73,15 +73,16 @@ func postForm(in *repo.PostInput, topics []repo.Topic, locations []repo.Location
 	return form.Run()
 }
 
+// AddSlice collects a new slice's details into in.
 func AddSlice(in *repo.PostInput, topics []repo.Topic, locations []repo.Location) error {
 	return sliceForm(in, topics, locations, "Add Slice")
 }
+
+// EditSlice collects changes to a slice's details into in.
 func EditSlice(in *repo.PostInput, topics []repo.Topic, locations []repo.Location) error {
 	return sliceForm(in, topics, locations, "Edit Slice")
 }
 
-// sliceForm collects a slice's thin metadata: an optional slug override (else a
-// date slug is assigned by the repo), the publish date, location, and topics.
 func sliceForm(in *repo.PostInput, topics []repo.Topic, locations []repo.Location, heading string) error {
 	form := huh.NewForm(
 		huh.NewGroup(
@@ -104,8 +105,6 @@ func sliceForm(in *repo.PostInput, topics []repo.Topic, locations []repo.Locatio
 	return form.Run()
 }
 
-// locationsGroup is the shared optional location select, preselected from
-// in.LocationID. Zero is "None".
 func locationsGroup(in *repo.PostInput, locations []repo.Location) *huh.Group {
 	options := []huh.Option[int]{huh.NewOption("None", 0)}
 	for _, l := range locations {
@@ -121,7 +120,6 @@ func locationsGroup(in *repo.PostInput, locations []repo.Location) *huh.Group {
 	return huh.NewGroup(sel)
 }
 
-// topicsGroup is the shared topics multiselect, preselected from in.TopicIDs.
 func topicsGroup(in *repo.PostInput, topics []repo.Topic) *huh.Group {
 	options := make([]huh.Option[int], len(topics))
 	for i, t := range topics {
@@ -135,7 +133,8 @@ func topicsGroup(in *repo.PostInput, topics []repo.Topic) *huh.Group {
 	)
 }
 
-// SelectArticle asks which article to act on, labelled by title. Drafts marked.
+// SelectArticle picks an article from posts, labelling drafts, and returns its
+// id.
 func SelectArticle(posts []repo.Post) (int, error) {
 	return selectPost(posts, func(p repo.Post) string {
 		label := p.Title
@@ -146,8 +145,7 @@ func SelectArticle(posts []repo.Post) (int, error) {
 	})
 }
 
-// SelectSlice asks which slice to act on, labelled by date + a body preview
-// (slices have no title). Drafts are marked.
+// SelectSlice picks a slice from slices and returns its id.
 func SelectSlice(slices []repo.Post) (int, error) {
 	return selectPost(slices, func(p repo.Post) string {
 		date := p.PublishedAt
@@ -206,9 +204,8 @@ func preview(body string) string {
 	return line
 }
 
-// PublishPost prompts for the publish date. A blank answer means "now" and is
-// stamped with the full current timestamp; a typed date is kept as-is (a past
-// date has no time of day).
+// PublishPost collects the published date for title into date, defaulting to
+// now.
 func PublishPost(title string, date *string) error {
 	now := time.Now()
 	form := huh.NewForm(
@@ -228,27 +225,6 @@ func PublishPost(title string, date *string) error {
 		*date = now.Format("2006-01-02 15:04:05")
 	}
 	return nil
-}
-
-func validateDateOptional(s string) error {
-	if s == "" {
-		return nil
-	}
-	return validateDate(s)
-}
-
-// validateDateTimeOptional accepts a blank value, a date, or a date with a time
-// of day (minute or second precision), for published_at.
-func validateDateTimeOptional(s string) error {
-	if s == "" {
-		return nil
-	}
-	for _, layout := range []string{"2006-01-02", "2006-01-02 15:04", "2006-01-02 15:04:05"} {
-		if _, err := time.Parse(layout, s); err == nil {
-			return nil
-		}
-	}
-	return fmt.Errorf("must be a date or date time, e.g. 2026-06-20 or 2026-06-20 14:32")
 }
 
 func postSummary(in *repo.PostInput, topics []repo.Topic, locations []repo.Location) string {

@@ -2,6 +2,7 @@ package text
 
 import "strings"
 
+// Slug lowercases s and converts runs of non-alphanumerics to single hyphens.
 func Slug(s string) string {
 	s = strings.ToLower(s)
 	s = strings.Map(func(r rune) rune {

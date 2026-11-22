@@ -1,6 +1,6 @@
 package templates
 
-// docTitle is the document <title>: the section name, then the site name. An
+// docTitle is the document title, the section name then the site name. An
 // empty section (the home page) yields the site name alone.
 func docTitle(section string) string {
 	if section == "" {
@@ -9,8 +9,9 @@ func docTitle(section string) string {
 	return section + "; " + Chrome.SiteName
 }
 
-// Layout is the HTML shell shared by every page. The title and the href of the
-// active nav section are passed in; the page body is supplied as templ children.
+// Layout is the HTML shell shared by every page. The title and the href of
+// the active nav section are passed in. The page body is supplied as templ
+// children.
 templ Layout(title, active string) {
 	<!DOCTYPE html>
 	<html lang="en">

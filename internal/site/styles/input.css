@@ -2,8 +2,8 @@
 @plugin "@tailwindcss/typography";
 @source "../templates";
 
-/* Self-hosted fonts. Latin woff2, served from /static/fonts. swap avoids a
-   blocking flash; the fallback stack in the font vars covers the swap window. */
+/* Self-hosted fonts. Latin woff2, served from /static/fonts. Swap avoids a
+   blocking flash. The fallback stack in the font vars covers the swap window. */
 @font-face {
     font-family: "Hanken Grotesk";
     font-style: normal;
@@ -108,7 +108,7 @@
     --color-ghost: #c4c7c4; /* inactive nav numbers, dividers */
 
     /* Accent (red) */
-    --color-accent: #b42318; /* the one accent, markers only */
+    --color-accent: #b42318; /* the one accent */
     --color-accent-tint: #fbe4e1; /* highlight behind text */
 
     /* Surfaces */
@@ -120,14 +120,14 @@
     --color-rule: #e6e6e4; /* standard hairline between entries */
     --color-rule-soft: #d6d7d5; /* boxed-off module border */
 
-    /* Type scale (display) */
+    /* Type scale */
     --text-kicker: 0.625rem; /* 10px mono uppercase */
     --text-meta: 0.6875rem; /* 11px mono */
     --text-label: 0.8125rem; /* 13px nav / UI */
     --text-body: 1.125rem; /* 18px serif body */
     --text-lead: 1.25rem; /* 20px lead paragraph */
-    /* Display sizes are fluid: clamp(mobile-min, rem + vw, desktop-max). Reading
-     and UI sizes above stay fixed. Set line-height/tracking. */
+    /* Display sizes are fluid. Reading and UI sizes above stay fixed.
+     Set line-height/tracking. */
     --text-h3: clamp(
         1.375rem,
         1.25rem + 0.55vw,
@@ -178,8 +178,7 @@
     }
 }
 
-/* kazari renders its own framed code blocks; keep Typography out of their
-   internals (it still styles inline code and everything else). */
+/* kazari renders its own framed code blocks. */
 .prose :where(.kazari-block) {
     margin: 1.5em 0;
 }
@@ -198,9 +197,7 @@
     content: none;
 }
 
-/* Re-skin kazari's frame with our tokens by overriding its --kz-* variables.
-   Blocks on the global theme are plain .kazari-block (no .kz-themed), and the
-   frame reads these vars from :root, so the two-class selector here wins. */
+/* Re-skin kazari's frame with my tokens by overriding its --kz-* variables. */
 .prose .kazari-block {
     --kz-radius: 0;
     --kz-shadow: none;
@@ -223,9 +220,7 @@
     --kz-mark-border: var(--color-accent);
 }
 
-/* Toolbar: filename on the left, language on the right. The left group is
-   unwrapped (display:contents) so both labels become flex items the toolbar can
-   space apart; the file icon and the empty right slot are dropped. */
+/* Toolbar. filename on the left, language on the right. */
 .prose .kazari-block .kz-toolbar-left {
     display: contents;
 }
@@ -255,13 +250,10 @@
     color: var(--color-fainter);
 }
 
-/* No traffic-light dots, even on author-set terminal frames. */
 .prose .kazari-block .kz-terminal-dots {
     display: none;
 }
 
-/* Inline code: a flat bordered chip, mono and slightly smaller than the
-   surrounding text. Beats Typography's lower-specificity :where() rules. */
 .prose :not(pre) > code {
     font-family: var(--font-mono);
     font-size: 0.875em;
@@ -277,11 +269,7 @@
     content: none;
 }
 
-/* ---------------------------------------------------------------------------
-   Prose: native markdown in a post body. A quiet serif column on white, with the
-   accent rationed to markers only (links, list dashes, the quote rule, footnote
-   refs). Element selectors sit at .prose > tag specificity to beat Typography's
-   :where() defaults. Code blocks and inline code are styled above. */
+/* Prose for native markdown in a post body. */
 .prose {
     max-width: var(--spacing-measure);
     font-family: var(--font-serif);
@@ -290,8 +278,6 @@
     color: var(--color-fg-body);
 }
 
-/* Headings: grotesk ink, never accent. Space opens above a new section, closes
-   tight below it. */
 .prose h2,
 .prose h3,
 .prose h4 {
@@ -299,8 +285,6 @@
     font-weight: 600;
     color: var(--color-fg);
 }
-/* h1 is the post title (set on the template), not body flow; this backs it up if
-   a body ever opens with one. */
 .prose h1 {
     margin-bottom: 0.5em;
     font-family: var(--font-sans);
@@ -326,7 +310,6 @@
     margin-bottom: 0.5em;
     font-size: var(--text-label);
 }
-/* Deepest levels drop to a mono uppercase label. */
 .prose h5,
 .prose h6 {
     margin-top: 1.4em;
@@ -339,12 +322,10 @@
     color: var(--color-fg);
 }
 
-/* Body: vertical rhythm only, no first-line indent. */
 .prose p {
     margin: 0 0 1.15em;
 }
 
-/* Inline formatting. */
 .prose strong {
     font-weight: 600;
     color: var(--color-fg);
@@ -372,8 +353,6 @@
     padding: 0.18em 0.3em 0.1em;
 }
 
-/* Blockquote: an accent rule in the margin, larger serif italic, no glyphs. A
-   nested attribution drops to a mono meta line. */
 .prose blockquote {
     margin: 1.6em 0;
     padding-left: 1.25rem;
@@ -400,8 +379,6 @@
     color: var(--color-faint);
 }
 
-/* Lists: custom markers set in a fixed gutter; accent at the top level, fainter
-   as nesting deepens. */
 .prose ul,
 .prose ol {
     margin: 1.15em 0;
@@ -444,7 +421,7 @@
     color: var(--color-fainter);
 }
 
-/* Task lists: a square checkbox replaces the dash. */
+/* TODO: style this better */
 .prose li:has(> input[type="checkbox"])::before {
     content: none;
 }
@@ -463,15 +440,12 @@
     border-color: var(--color-accent);
 }
 
-/* Horizontal rule: a single hairline across the measure, no ornament. */
 .prose hr {
     margin: 2.5em 0;
     border: 0;
     border-top: 1px solid var(--color-rule);
 }
 
-/* Images: full measure, square, a hairline frame. An optional figcaption sits
-   below in serif italic. */
 .prose img {
     display: block;
     max-width: 100%;
@@ -493,8 +467,6 @@
     color: var(--color-muted);
 }
 
-/* Tables: horizontal rules only. A fg rule under the mono uppercase header, a
-   hairline between body rows. */
 .prose table {
     width: 100%;
     margin: 1.6em 0;
@@ -523,8 +495,6 @@
     color: var(--color-fg-body);
 }
 
-/* Footnotes: superscript mono accent refs; the list sits above the footer behind
-   a hairline, a step below body. */
 .prose .footnote-ref,
 .prose .footnote-backref {
     font-family: var(--font-mono);
@@ -542,8 +512,6 @@
     display: none;
 }
 
-/* Table of contents: a boxed module at the top of a post. Two levels: numbered
-   h2 entries with their h3s nested beneath, aligned past the ordinal gutter. */
 .toc {
     --toc-gutter: 2.25rem;
     max-width: var(--spacing-measure);
@@ -580,7 +548,6 @@
 .toc-list > li {
     counter-increment: toc;
 }
-/* level 1 (h2): ordinal in a fixed gutter, heading in the text column */
 .toc-list > li > a {
     display: grid;
     grid-template-columns: var(--toc-gutter) 1fr;
@@ -599,7 +566,6 @@
     font-size: var(--text-meta);
     color: var(--color-accent);
 }
-/* level 2 (h3): indented to the parent text column, marker instead of ordinal */
 .toc-sub {
     list-style: none;
     margin: 0.05rem 0 0.4rem;

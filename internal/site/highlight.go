@@ -1,5 +1,3 @@
-// highlight.go
-
 package site
 
 import (
@@ -67,8 +65,10 @@ func (s *markParser) CloseBlock(parent ast.Node, pc parser.Context) {
 // MarkHTMLRenderer renders markNode as <mark>.
 type MarkHTMLRenderer struct{}
 
+// NewMarkHTMLRenderer returns a renderer for markNode.
 func NewMarkHTMLRenderer() renderer.NodeRenderer { return &MarkHTMLRenderer{} }
 
+// RegisterFuncs registers the markNode renderer.
 func (r *MarkHTMLRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
 	reg.Register(kindMark, r.renderMark)
 }
@@ -86,7 +86,7 @@ func (r *MarkHTMLRenderer) renderMark(
 // markExt is an extension that lets you write highlighted text as "==text==".
 type markExt struct{}
 
-// Mark is the extension instance; add it via goldmark.WithExtensions(Mark).
+// Mark is the extension instance. Add it via goldmark.WithExtensions(Mark).
 var Mark = &markExt{}
 
 func (e *markExt) Extend(m goldmark.Markdown) {

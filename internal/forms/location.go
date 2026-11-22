@@ -10,8 +10,7 @@ import (
 	"github.com/henryppercy/hp-source/internal/text"
 )
 
-// AddLocation collects a place: name, optional country code, optional
-// coordinates, and a slug (defaulting to the slugified name).
+// AddLocation collects a location's details into in.
 func AddLocation(in *repo.LocationInput) error {
 	var lat, lng string
 
@@ -86,26 +85,6 @@ func AddLocation(in *repo.LocationInput) error {
 	in.Code = strings.ToUpper(strings.TrimSpace(in.Code))
 	in.Lat = parseFloatPtr(lat)
 	in.Lng = parseFloatPtr(lng)
-	return nil
-}
-
-func validateCountryCode(s string) error {
-	if s == "" {
-		return nil
-	}
-	if len(strings.TrimSpace(s)) != 2 {
-		return fmt.Errorf("must be a 2-letter code, e.g. GB")
-	}
-	return nil
-}
-
-func validateOptionalFloat(s string) error {
-	if s == "" {
-		return nil
-	}
-	if _, err := strconv.ParseFloat(s, 64); err != nil {
-		return fmt.Errorf("must be a number, e.g. 53.22")
-	}
 	return nil
 }
 

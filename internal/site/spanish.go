@@ -11,12 +11,13 @@ import (
 )
 
 // dsLevels are the Dreaming Spanish level thresholds in hours. The level a
-// learner sits on is the highest threshold they have passed; the band figure
+// learner sits on is the highest threshold they have passed. The band figure
 // shows progress toward the next.
 var dsLevels = []int{0, 50, 150, 300, 600, 1000, 1500}
 
-// The current goal: reach spanishGoalHours by the end of the given month and
-// year. Change these three and the figure updates everywhere on the page.
+// The current goal is to reach spanishGoalHours by the end of the given month
+// and year. Change these three constants and the figure updates everywhere on
+// the page.
 const (
 	spanishGoalHours = 800
 	spanishGoalYear  = 2027
@@ -130,9 +131,9 @@ func spanishBand(total int) templates.BandView {
 	}
 }
 
-// spanishStats are the six frontispiece figures, all leaning on the current year
-// and recent momentum: the week, month and year totals to date, this year's
-// daily average, the trailing pace and the live streak.
+// spanishStats are the six dashboard figures, all leaning on the current
+// year and recent momentum. They are the week, month and year totals to date,
+// this year's daily average, the trailing pace and the live streak.
 func spanishStats(days []spanishDay, now time.Time) []templates.Stat {
 	cur, _ := streaks(days, dateOnly(now))
 	weekStart := dateOnly(now).AddDate(0, 0, -((int(now.Weekday()) + 6) % 7)) // back to Monday
@@ -247,8 +248,8 @@ func spanishGoal(days []spanishDay, total int, start, now time.Time) templates.G
 	return g
 }
 
-// paceVerdict frames a projected finish against the deadline; days > 0 means the
-// projection lands that many days early, negative means late.
+// paceVerdict frames a projected finish against the deadline. days > 0
+// means the projection lands that many days early, negative means late.
 func paceVerdict(days float64) string {
 	d := int(math.Round(math.Abs(days)))
 	if d < 14 {

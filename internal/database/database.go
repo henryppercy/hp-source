@@ -7,6 +7,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+// NewDB opens the SQLite database at path with WAL mode and foreign keys on.
 func NewDB(path string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite", path)
 

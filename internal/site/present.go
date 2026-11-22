@@ -9,9 +9,9 @@ import (
 	"github.com/henryppercy/hp-source/internal/site/templates"
 )
 
-// This file holds the presentation helpers shared across the section domains
-// (home, posts, reading, spanish): dates, locations, cover paths and small
-// formatting. Domain-specific presenters live in their own files.
+// This file holds the presentation helpers shared across the home, posts,
+// reading and spanish sections. Dates, locations, cover paths and small
+// formatting live here. Domain-specific presenters live in their own files.
 
 // parseDate parses the date/datetime text the repo stores, returning the zero
 // time when empty or unrecognised.
@@ -25,7 +25,7 @@ func parseDate(s string) time.Time {
 }
 
 // locationStamps maps location ids to display stamps for the post and slice
-// cards. The builder populates it before rendering; a missing id yields a blank
+// cards. The builder populates it before rendering. A missing id yields a blank
 // stamp, so unlocated content simply shows no place.
 var locationStamps map[int]templates.Place
 

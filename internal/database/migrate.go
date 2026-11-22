@@ -10,7 +10,7 @@ import (
 //go:embed migrations/*.sql
 var migrationFiles embed.FS
 
-const schemaMigrationsDDL = `CREATE TABLE IF NOT EXISTS schema_migrations (
+const schemaMigration = `CREATE TABLE IF NOT EXISTS schema_migrations (
     version    TEXT PRIMARY KEY,
     applied_at TEXT NOT NULL DEFAULT (datetime('now'))
 )`
@@ -25,10 +25,11 @@ func Migrate(db *sql.DB) ([]string, error) {
 	return migrateFS(db, migrations)
 }
 
-// migrateFS runs the migrations in fsys (a flat directory of *.sql files) and
-// returns the filenames it ran. Split out so tests can supply synthetic ones.
+// migrateFS runs the migrations in fsys, a flat directory of *.sql files, and
+// returns the filenames it ran.
 func migrateFS(db *sql.DB, fsys fs.FS) ([]string, error) {
-	if _, err := db.Exec(schemaMigrationsDDL); err != nil {
+	// Split out from Migrate so tests can supply synthetic migrations.
+	if _, err := db.Exec(schemaMigration); err != nil {
 		return nil, fmt.Errorf("failed to create schema_migrations: %w", err)
 	}
 
@@ -82,7 +83,6 @@ func appliedVersions(db *sql.DB) (map[string]bool, error) {
 	return applied, rows.Err()
 }
 
-// applyMigration runs a single migration and records it, atomically.
 func applyMigration(db *sql.DB, name, content string) error {
 	tx, err := db.Begin()
 	if err != nil {
@@ -101,6 +101,7 @@ func applyMigration(db *sql.DB, name, content string) error {
 	return tx.Commit()
 }
 
+// Fresh drops every table, preparing for a clean migrate.
 func Fresh(db *sql.DB) error {
 	_, err := db.Exec("PRAGMA foreign_keys=OFF")
 	if err != nil {

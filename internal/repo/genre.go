@@ -1,10 +1,12 @@
 package repo
 
+// Genre is a category of work.
 type Genre struct {
 	ID   int
 	Name string
 }
 
+// ListGenres returns every genre ordered by name.
 func (r *Repo) ListGenres() ([]Genre, error) {
 	rows, err := r.db.Query("SELECT id, name FROM genre ORDER BY name")
 	if err != nil {

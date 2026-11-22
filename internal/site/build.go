@@ -17,12 +17,12 @@ import (
 	"github.com/yuin/goldmark"
 )
 
-// imageDir is the asset tree served from the CDN, relative to the static root.
+// imageDir is the path of the image tree within the embedded assets FS.
 const imageDir = "static/images"
 
-// Build renders the site into out from the repo using the embedded assets.
-// When images is false the local image tree is left out of the output, so it
-// can be served from the CDN instead.
+// Build renders the site into out from the repo. When images is
+// false the local image tree is left out of the output, as it is
+// served from the CDN instead.
 func Build(r *repo.Repo, out string, images bool) error {
 	return newBuilder(r, embeddedAssets(), out, images).Build()
 }
@@ -77,8 +77,7 @@ func (b *builder) Build() error {
 	if err := b.loadLocations(); err != nil {
 		return err
 	}
-	// A recorded build (hp site build) has already set LastBuild; dev serving
-	// and watch rebuilds fall back to live info filed from home.
+
 	if templates.LastBuild.Date.IsZero() {
 		templates.LastBuild = liveBuildInfo()
 	}
@@ -150,6 +149,7 @@ func (b *builder) Build() error {
 		return err
 	}
 
+	// Uncomment for local dev. Not rendered in the output.
 	// if err := b.render("/design", templates.Design()); err != nil {
 	// 	return err
 	// }
@@ -164,16 +164,12 @@ func (b *builder) Build() error {
 	return b.writeCodeCSS()
 }
 
-// loadImageConfig overrides the image URL pattern and default transforms from
-// the environment, so images can be repointed without a rebuild.
 func loadImageConfig() {
 	if p := os.Getenv("HP_IMAGE_PATTERN"); p != "" {
 		imagePattern = p
 	}
 }
 
-// sliceItem renders one slice post into a timeline item, shared by the feed and
-// the slice permalink page.
 func (b *builder) sliceItem(p repo.Post) (templates.SliceItem, error) {
 	body, _, err := render(b.md, p.Body)
 	if err != nil {
@@ -189,8 +185,6 @@ func (b *builder) sliceItem(p repo.Post) (templates.SliceItem, error) {
 	}, nil
 }
 
-// sliceItems renders already-filtered slice posts (newest-first) into timeline
-// items, reused by /slices and topic pages.
 func (b *builder) sliceItems(slices []repo.Post) ([]templates.SliceItem, error) {
 	var items []templates.SliceItem
 	for _, p := range slices {
@@ -203,8 +197,6 @@ func (b *builder) sliceItems(slices []repo.Post) ([]templates.SliceItem, error) 
 	return items, nil
 }
 
-// renderTopics renders /spanish (kept as a special top-level route) plus a
-// /topics/{topic} page for every topic present on a published post.
 func (b *builder) renderTopics(posts []repo.Post, log []repo.SpanishLogEntry) error {
 	spanish := spanishView(log, articlesWithTopic(posts, "spanish"), time.Now())
 	if err := b.render("/spanish", templates.Spanish(spanish)); err != nil {
@@ -307,8 +299,8 @@ func (b *builder) render(urlPath string, c templ.Component) error {
 	return nil
 }
 
-// outputPath maps a URL path to its file on disk:
-// "/" -> index.html, "/404" -> 404.html, "/x/y" -> x/y/index.html.
+// outputPath maps a URL path to its file on disk, so "/" is index.html,
+// "/404" is 404.html, and "/x/y" is x/y/index.html.
 func outputPath(out, urlPath string) string {
 	switch urlPath {
 	case "/":
@@ -326,8 +318,9 @@ func (b *builder) copyStatic() error {
 		if err != nil {
 			return err
 		}
-		// Images are served from the CDN unless the build opts them in, so skip
-		// the whole tree; favicon lives at static/ root and is always copied.
+
+		// Images being false means the page loads images from the CDN,
+		// therefore local files are not needed in the output.
 		if !b.images && (path == imageDir || strings.HasPrefix(path, imageDir+"/")) {
 			if d.IsDir() {
 				return fs.SkipDir

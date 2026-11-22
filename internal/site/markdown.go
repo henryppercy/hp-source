@@ -22,8 +22,8 @@ import (
 	"github.com/yuin/goldmark/util"
 )
 
-// imagePattern builds a content image URL from a bare name and target width.
-// {path} is the name; {width}, when present, is the requested pixel width.
+// imagePattern builds a content image URL from path and optional width.
+// {path} is the name and {width}, when set, the requested pixel width.
 var imagePattern = "/static/images/{path}"
 
 const (
@@ -31,9 +31,10 @@ const (
 	bodyWidth  = 1600
 )
 
-// codeTheme is the restrained syntax palette kazari resolves by name: keywords
-// in the accent, strings and numbers in one warm tone, comments and punctuation
-// greyed, everything else default text. Colours mirror the tokens in input.css.
+// codeTheme is the restrained syntax palette kazari resolves by name.
+// Keywords take the accent, strings and numbers one warm tone, comments and
+// punctuation grey, and everything else default text. Colours mirror the tokens
+// in input.css.
 const codeTheme = "hp-code"
 
 func registerCodeTheme() {
@@ -48,10 +49,11 @@ func registerCodeTheme() {
 	}))
 }
 
-// newCodeEngine builds the kazari engine that renders fenced code into framed,
-// highlighted blocks. It is the single source of truth for the code theme; the
-// matching CSS comes from engine.CSS(). The site ships no JavaScript and no dark
-// theme, so every block uses the plain code frame in one restrained palette.
+// newCodeEngine builds the kazari engine that renders fenced code into
+// framed, highlighted blocks. It is the single source of truth for the code
+// theme. The matching CSS comes from engine.CSS(). The site ships no JavaScript
+// and no dark theme, so every block uses the plain code frame in one restrained
+// palette.
 func newCodeEngine() *kazari.Engine {
 	registerCodeTheme()
 	return kazari.New(
@@ -157,9 +159,9 @@ func loneImage(p *ast.Paragraph) bool {
 	return ok && p.ChildCount() == 1
 }
 
-// figureRenderer emits <figure><img><figcaption>alt</figcaption></figure>. The
-// inner image renders via goldmark's default (carrying the alt attribute); the
-// caption repeats that alt text as visible copy.
+// figureRenderer emits <figure><img><figcaption>alt</figcaption></figure>.
+// The inner image renders via goldmark's default, carrying the alt attribute.
+// The caption repeats that alt text as visible copy.
 type figureRenderer struct{}
 
 func (r figureRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {

@@ -2,8 +2,8 @@ package templates
 
 import "fmt"
 
-// Reading is the /reading hub: the frontispiece plate, this year's ledger, links
-// to earlier years, and a glance at the shelf.
+// Reading is the /reading hub, the hub plate, this year's ledger, links to
+// earlier years, and a glance at the shelf.
 templ Reading(v ReadingView) {
 	@Layout(docTitle("Reading"), "/reading") {
 		<div class="mx-auto max-w-broad">
@@ -47,8 +47,9 @@ templ logSection(y FinishedYear, aside []FinishedBook, head, note string) {
 	@setAside(aside)
 }
 
-// frontispiece is the hub plate: a header strip, now-reading on the left, the
-// year's almanac cells on the right, and the month density strip across the foot.
+// frontispiece is the hub plate, a header strip, now-reading on the left,
+// the year's almanac cells on the right, and the month density strip across
+// the foot.
 templ frontispiece(v ReadingView) {
 	<div class="border border-fg">
 		<div class="grid lg:grid-cols-[2fr_3fr]">
@@ -82,8 +83,8 @@ templ frontispiece(v ReadingView) {
 	</div>
 }
 
-// readingPlate is the standalone almanac plate for a year recap: header strip,
-// full-width stat cells, and the month density strip.
+// readingPlate is the standalone almanac plate for a year recap, header
+// strip, full-width stat cells, and the month density strip.
 templ readingPlate(a AlmanacView) {
 	<div class="border border-fg">
 		<dl class="grid grid-cols-2 gap-px bg-rule-soft sm:grid-cols-3 lg:grid-cols-6">
@@ -103,7 +104,8 @@ templ statCells(a AlmanacView) {
 	@statSplit("fiction", a.FictionPct, a.FictionNote)
 }
 
-// monthStrip is the year's reading density: a bar per month over a baseline rule.
+// monthStrip is the year's reading density, a bar per month over a
+// baseline rule.
 templ monthStrip(a AlmanacView) {
 	<div class="border-t border-fg px-5 pb-4 pt-5">
 		<div class="mb-4 flex items-baseline justify-between">
@@ -168,8 +170,8 @@ templ deskBook(r CurrentRead) {
 	</div>
 }
 
-// deskCompanions lists the other open books beneath the desk book: up to two as
-// bare lines with their progress, any beyond that folded into a count.
+// deskCompanions lists the other open books beneath the desk book, up to
+// two as bare lines with their progress, any beyond that folded into a count.
 templ deskCompanions(reads []CurrentRead) {
 	if len(reads) > 1 {
 		<ul class="mt-5 space-y-1 border-t border-rule pt-5">
@@ -187,8 +189,9 @@ templ deskCompanions(reads []CurrentRead) {
 	}
 }
 
-// companionLine is a secondary open book on a single line: title and author left
-// together as on the shelf, its progress percent pushed to the right.
+// companionLine is a secondary open book on a single line, title and
+// author left together as on the shelf, its progress percent pushed to the
+// right.
 templ companionLine(r CurrentRead) {
 	<div class="flex items-baseline justify-between gap-x-2">
 		<div class="min-w-0 truncate">
@@ -201,8 +204,8 @@ templ companionLine(r CurrentRead) {
 	</div>
 }
 
-// ledgerTable is a single year's finished books: ruled columns, a lifetime index
-// and a pip rating, with the column header at the top.
+// ledgerTable is a single year's finished books, ruled columns, a
+// lifetime index and a pip rating, with the column header at the top.
 templ ledgerTable(y FinishedYear) {
 	if len(y.Books) > 0 {
 		<div class="overflow-x-auto">
@@ -322,8 +325,8 @@ templ yearNav(links []YearLink) {
 	</nav>
 }
 
-// shelfGlance is the hub's rail card for the antilibrary: a lead line, the
-// longest-waiting few, and a footer link to the full shelf. No header.
+// shelfGlance is the hub's rail card for the antilibrary, a lead line,
+// the longest-waiting few, and a footer link to the full shelf. No header.
 templ shelfGlance(s ShelfSummary) {
 	<div class="border border-rule-soft p-5">
 		if s.Total > 0 {
@@ -472,8 +475,9 @@ templ shelf(books []ShelfBook) {
 	</div>
 }
 
-// sectionHead is a /reading section heading: a kicker over a firm rule, weightier
-// than the soft head/body dividers the index pages use so it reads as a section.
+// sectionHead is a /reading section heading, a kicker over a firm rule,
+// weightier than the soft head/body dividers the index pages use so it reads
+// as a section.
 templ sectionHead(label, note string) {
 	<header class="mb-6 flex items-baseline justify-between gap-4 border-b border-fg pb-3">
 		<h2 class="font-mono text-kicker tracking-kicker uppercase text-muted">{ label }</h2>
@@ -483,7 +487,7 @@ templ sectionHead(label, note string) {
 	</header>
 }
 
-// stat is one almanac cell: a kicker label over a large figure.
+// stat is one almanac cell, a kicker label over a large figure.
 templ stat(label, value string) {
 	<div class="bg-surface p-5">
 		<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ label }</dt>

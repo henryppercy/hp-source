@@ -10,8 +10,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// openTempDB opens an isolated, file-backed sqlite db in a temp dir. Tests never
-// touch the real database or real migrations; everything here is mock data.
+// openTempDB opens an isolated, file-backed sqlite db in a temp dir.
 func openTempDB(t *testing.T) *sql.DB {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "test.db")
@@ -41,7 +40,7 @@ func tableExists(t *testing.T, db *sql.DB, name string) bool {
 		"SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?", name) > 0
 }
 
-// mock migrations used across the tests
+// mockInit and mockNote are mock migrations used across the tests.
 var mockInit = &fstest.MapFile{Data: []byte(
 	`CREATE TABLE item (id INTEGER PRIMARY KEY, name TEXT UNIQUE);
 	 INSERT INTO item (name) VALUES ('a'), ('b'), ('c');`)}
@@ -109,8 +108,6 @@ func TestMigrateIncremental(t *testing.T) {
 		t.Fatalf("applied = %v, want [001_init.sql 002_note.sql]", applied)
 	}
 
-	// Add a third migration; only it should apply. If 001/002 re-ran, their
-	// CREATE TABLE statements would fail on the already-existing tables.
 	fsys["003_extra.sql"] = &fstest.MapFile{Data: []byte("CREATE TABLE extra (id INTEGER PRIMARY KEY);")}
 	applied, err = migrateFS(db, fsys)
 	if err != nil {
@@ -124,17 +121,12 @@ func TestMigrateIncremental(t *testing.T) {
 	}
 }
 
-// TestMigrateAdoptPreexistingSchema models adopting a db that already has a
-// migration's schema but no schema_migrations record (the real-world situation
-// the documented one-time baseline statement is for), entirely with mock data.
 func TestMigrateAdoptPreexistingSchema(t *testing.T) {
 	fsys := fstest.MapFS{
 		"001_init.sql": mockInit,
 		"002_note.sql": mockNote,
 	}
 
-	// A db where 001's schema already exists but nothing records that it ran:
-	// migrateFS must fail trying to re-run 001 (table already exists).
 	raw := openTempDB(t)
 	if _, err := raw.Exec(string(mockInit.Data)); err != nil {
 		t.Fatalf("seed preexisting schema: %v", err)
@@ -143,16 +135,13 @@ func TestMigrateAdoptPreexistingSchema(t *testing.T) {
 		t.Fatal("expected migrateFS to fail on un-baselined preexisting schema")
 	}
 
-	// Same starting point, but first apply the documented baseline: create
-	// schema_migrations and mark 001 as already applied. migrateFS should then
-	// skip 001, apply 002, and leave existing data intact.
 	db := openTempDB(t)
 	if _, err := db.Exec(string(mockInit.Data)); err != nil {
 		t.Fatalf("seed preexisting schema: %v", err)
 	}
 	items := countRows(t, db, "SELECT count(*) FROM item")
 
-	baseline := schemaMigrationsDDL + `;
+	baseline := schemaMigration + `;
 	INSERT OR IGNORE INTO schema_migrations (version) VALUES ('001_init.sql');`
 	if _, err := db.Exec(baseline); err != nil {
 		t.Fatalf("baseline statement: %v", err)

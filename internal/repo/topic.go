@@ -2,11 +2,13 @@ package repo
 
 import "fmt"
 
+// Topic is a subject label for posts.
 type Topic struct {
 	ID   int
 	Name string
 }
 
+// ListTopics returns every topic ordered by name.
 func (r *Repo) ListTopics() ([]Topic, error) {
 	rows, err := r.db.Query("SELECT id, name FROM topic ORDER BY name")
 	if err != nil {
