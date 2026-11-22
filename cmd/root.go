@@ -91,7 +91,6 @@ func newRootCmd() *cobra.Command {
 		newTranslatorCmd(a),
 		newReadCmd(a),
 		newLocationCmd(a),
-		newExportCmd(a),
 		newSiteCmd(a),
 		newPostCmd(a),
 		newSliceCmd(a),
