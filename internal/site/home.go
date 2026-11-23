@@ -27,8 +27,8 @@ const homeCurrently = ""
 const (
 	homeKicker     = "Field notebook"
 	homeHero       = "I like to keep a record."
-	homeSubheading = "Software developer based in Sheffield and semi-obsessive logger of things."
-	homeBio        = "This is my digital field notebook. It's where I write down my thoughts, " +
+	homeSubheading = "I'm a Software developer based in Sheffield and semi-obsessive logger of things."
+	homeBio        = "I use this as a virtual field notebook. It's where I write down my thoughts, " +
 		"log my reading, and track my Spanish learning. Everything enters via the command " +
 		"line and the output is this website."
 	homeStreamIntro = "This is all posts, slices, completed reads, and spanish milestones. " +

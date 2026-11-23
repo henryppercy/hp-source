@@ -969,12 +969,12 @@ func recentReadsCard(reads []RecentRead) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\" class=\"aspect-[2/3] w-full object-cover\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\" class=\"aspect-2/3 w-full object-cover border border-rule\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "<div class=\"flex aspect-[2/3] w-full items-center justify-center border border-rule bg-surface p-1.5\"><span class=\"font-serif italic text-meta text-muted leading-tight\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "<div class=\"flex aspect-2/3 w-full items-center justify-center border border-rule bg-surface p-1.5\"><span class=\"font-serif italic text-meta text-muted leading-tight\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

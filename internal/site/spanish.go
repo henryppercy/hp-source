@@ -28,17 +28,15 @@ const (
 // the finish date. Long enough to smooth out quiet weeks and ignore old gaps.
 const spanishGoalWindow = 90
 
-const spanishSubheading = "The stats and trends which map my journey to functional " +
-	"Spanish fluency. Currently learning via Comprehensible Input."
+const spanishSubheading = "The stats and trends which map my journey to functional Spanish fluency."
 
 const spanishIntro = "I am currently learning Spanish using Comprehensible Input, " +
 	"a language learning style favouring comprehension over output. The core is formed " +
 	"of listening to spoken language at a level slightly above my current proficiency, " +
 	"before incorporating reading and speaking."
 
-const spanishNote = "Right now I'm pretty consistenly hitting 1 hour of Spanish input per day. This is mostly though " +
-	"intermediate podcasts and native YouTube content. I'm on a bit of a Mexican kick at the moment, mostly watching " +
-	"Robegrill and most recently ElMariana. I am also very very slowly reading Harry Potter y la piedra filosofal."
+const spanishNote = "On a bit of a lull after hitting 600 hours. Mostly on native YouTube content, most watched " +
+	"are Calixto Serna and Diegodoal. Still slowly working through Harry Potter y la piedra filosofal."
 
 // spanishGoalDeadline is the last moment of the goal month.
 func spanishGoalDeadline(loc *time.Location) time.Time {

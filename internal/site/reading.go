@@ -14,10 +14,10 @@ import (
 // Copy for the reading hub, the year recaps and the shelf. Edit the wording
 // here.
 const (
-	readingSubheading = "The book I'm currently reading, the books I've read, and what books are on the shelf to be read."
+	readingSubheading = "What I'm currently reading, what I've read, and what books are on the shelf to be read."
 	readingDeskEmpty  = "Nothing open on the desk right now."
 	shelfSubheading   = "Books that I own and have not read yet, longest-waiting first."
-	yearSubheading    = "A year in books, goodreads not invited."
+	yearSubheading    = "A summary of my year in books, goodreads not invited."
 )
 
 // readingHub assembles the /reading hub from the desk, this year's almanac
