@@ -61,8 +61,8 @@ func Topic(v TopicFeedView) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if v.Standfirst != "" {
-				templ_7745c5c3_Err = standfirst(v.Standfirst).Render(ctx, templ_7745c5c3_Buffer)
+			if v.Subheading != "" {
+				templ_7745c5c3_Err = subheading(v.Subheading).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

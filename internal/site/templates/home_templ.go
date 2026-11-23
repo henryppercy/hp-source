@@ -10,9 +10,9 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "fmt"
 
-// Home is the frontispiece: a nameplate, the live dispatch strip, then a
-// notebook body with the merged stream in the main column and the figures and
-// index crammed into the margin.
+// Home is the homepage, a nameplate and the live latest-activity strip above
+// a notebook body with the merged stream in the main column and the figures
+// and index crammed into the margin.
 func Home(v HomeView) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -54,7 +54,7 @@ func Home(v HomeView) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = homeDispatch(v.Dispatch, v.Copy).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = homeLatest(v.Latest, v.Copy).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -113,8 +113,8 @@ func Home(v HomeView) templ.Component {
 	})
 }
 
-// homeNameplate is the opening statement: a kicker, a mega line, the standfirst
-// and bio set to a readable measure, and the filed-from stamp.
+// homeNameplate is the opening statement, a kicker, a mega line, the
+// subheading and bio set to a readable measure, and the filed-from stamp.
 func homeNameplate(c HomeCopy) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -166,7 +166,7 @@ func homeNameplate(c HomeCopy) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = standfirst(c.Standfirst).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = subheading(c.Subheading).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -199,9 +199,9 @@ func homeNameplate(c HomeCopy) templ.Component {
 	})
 }
 
-// homeDispatch is the dispatch plate: a header strip over a row of live cells,
-// each the freshest fact from one feed.
-func homeDispatch(cells []DispatchCell, c HomeCopy) templ.Component {
+// homeLatest is the latest-activity plate, a header strip over a row of
+// live cells, each the freshest fact from one feed.
+func homeLatest(cells []LatestCell, c HomeCopy) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -254,7 +254,7 @@ func homeDispatch(cells []DispatchCell, c HomeCopy) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for i, c := range cells {
-				templ_7745c5c3_Err = dispatchCell(c, i == 0 && len(cells)%2 == 1).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = latestCell(c, i == 0 && len(cells)%2 == 1).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -268,7 +268,7 @@ func homeDispatch(cells []DispatchCell, c HomeCopy) templ.Component {
 	})
 }
 
-func dispatchCell(c DispatchCell, span bool) templ.Component {
+func latestCell(c LatestCell, span bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -342,7 +342,7 @@ func dispatchCell(c DispatchCell, span bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = dispatchBody(c).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = latestBody(c).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -351,7 +351,7 @@ func dispatchCell(c DispatchCell, span bool) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = dispatchBody(c).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = latestBody(c).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -364,7 +364,7 @@ func dispatchCell(c DispatchCell, span bool) templ.Component {
 	})
 }
 
-func dispatchBody(c DispatchCell) templ.Component {
+func latestBody(c LatestCell) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -462,9 +462,9 @@ func dispatchBody(c DispatchCell) templ.Component {
 	})
 }
 
-// homeStream is the merged feed in the main column: boxed cards hung from a
-// dateline in the margin, each card sized and enriched to its kind so none reads
-// as an empty frame.
+// homeStream is the merged feed in the main column, boxed cards hung from
+// a dateline in the margin, each card sized and enriched to its kind so none
+// reads as an empty frame.
 func homeStream(entries []FeedEntry) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -874,8 +874,8 @@ func streamCard(e FeedEntry) templ.Component {
 	})
 }
 
-// recentReadsCard is the rail's shelf: a grid of the most recent covers, each
-// linking into the reading section with its detail on hover.
+// recentReadsCard is the rail's shelf, a grid of the most recent covers,
+// each linking into the reading section with its detail on hover.
 func recentReadsCard(reads []RecentRead) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -997,9 +997,9 @@ func recentReadsCard(reads []RecentRead) templ.Component {
 	})
 }
 
-// spanishLevelsCard is the rail's Dreaming Spanish roadmap: the running total at
-// the head over the hour milestones, each reached mark dated and linked to its
-// post, unreached ones faint and showing the hours still to go.
+// spanishLevelsCard is the rail's Dreaming Spanish roadmap, the running
+// total at the head over the hour milestones, each reached mark dated and
+// linked to its post, unreached ones faint and showing the hours still to go.
 func spanishLevelsCard(v DSLevelsView) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -1075,9 +1075,9 @@ func spanishLevelsCard(v DSLevelsView) templ.Component {
 	})
 }
 
-// levelRow is one milestone line: the hour mark left, a dotted leader carrying
-// the eye across to its date or the hours still to go on the right. Reached marks
-// with a post link the whole row through to it.
+// levelRow is one milestone line, the hour mark left, a dotted leader
+// carrying the eye across to its date or the hours still to go on the right.
+// Reached marks with a post link the whole row through to it.
 func levelRow(l DSLevel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -1338,8 +1338,8 @@ func subjectsCard(topics []TopicCount) templ.Component {
 	})
 }
 
-// homeIndexCard is the section directory as a margin card: a numbered line per
-// section with its live count, unbuilt sections ghosted.
+// homeIndexCard is the section directory as a margin card, a numbered
+// line per section with its live count, unbuilt sections ghosted.
 func homeIndexCard(rows []IndexRow) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context

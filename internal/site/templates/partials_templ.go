@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-// location is the place stamp; code and coords are optional.
+// location is the place stamp. code and coords are optional.
 func location(city, code, coords string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -93,15 +93,16 @@ func location(city, code, coords string) templ.Component {
 	})
 }
 
-// datelineBase is the shared look of the hung marginal date: a serif italic in
-// muted grey, stacked above the card until a breakpoint pulls it into the left
-// margin. datelineHang is that pull; datelineHangWide defers it to xl, where the
-// home grid opens its dateline rail and the margin clears the date.
+// datelineBase is the shared look of the hung marginal date, a serif
+// italic in muted grey, stacked above the card until a breakpoint pulls it into
+// the left margin. datelineHang is that pull. datelineHangWide defers it to xl,
+// where the home grid opens its dateline rail and the margin clears the date.
 const datelineBase = "block whitespace-nowrap font-serif italic text-muted tabular-nums leading-none mb-3"
 const datelineHang = "lg:absolute lg:right-full lg:mr-8 lg:mb-0"
 const datelineHangWide = "xl:absolute xl:right-full xl:mr-8 xl:mb-0"
 
-// datelineHangClass picks the hang breakpoint; the caller's top-offset must match.
+// datelineHangClass picks the hang breakpoint. The caller's top-offset
+// must match.
 func datelineHangClass(wide bool) string {
 	if wide {
 		return datelineHangWide
@@ -109,9 +110,10 @@ func datelineHangClass(wide bool) string {
 	return datelineHang
 }
 
-// dateline is the hung marginal date shared across the feeds. href links the date
-// when set (the slices timeline anchors each note to itself); top aligns it with
-// the card's first line once hung; wide defers the hang for the broad home grid.
+// dateline is the hung marginal date shared across the feeds. href links
+// the date when set (the slices timeline anchors each note to itself). top
+// aligns it with the card's first line once hung. wide defers the hang for the
+// broad home grid.
 func dateline(label, href, top string, wide bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -146,7 +148,7 @@ func dateline(label, href, top string, wide bool) templ.Component {
 			var templ_7745c5c3_Var7 templ.SafeURL
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(href)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 38, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 40, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -172,7 +174,7 @@ func dateline(label, href, top string, wide bool) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 38, Col: 100}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 40, Col: 100}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -208,7 +210,7 @@ func dateline(label, href, top string, wide bool) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 40, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 42, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -252,7 +254,7 @@ func indexLink(href, label string) templ.Component {
 		var templ_7745c5c3_Var14 templ.SafeURL
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinURLErrs(href)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 46, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 48, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -265,7 +267,7 @@ func indexLink(href, label string) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 46, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 48, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -279,9 +281,10 @@ func indexLink(href, label string) templ.Component {
 	})
 }
 
-// standfirst is the italic serif lead beneath a page title: the one-line summary
-// shared by the section fronts and post headers, set to a fixed measure.
-func standfirst(text string) templ.Component {
+// subheading is the italic serif lead beneath a page title, the one-line
+// summary shared by the section fronts and post headers, set to a fixed
+// measure.
+func subheading(text string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -309,7 +312,7 @@ func standfirst(text string) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 52, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 55, Col: 74}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -353,7 +356,7 @@ func tagChips(links []TopicLink) templ.Component {
 			var templ_7745c5c3_Var19 templ.SafeURL
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinURLErrs(t.URL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 58, Col: 17}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 61, Col: 17}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -366,7 +369,7 @@ func tagChips(links []TopicLink) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(t.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 58, Col: 121}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 61, Col: 121}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -411,7 +414,7 @@ func postRow(p PostListItem) templ.Component {
 		var templ_7745c5c3_Var22 templ.SafeURL
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinURLErrs(p.URL + "/")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 65, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 68, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -424,7 +427,7 @@ func postRow(p PostListItem) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmtDate(p.PublishedAt))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 66, Col: 90}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 69, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -437,7 +440,7 @@ func postRow(p PostListItem) templ.Component {
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(p.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 67, Col: 107}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 70, Col: 107}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -455,7 +458,7 @@ func postRow(p PostListItem) templ.Component {
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(p.Headline)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 69, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 72, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -481,7 +484,7 @@ func postRow(p PostListItem) templ.Component {
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(readLabel(p.ReadMinutes))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 77, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 80, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
@@ -499,7 +502,7 @@ func postRow(p PostListItem) templ.Component {
 			var templ_7745c5c3_Var27 string
 			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(p.Location.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 80, Col: 27}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 83, Col: 27}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {
@@ -565,7 +568,7 @@ func sliceCard(s SliceItem, permalink bool) templ.Component {
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fmtDateTime(s.PublishedAt))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 99, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 102, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
@@ -583,7 +586,7 @@ func sliceCard(s SliceItem, permalink bool) templ.Component {
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(s.Location.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 102, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 105, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -602,7 +605,7 @@ func sliceCard(s SliceItem, permalink bool) templ.Component {
 			var templ_7745c5c3_Var31 templ.SafeURL
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinURLErrs(s.URL + "/")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 106, Col: 26}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/partials.templ`, Line: 109, Col: 26}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {

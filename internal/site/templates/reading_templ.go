@@ -10,8 +10,8 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "fmt"
 
-// Reading is the /reading hub: the frontispiece plate, this year's ledger, links
-// to earlier years, and a glance at the shelf.
+// Reading is the /reading hub, the hub plate, this year's ledger, links to
+// earlier years, and a glance at the shelf.
 func Reading(v ReadingView) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -49,7 +49,7 @@ func Reading(v ReadingView) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = standfirst(v.Standfirst).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = subheading(v.Subheading).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -174,8 +174,9 @@ func logSection(y FinishedYear, aside []FinishedBook, head, note string) templ.C
 	})
 }
 
-// frontispiece is the hub plate: a header strip, now-reading on the left, the
-// year's almanac cells on the right, and the month density strip across the foot.
+// frontispiece is the hub plate, a header strip, now-reading on the left,
+// the year's almanac cells on the right, and the month density strip across
+// the foot.
 func frontispiece(v ReadingView) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -226,7 +227,7 @@ func frontispiece(v ReadingView) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(v.DeskEmpty)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 63, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 64, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -262,7 +263,7 @@ func frontispiece(v ReadingView) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", v.Almanac.Year))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 74, Col: 102}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 75, Col: 102}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -291,8 +292,8 @@ func frontispiece(v ReadingView) templ.Component {
 	})
 }
 
-// readingPlate is the standalone almanac plate for a year recap: header strip,
-// full-width stat cells, and the month density strip.
+// readingPlate is the standalone almanac plate for a year recap, header
+// strip, full-width stat cells, and the month density strip.
 func readingPlate(a AlmanacView) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -388,7 +389,8 @@ func statCells(a AlmanacView) templ.Component {
 	})
 }
 
-// monthStrip is the year's reading density: a bar per month over a baseline rule.
+// monthStrip is the year's reading density, a bar per month over a
+// baseline rule.
 func monthStrip(a AlmanacView) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -417,7 +419,7 @@ func monthStrip(a AlmanacView) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(commas(a.PeakMonth))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 111, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 113, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -435,7 +437,7 @@ func monthStrip(a AlmanacView) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%s pages, %d %s", commas(c), a.MonthsBooks[i], plural(a.MonthsBooks[i], "book")))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 115, Col: 125}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 117, Col: 125}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 			if templ_7745c5c3_Err != nil {
@@ -453,7 +455,7 @@ func monthStrip(a AlmanacView) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("height:%d%%", barPct(c, a.PeakMonth)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 118, Col: 95}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 120, Col: 95}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -481,7 +483,7 @@ func monthStrip(a AlmanacView) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(monthInitials[i])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 126, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 128, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -534,7 +536,7 @@ func deskBook(r CurrentRead) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(r.ImageURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 136, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 138, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 			if templ_7745c5c3_Err != nil {
@@ -552,7 +554,7 @@ func deskBook(r CurrentRead) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(r.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 139, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 141, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -565,7 +567,7 @@ func deskBook(r CurrentRead) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(r.Author)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 140, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 142, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -583,7 +585,7 @@ func deskBook(r CurrentRead) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d/%d pages", r.CurrentPage, r.Pages))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 144, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 146, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -601,7 +603,7 @@ func deskBook(r CurrentRead) templ.Component {
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d pages", r.Pages))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 146, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 148, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -624,7 +626,7 @@ func deskBook(r CurrentRead) templ.Component {
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d%%", r.Percent))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 150, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 152, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -637,7 +639,7 @@ func deskBook(r CurrentRead) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("width:%d%%", r.Percent))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 153, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 155, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -655,7 +657,7 @@ func deskBook(r CurrentRead) templ.Component {
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmtDate(r.StartedAt))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 157, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 159, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -680,7 +682,7 @@ func deskBook(r CurrentRead) templ.Component {
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", r.DayCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 163, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 165, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -699,8 +701,8 @@ func deskBook(r CurrentRead) templ.Component {
 	})
 }
 
-// deskCompanions lists the other open books beneath the desk book: up to two as
-// bare lines with their progress, any beyond that folded into a count.
+// deskCompanions lists the other open books beneath the desk book, up to
+// two as bare lines with their progress, any beyond that folded into a count.
 func deskCompanions(reads []CurrentRead) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -751,7 +753,7 @@ func deskCompanions(reads []CurrentRead) templ.Component {
 				var templ_7745c5c3_Var25 string
 				templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("+%d more", len(reads)-3))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 184, Col: 86}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 186, Col: 86}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 				if templ_7745c5c3_Err != nil {
@@ -771,8 +773,9 @@ func deskCompanions(reads []CurrentRead) templ.Component {
 	})
 }
 
-// companionLine is a secondary open book on a single line: title and author left
-// together as on the shelf, its progress percent pushed to the right.
+// companionLine is a secondary open book on a single line, title and
+// author left together as on the shelf, its progress percent pushed to the
+// right.
 func companionLine(r CurrentRead) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -801,7 +804,7 @@ func companionLine(r CurrentRead) templ.Component {
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(r.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 195, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 198, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -814,7 +817,7 @@ func companionLine(r CurrentRead) templ.Component {
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(r.Author)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 196, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 199, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
@@ -832,7 +835,7 @@ func companionLine(r CurrentRead) templ.Component {
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d%%", r.Percent))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 199, Col: 102}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 202, Col: 102}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -851,8 +854,8 @@ func companionLine(r CurrentRead) templ.Component {
 	})
 }
 
-// ledgerTable is a single year's finished books: ruled columns, a lifetime index
-// and a pip rating, with the column header at the top.
+// ledgerTable is a single year's finished books, ruled columns, a
+// lifetime index and a pip rating, with the column header at the top.
 func ledgerTable(y FinishedYear) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -988,7 +991,7 @@ func ledgerRow(b FinishedBook) templ.Component {
 		var templ_7745c5c3_Var35 string
 		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", b.Index))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 242, Col: 175}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 245, Col: 175}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 		if templ_7745c5c3_Err != nil {
@@ -1001,7 +1004,7 @@ func ledgerRow(b FinishedBook) templ.Component {
 		var templ_7745c5c3_Var36 string
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(b.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 244, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 247, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 		if templ_7745c5c3_Err != nil {
@@ -1014,7 +1017,7 @@ func ledgerRow(b FinishedBook) templ.Component {
 		var templ_7745c5c3_Var37 string
 		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(b.Author)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 245, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 248, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 		if templ_7745c5c3_Err != nil {
@@ -1027,7 +1030,7 @@ func ledgerRow(b FinishedBook) templ.Component {
 		var templ_7745c5c3_Var38 string
 		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(b.Genre)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 247, Col: 108}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 250, Col: 108}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 		if templ_7745c5c3_Err != nil {
@@ -1056,7 +1059,7 @@ func ledgerRow(b FinishedBook) templ.Component {
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(fmtDate(b.StartedAt))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 257, Col: 26}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 260, Col: 26}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {
@@ -1075,7 +1078,7 @@ func ledgerRow(b FinishedBook) templ.Component {
 		var templ_7745c5c3_Var40 string
 		templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(fmtDate(b.FinishedAt))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 262, Col: 152}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 265, Col: 152}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 		if templ_7745c5c3_Err != nil {
@@ -1089,7 +1092,7 @@ func ledgerRow(b FinishedBook) templ.Component {
 			var templ_7745c5c3_Var41 string
 			templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", b.DaysToRead))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 265, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 268, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 			if templ_7745c5c3_Err != nil {
@@ -1109,7 +1112,7 @@ func ledgerRow(b FinishedBook) templ.Component {
 			var templ_7745c5c3_Var42 string
 			templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", b.Pages))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 272, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 275, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 			if templ_7745c5c3_Err != nil {
@@ -1217,7 +1220,7 @@ func setAside(books []FinishedBook) templ.Component {
 				var templ_7745c5c3_Var45 string
 				templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(b.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 305, Col: 62}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 308, Col: 62}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 				if templ_7745c5c3_Err != nil {
@@ -1230,7 +1233,7 @@ func setAside(books []FinishedBook) templ.Component {
 				var templ_7745c5c3_Var46 string
 				templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(b.Author)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 306, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 309, Col: 63}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 				if templ_7745c5c3_Err != nil {
@@ -1243,7 +1246,7 @@ func setAside(books []FinishedBook) templ.Component {
 				var templ_7745c5c3_Var47 string
 				templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(b.Genre)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 308, Col: 70}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 311, Col: 70}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var47))
 				if templ_7745c5c3_Err != nil {
@@ -1302,7 +1305,7 @@ func yearNav(links []YearLink) templ.Component {
 			var templ_7745c5c3_Var50 templ.SafeURL
 			templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinURLErrs(l.URL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 320, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 323, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 			if templ_7745c5c3_Err != nil {
@@ -1328,7 +1331,7 @@ func yearNav(links []YearLink) templ.Component {
 			var templ_7745c5c3_Var52 string
 			templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.JoinStringErrs(l.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 320, Col: 211}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 323, Col: 211}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var52))
 			if templ_7745c5c3_Err != nil {
@@ -1347,8 +1350,8 @@ func yearNav(links []YearLink) templ.Component {
 	})
 }
 
-// shelfGlance is the hub's rail card for the antilibrary: a lead line, the
-// longest-waiting few, and a footer link to the full shelf. No header.
+// shelfGlance is the hub's rail card for the antilibrary, a lead line,
+// the longest-waiting few, and a footer link to the full shelf. No header.
 func shelfGlance(s ShelfSummary) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -1382,7 +1385,7 @@ func shelfGlance(s ShelfSummary) templ.Component {
 			var templ_7745c5c3_Var54 string
 			templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d books I own and have not read yet", s.Total))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 331, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 334, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var54))
 			if templ_7745c5c3_Err != nil {
@@ -1400,7 +1403,7 @@ func shelfGlance(s ShelfSummary) templ.Component {
 				var templ_7745c5c3_Var55 string
 				templ_7745c5c3_Var55, templ_7745c5c3_Err = templ.JoinStringErrs(s.LongestWait)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 333, Col: 107}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 336, Col: 107}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var55))
 				if templ_7745c5c3_Err != nil {
@@ -1423,7 +1426,7 @@ func shelfGlance(s ShelfSummary) templ.Component {
 				var templ_7745c5c3_Var56 string
 				templ_7745c5c3_Var56, templ_7745c5c3_Err = templ.JoinStringErrs(b.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 341, Col: 67}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 344, Col: 67}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var56))
 				if templ_7745c5c3_Err != nil {
@@ -1436,7 +1439,7 @@ func shelfGlance(s ShelfSummary) templ.Component {
 				var templ_7745c5c3_Var57 string
 				templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(b.Author)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 342, Col: 61}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 345, Col: 61}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
 				if templ_7745c5c3_Err != nil {
@@ -1454,7 +1457,7 @@ func shelfGlance(s ShelfSummary) templ.Component {
 					var templ_7745c5c3_Var58 string
 					templ_7745c5c3_Var58, templ_7745c5c3_Err = templ.JoinStringErrs(b.Waiting)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 345, Col: 83}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 348, Col: 83}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var58))
 					if templ_7745c5c3_Err != nil {
@@ -1537,7 +1540,7 @@ func standoutsCard(items []Superlative) templ.Component {
 					var templ_7745c5c3_Var60 string
 					templ_7745c5c3_Var60, templ_7745c5c3_Err = templ.ResolveAttributeValue(s.ImageURL)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 371, Col: 28}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 374, Col: 28}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var60)
 					if templ_7745c5c3_Err != nil {
@@ -1555,7 +1558,7 @@ func standoutsCard(items []Superlative) templ.Component {
 				var templ_7745c5c3_Var61 string
 				templ_7745c5c3_Var61, templ_7745c5c3_Err = templ.JoinStringErrs(s.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 374, Col: 91}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 377, Col: 91}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var61))
 				if templ_7745c5c3_Err != nil {
@@ -1568,7 +1571,7 @@ func standoutsCard(items []Superlative) templ.Component {
 				var templ_7745c5c3_Var62 string
 				templ_7745c5c3_Var62, templ_7745c5c3_Err = templ.JoinStringErrs(s.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 375, Col: 78}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 378, Col: 78}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var62))
 				if templ_7745c5c3_Err != nil {
@@ -1581,7 +1584,7 @@ func standoutsCard(items []Superlative) templ.Component {
 				var templ_7745c5c3_Var63 string
 				templ_7745c5c3_Var63, templ_7745c5c3_Err = templ.JoinStringErrs(s.Value)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 376, Col: 79}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 379, Col: 79}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var63))
 				if templ_7745c5c3_Err != nil {
@@ -1632,7 +1635,7 @@ func tallyCard(title string, items []Tally) templ.Component {
 			var templ_7745c5c3_Var65 string
 			templ_7745c5c3_Var65, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 391, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 394, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var65))
 			if templ_7745c5c3_Err != nil {
@@ -1650,7 +1653,7 @@ func tallyCard(title string, items []Tally) templ.Component {
 				var templ_7745c5c3_Var66 string
 				templ_7745c5c3_Var66, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", i+1))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 396, Col: 88}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 399, Col: 88}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var66))
 				if templ_7745c5c3_Err != nil {
@@ -1663,7 +1666,7 @@ func tallyCard(title string, items []Tally) templ.Component {
 				var templ_7745c5c3_Var67 string
 				templ_7745c5c3_Var67, templ_7745c5c3_Err = templ.JoinStringErrs(t.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 397, Col: 62}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 400, Col: 62}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var67))
 				if templ_7745c5c3_Err != nil {
@@ -1676,7 +1679,7 @@ func tallyCard(title string, items []Tally) templ.Component {
 				var templ_7745c5c3_Var68 string
 				templ_7745c5c3_Var68, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", t.Count))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 398, Col: 93}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 401, Col: 93}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var68))
 				if templ_7745c5c3_Err != nil {
@@ -1730,7 +1733,7 @@ func shelf(books []ShelfBook) templ.Component {
 			var templ_7745c5c3_Var70 string
 			templ_7745c5c3_Var70, templ_7745c5c3_Err = templ.JoinStringErrs(b.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 425, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 428, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var70))
 			if templ_7745c5c3_Err != nil {
@@ -1743,7 +1746,7 @@ func shelf(books []ShelfBook) templ.Component {
 			var templ_7745c5c3_Var71 string
 			templ_7745c5c3_Var71, templ_7745c5c3_Err = templ.JoinStringErrs(b.Author)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 426, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 429, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var71))
 			if templ_7745c5c3_Err != nil {
@@ -1761,7 +1764,7 @@ func shelf(books []ShelfBook) templ.Component {
 				var templ_7745c5c3_Var72 string
 				templ_7745c5c3_Var72, templ_7745c5c3_Err = templ.JoinStringErrs(b.Series)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 428, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 431, Col: 85}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var72))
 				if templ_7745c5c3_Err != nil {
@@ -1779,7 +1782,7 @@ func shelf(books []ShelfBook) templ.Component {
 			var templ_7745c5c3_Var73 string
 			templ_7745c5c3_Var73, templ_7745c5c3_Err = templ.JoinStringErrs(b.Genre)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 431, Col: 99}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 434, Col: 99}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var73))
 			if templ_7745c5c3_Err != nil {
@@ -1802,7 +1805,7 @@ func shelf(books []ShelfBook) templ.Component {
 					var templ_7745c5c3_Var74 string
 					templ_7745c5c3_Var74, templ_7745c5c3_Err = templ.JoinStringErrs(b.Source)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 436, Col: 26}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 439, Col: 26}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var74))
 					if templ_7745c5c3_Err != nil {
@@ -1837,7 +1840,7 @@ func shelf(books []ShelfBook) templ.Component {
 				var templ_7745c5c3_Var75 string
 				templ_7745c5c3_Var75, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", b.Pages))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 448, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 451, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var75))
 				if templ_7745c5c3_Err != nil {
@@ -1857,7 +1860,7 @@ func shelf(books []ShelfBook) templ.Component {
 				var templ_7745c5c3_Var76 string
 				templ_7745c5c3_Var76, templ_7745c5c3_Err = templ.JoinStringErrs(b.Format)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 455, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 458, Col: 18}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var76))
 				if templ_7745c5c3_Err != nil {
@@ -1876,7 +1879,7 @@ func shelf(books []ShelfBook) templ.Component {
 			var templ_7745c5c3_Var77 string
 			templ_7745c5c3_Var77, templ_7745c5c3_Err = templ.JoinStringErrs(fmtDate(b.AcquiredAt))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 460, Col: 143}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 463, Col: 143}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var77))
 			if templ_7745c5c3_Err != nil {
@@ -1890,7 +1893,7 @@ func shelf(books []ShelfBook) templ.Component {
 				var templ_7745c5c3_Var78 string
 				templ_7745c5c3_Var78, templ_7745c5c3_Err = templ.JoinStringErrs(b.Waiting)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 463, Col: 19}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 466, Col: 19}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var78))
 				if templ_7745c5c3_Err != nil {
@@ -1915,8 +1918,9 @@ func shelf(books []ShelfBook) templ.Component {
 	})
 }
 
-// sectionHead is a /reading section heading: a kicker over a firm rule, weightier
-// than the soft head/body dividers the index pages use so it reads as a section.
+// sectionHead is a /reading section heading, a kicker over a firm rule,
+// weightier than the soft head/body dividers the index pages use so it reads
+// as a section.
 func sectionHead(label, note string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -1945,7 +1949,7 @@ func sectionHead(label, note string) templ.Component {
 		var templ_7745c5c3_Var80 string
 		templ_7745c5c3_Var80, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 479, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 483, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var80))
 		if templ_7745c5c3_Err != nil {
@@ -1963,7 +1967,7 @@ func sectionHead(label, note string) templ.Component {
 			var templ_7745c5c3_Var81 string
 			templ_7745c5c3_Var81, templ_7745c5c3_Err = templ.JoinStringErrs(note)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 481, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 485, Col: 67}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var81))
 			if templ_7745c5c3_Err != nil {
@@ -1982,7 +1986,7 @@ func sectionHead(label, note string) templ.Component {
 	})
 }
 
-// stat is one almanac cell: a kicker label over a large figure.
+// stat is one almanac cell, a kicker label over a large figure.
 func stat(label, value string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -2011,7 +2015,7 @@ func stat(label, value string) templ.Component {
 		var templ_7745c5c3_Var83 string
 		templ_7745c5c3_Var83, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 489, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 493, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var83))
 		if templ_7745c5c3_Err != nil {
@@ -2024,7 +2028,7 @@ func stat(label, value string) templ.Component {
 		var templ_7745c5c3_Var84 string
 		templ_7745c5c3_Var84, templ_7745c5c3_Err = templ.JoinStringErrs(value)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 490, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 494, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var84))
 		if templ_7745c5c3_Err != nil {
@@ -2068,7 +2072,7 @@ func statSplit(label, value, note string) templ.Component {
 		var templ_7745c5c3_Var86 string
 		templ_7745c5c3_Var86, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 498, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 502, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var86))
 		if templ_7745c5c3_Err != nil {
@@ -2081,7 +2085,7 @@ func statSplit(label, value, note string) templ.Component {
 		var templ_7745c5c3_Var87 string
 		templ_7745c5c3_Var87, templ_7745c5c3_Err = templ.JoinStringErrs(value)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 499, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 503, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var87))
 		if templ_7745c5c3_Err != nil {
@@ -2099,7 +2103,7 @@ func statSplit(label, value, note string) templ.Component {
 			var templ_7745c5c3_Var88 string
 			templ_7745c5c3_Var88, templ_7745c5c3_Err = templ.JoinStringErrs(note)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 501, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/site/templates/reading.templ`, Line: 505, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var88))
 			if templ_7745c5c3_Err != nil {
