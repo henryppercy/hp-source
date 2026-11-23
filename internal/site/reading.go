@@ -14,10 +14,10 @@ import (
 // Copy for the reading hub, the year recaps and the shelf. Edit the wording
 // here.
 const (
-	readingStandfirst = "The book I'm currently reading, the books I've read, and what books are on the shelf to be read."
+	readingSubheading = "The book I'm currently reading, the books I've read, and what books are on the shelf to be read."
 	readingDeskEmpty  = "Nothing open on the desk right now."
-	shelfStandfirst   = "Books that I own and have not read yet, longest-waiting first."
-	yearStandfirst    = "A year in books; goodreads not invited."
+	shelfSubheading   = "Books that I own and have not read yet, longest-waiting first."
+	yearSubheading    = "A year in books; goodreads not invited."
 )
 
 
@@ -26,7 +26,7 @@ const (
 func readingHub(reads []repo.ReadEntry, shelf []repo.ShelfEntry, year int) templates.ReadingView {
 	log := finishedLog(reads)
 	return templates.ReadingView{
-		Standfirst: readingStandfirst,
+		Subheading: readingSubheading,
 		DeskEmpty:  readingDeskEmpty,
 		Almanac:    almanac(reads, year),
 		Reading:    currentReads(reads),
@@ -57,7 +57,7 @@ func readingYearPages(reads []repo.ReadEntry, current int) []yearPage {
 		pages = append(pages, yearPage{
 			Year: y.Year,
 			View: templates.YearView{
-				Standfirst: yearStandfirst,
+				Subheading: yearSubheading,
 				Almanac:    almanac(reads, y.Year),
 				Year:       y,
 				SetAside:   abandonedInYear(reads, y.Year),
@@ -70,7 +70,7 @@ func readingYearPages(reads []repo.ReadEntry, current int) []yearPage {
 }
 
 func readingShelf(shelf []repo.ShelfEntry) templates.ShelfView {
-	return templates.ShelfView{Standfirst: shelfStandfirst, Books: shelfBooks(shelf)}
+	return templates.ShelfView{Subheading: shelfSubheading, Books: shelfBooks(shelf)}
 }
 
 // yearLog returns the log for a single year, an empty year when none is found.

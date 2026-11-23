@@ -24,12 +24,12 @@ const homeShelfLimit = 12
 // strip.
 const homeCurrently = ""
 
-// Homepage prose. The standfirst says who I am and the bio what the site is,
+// Homepage prose. The subheading says who I am and the bio what the site is,
 // so the two do not repeat each other.
 const (
 	homeKicker     = "Field notebook"
 	homeHero       = "I like to keep a record."
-	homeStandfirst = "Software developer based in Sheffield and semi-obsessive logger of things."
+	homeSubheading = "Software developer based in Sheffield and semi-obsessive logger of things."
 	homeBio        = "This is my digital field notebook; it's where I write down my thoughts, " +
 		"log my reading, and track my Spanish learning. Everything enters via the command " +
 		"line and the output is this website."
@@ -41,7 +41,7 @@ const (
 var homeCopy = templates.HomeCopy{
 	Kicker:      homeKicker,
 	Hero:        homeHero,
-	Standfirst:  homeStandfirst,
+	Subheading:  homeSubheading,
 	Bio:         homeBio,
 	StreamIntro: homeStreamIntro,
 }
@@ -65,7 +65,7 @@ func homeView(
 
 	return templates.HomeView{
 		Copy:     homeCopy,
-		Dispatch: dispatchCells(reads, days, total, articles, notes, now),
+		Latest: latestCells(reads, days, total, articles, notes, now),
 		Reads:    recentReads(reads, homeShelfLimit),
 		Levels:   spanishLevels(days, total, articles),
 		Subjects: topicCounts(posts),
@@ -99,16 +99,16 @@ func topicCounts(posts []repo.Post) []templates.TopicCount {
 	return out
 }
 
-// dispatchCells builds the cells holding the freshest fact from each feed.
-func dispatchCells(
+// latestCells builds the cells holding the freshest fact from each feed.
+func latestCells(
 	reads []repo.ReadEntry,
 	days []spanishDay,
 	total int,
 	articles []templates.PostListItem,
 	notes []templates.SliceItem,
 	now time.Time,
-) []templates.DispatchCell {
-	var cells []templates.DispatchCell
+) []templates.LatestCell {
+	var cells []templates.LatestCell
 
 	if cr := currentReads(reads); len(cr) > 0 {
 		r := cr[0]
@@ -122,7 +122,7 @@ func dispatchCells(
 			kicker += fmt.Sprintf("; %d", len(cr))
 			sub = fmt.Sprintf("+%d more open", n)
 		}
-		cells = append(cells, templates.DispatchCell{
+		cells = append(cells, templates.LatestCell{
 			Kicker: kicker,
 			Lead:   r.Title + ", " + r.Author,
 			Sub:    sub,
@@ -139,7 +139,7 @@ func dispatchCells(
 		if cur > 0 {
 			meta += fmt.Sprintf("; %dd streak", cur)
 		}
-		cells = append(cells, templates.DispatchCell{
+		cells = append(cells, templates.LatestCell{
 			Kicker: "Spanish",
 			Lead:   fmt.Sprintf("Day %d of comprehensible input", dayCount),
 			Meta:   meta,
@@ -149,7 +149,7 @@ func dispatchCells(
 
 	if len(notes) > 0 {
 		s := notes[0]
-		cells = append(cells, templates.DispatchCell{
+		cells = append(cells, templates.LatestCell{
 			Kicker: "Latest note",
 			Lead:   teaser(s.BodyHTML, 90),
 			Meta:   humanizeSince(s.PublishedAt),
@@ -159,7 +159,7 @@ func dispatchCells(
 
 	if len(articles) > 0 {
 		p := articles[0]
-		cells = append(cells, templates.DispatchCell{
+		cells = append(cells, templates.LatestCell{
 			Kicker: "Latest post",
 			Lead:   p.Title,
 			Meta:   p.PublishedAt.Format("2 Jan 2006"),
@@ -168,7 +168,7 @@ func dispatchCells(
 	}
 
 	if homeCurrently != "" {
-		cells = append(cells, templates.DispatchCell{Kicker: "Currently", Lead: homeCurrently})
+		cells = append(cells, templates.LatestCell{Kicker: "Currently", Lead: homeCurrently})
 	}
 
 	return cells

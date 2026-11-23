@@ -97,7 +97,7 @@ func (b *builder) Build() error {
 
 	if err := b.render("/posts", templates.PostList(templates.PostListView{
 		Heading:    postsHeading,
-		Standfirst: postsStandfirst,
+		Subheading: postsSubheading,
 		Empty:      feedEmpty,
 		Posts:      mainArticles(posts),
 	})); err != nil {
@@ -106,7 +106,7 @@ func (b *builder) Build() error {
 
 	if err := b.render("/slices", templates.Slices(templates.SliceFeedView{
 		Heading:    slicesHeading,
-		Standfirst: slicesStandfirst,
+		Subheading: slicesSubheading,
 		Empty:      feedEmpty,
 		Slices:     timeline,
 	})); err != nil {

@@ -56,12 +56,12 @@ type NotFoundCopy struct {
 }
 
 // HomeCopy is the homepage prose, carried on HomeView and set from home.go.
-// The standfirst says who I am and the bio what the site is, so the two do not
+// The subheading says who I am and the bio what the site is, so the two do not
 // repeat each other.
 type HomeCopy struct {
 	Kicker      string
 	Hero        string
-	Standfirst  string
+	Subheading  string
 	Bio         string
 	StreamIntro string
 }

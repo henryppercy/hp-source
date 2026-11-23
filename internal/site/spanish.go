@@ -28,7 +28,7 @@ const (
 // the finish date. Long enough to smooth out quiet weeks and ignore old gaps.
 const spanishGoalWindow = 90
 
-const spanishStandfirst = "The stats and trends which map my journey to functional " +
+const spanishSubheading = "The stats and trends which map my journey to functional " +
 	"Spanish fluency. Currently learning via Comprehensible Input."
 
 const spanishIntro = "I am currently learning Spanish using Comprehensible Input, " +
@@ -60,7 +60,7 @@ func spanishView(
 ) templates.SpanishView {
 	days, secByDate := aggregateSpanish(entries)
 	if len(days) == 0 {
-		return templates.SpanishView{Standfirst: spanishStandfirst, Year: now.Year(), Articles: articles}
+		return templates.SpanishView{Subheading: spanishSubheading, Year: now.Year(), Articles: articles}
 	}
 
 	total := 0
@@ -73,7 +73,7 @@ func spanishView(
 
 	v := templates.SpanishView{
 		Total:      fmt.Sprintf("%d", total/3600),
-		Standfirst: spanishStandfirst,
+		Subheading: spanishSubheading,
 		Intro:      spanishIntro,
 		StartDate:  start,
 		DayCount:   dayCount,

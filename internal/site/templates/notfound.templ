@@ -6,7 +6,7 @@ templ NotFound() {
             <div class="flex flex-col items-center px-5 py-16 text-center">
                 <span class="font-sans font-bold tracking-tightest text-mega text-fg leading-none">{ Chrome.NotFound.Code }</span>
                 <div class="mt-6">
-                    @standfirst(Chrome.NotFound.Message)
+                    @subheading(Chrome.NotFound.Message)
                 </div>
                 <div class="mt-8">
                     @location(Chrome.NotFound.Place, "??", Chrome.NotFound.Coords)

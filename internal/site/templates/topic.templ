@@ -9,8 +9,8 @@ templ Topic(v TopicFeedView) {
 			<header class="mb-12">
 				<div class="space-y-4">
 					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">{ v.Heading }</h1>
-					if v.Standfirst != "" {
-						@standfirst(v.Standfirst)
+					if v.Subheading != "" {
+						@subheading(v.Subheading)
 					}
 				</div>
 			</header>

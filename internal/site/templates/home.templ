@@ -9,7 +9,7 @@ templ Home(v HomeView) {
 	@Layout(docTitle(""), "/") {
 		<div class="mx-auto max-w-broad">
 			@homeNameplate(v.Copy)
-			@homeDispatch(v.Dispatch, v.Copy)
+			@homeLatest(v.Latest, v.Copy)
 			<p class="mx-auto mb-16 max-w-measure font-serif text-lead text-muted leading-relaxed">{ v.Copy.StreamIntro }</p>
 			<div class="grid gap-x-10 gap-y-12 mx-auto max-w-measure xl:max-w-none xl:grid-cols-[var(--spacing-rail)_var(--spacing-measure)_1fr] xl:items-start">
 				<div class="min-w-0 xl:col-start-2">
@@ -27,13 +27,13 @@ templ Home(v HomeView) {
 }
 
 // homeNameplate is the opening statement, a kicker, a mega line, the
-// standfirst and bio set to a readable measure, and the filed-from stamp.
+// subheading and bio set to a readable measure, and the filed-from stamp.
 templ homeNameplate(c HomeCopy) {
 	<header class="pb-14">
 		<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ c.Kicker }</span>
 		<h1 class="mt-4 font-sans font-bold tracking-tightest text-display text-fg leading-none md:text-mega">{ c.Hero }</h1>
 		<div class="mt-6 max-w-measure space-y-4">
-			@standfirst(c.Standfirst)
+			@subheading(c.Subheading)
 			<p class="font-serif text-body text-fg-body leading-relaxed">{ c.Bio }</p>
 		</div>
 		<div class="mt-6">
@@ -42,9 +42,9 @@ templ homeNameplate(c HomeCopy) {
 	</header>
 }
 
-// homeDispatch is the latest-activity plate, a header strip over a row of
+// homeLatest is the latest-activity plate, a header strip over a row of
 // live cells, each the freshest fact from one feed.
-templ homeDispatch(cells []DispatchCell, c HomeCopy) {
+templ homeLatest(cells []LatestCell, c HomeCopy) {
 	if len(cells) > 0 {
 		<section class="mb-16 border border-fg">
 			<div
@@ -55,27 +55,27 @@ templ homeDispatch(cells []DispatchCell, c HomeCopy) {
 				templ.KV("lg:grid-cols-2", len(cells) <= 2) }
 			>
 				for i, c := range cells {
-					@dispatchCell(c, i == 0 && len(cells)%2 == 1)
+					@latestCell(c, i == 0 && len(cells)%2 == 1)
 				}
 			</div>
 		</section>
 	}
 }
 
-templ dispatchCell(c DispatchCell, span bool) {
+templ latestCell(c LatestCell, span bool) {
 	<div class={ "flex flex-col bg-surface p-5", templ.KV("col-span-2 lg:col-span-1", span) }>
 		<span class="mb-2 font-mono text-kicker tracking-kicker uppercase text-fainter">{ c.Kicker }</span>
 		if c.URL != "" {
 			<a href={ c.URL } class="group flex grow flex-col">
-				@dispatchBody(c)
+				@latestBody(c)
 			</a>
 		} else {
-			@dispatchBody(c)
+			@latestBody(c)
 		}
 	</div>
 }
 
-templ dispatchBody(c DispatchCell) {
+templ latestBody(c LatestCell) {
 	<p class={ "font-serif text-body text-fg-body leading-snug group-hover:text-accent", templ.KV("italic", c.Italic) }>{ c.Lead }</p>
 	if c.Sub != "" {
 		<p class="mt-1 font-sans text-meta text-muted">{ c.Sub }</p>

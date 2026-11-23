@@ -135,7 +135,7 @@ type PostListItem struct {
 // template.
 type HomeView struct {
 	Copy     HomeCopy
-	Dispatch []DispatchCell
+	Latest []LatestCell
 	Reads    []RecentRead
 	Levels   DSLevelsView
 	Subjects []TopicCount
@@ -182,11 +182,11 @@ type TopicCount struct {
 	Count int
 }
 
-// DispatchCell is one cell of the homepage's latest-activity strip, a
+// LatestCell is one cell of the homepage's latest-activity strip, a
 // freshest-fact pull from a single feed. Italic sets the lead in serif italic,
 // for a book title. Sub is an optional muted line under the lead. URL, when
 // set, makes the cell a link into its section.
-type DispatchCell struct {
+type LatestCell struct {
 	Kicker string
 	Lead   string
 	Sub    string
@@ -226,7 +226,7 @@ type IndexRow struct {
 // PostListView is the top-level data for a post listing page (e.g. /posts).
 type PostListView struct {
 	Heading    string
-	Standfirst string
+	Subheading string
 	Empty      string
 	Posts      []PostListItem
 }
@@ -235,7 +235,7 @@ type PostListView struct {
 // list of articles and a timeline of slices, each rendered only when non-empty.
 type TopicFeedView struct {
 	Heading    string
-	Standfirst string
+	Subheading string
 	Empty      string
 	Articles   []PostListItem
 	Slices     []SliceItem
@@ -245,7 +245,7 @@ type TopicFeedView struct {
 // feed.
 type SpanishView struct {
 	Total      string // lifetime hours, e.g. "472"
-	Standfirst string // the page lead under the title
+	Subheading string // the page lead under the title
 	Intro      string // the serif interlude framing the daily log
 	Band       BandView
 	StartDate  time.Time
@@ -333,7 +333,7 @@ type SliceItem struct {
 // SliceFeedView is the top-level data for the /slices timeline.
 type SliceFeedView struct {
 	Heading    string
-	Standfirst string
+	Subheading string
 	Empty      string
 	Slices     []SliceItem
 }
@@ -341,7 +341,7 @@ type SliceFeedView struct {
 // ReadingView is the /reading hub, what's open now, this year's almanac
 // and log, links to earlier years, the rail insights, and a shelf summary.
 type ReadingView struct {
-	Standfirst string
+	Subheading string
 	DeskEmpty  string // shown when nothing is currently being read
 	Almanac    AlmanacView
 	Reading    []CurrentRead
@@ -355,7 +355,7 @@ type ReadingView struct {
 // YearView is a /reading/{year} recap, that year's almanac, log and
 // insights, with the year nav to move between years.
 type YearView struct {
-	Standfirst string
+	Subheading string
 	Almanac    AlmanacView
 	Year       FinishedYear
 	SetAside   []FinishedBook
@@ -393,7 +393,7 @@ type Tally struct {
 
 // ShelfView is the full antilibrary at /reading/shelf.
 type ShelfView struct {
-	Standfirst string
+	Subheading string
 	Books      []ShelfBook
 }
 
