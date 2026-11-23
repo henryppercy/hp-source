@@ -8,8 +8,7 @@ templ location(city, code, coords string) {
 			<span class="font-mono text-meta text-accent">{ code }</span>
 		}
 		if coords != "" {
-			<span class="font-mono text-meta text-ghost -ml-2">;</span>
-			<span class="font-mono text-kicker text-fainter tabular-nums whitespace-nowrap">{ coords }</span>
+			<span class="-ml-2 font-mono text-kicker text-fainter tabular-nums whitespace-nowrap"><span class="text-ghost">;</span> { coords }</span>
 		}
 	</span>
 }
@@ -79,16 +78,15 @@ templ postRow(p PostListItem) {
 		<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
 			<span>{ readLabel(p.ReadMinutes) }</span>
 			if p.Location.Name != "" {
-				<span class="text-ghost -ml-3">;</span>
-				<span>{ p.Location.Name }</span>
+				<span class="-ml-3"><span class="text-ghost">;</span> { p.Location.Name }</span>
 			}
 		</div>
 	</div>
 }
 
 // sliceCard is one note, shared by the /slices timeline and the topic feed.
-// The timeline's hung dateline is added by the caller, not here. permalink shows
-// the link to the note's own page, dropped on that page itself.
+// The timeline's hung dateline is added by the caller, not here. permalink turns
+// the timestamp into the link to the note's own page, dropped on that page itself.
 templ sliceCard(s SliceItem, permalink bool) {
 	<article class="border border-rule-soft p-6">
 		<div class="prose">
@@ -99,14 +97,13 @@ templ sliceCard(s SliceItem, permalink bool) {
 				@tagChips(s.Topics)
 			</div>
 			<div class="flex items-center gap-x-3 font-mono text-meta text-faint">
-				<time>{ fmtDateTime(s.PublishedAt) }</time>
-				if s.Location.Name != "" {
-					<span class="text-ghost -ml-3">;</span>
-					<span>{ s.Location.Name }</span>
-				}
 				if permalink {
-					<span class="text-ghost -ml-3">;</span>
-					<a href={ s.URL + "/" } class="hover:text-accent">permalink</a>
+					<a href={ s.URL + "/" } class="hover:text-accent"><time>{ fmtDateTime(s.PublishedAt) }</time></a>
+				} else {
+					<time>{ fmtDateTime(s.PublishedAt) }</time>
+				}
+				if s.Location.Name != "" {
+					<span class="-ml-3"><span class="text-ghost">;</span> { s.Location.Name }</span>
 				}
 			</div>
 		</div>

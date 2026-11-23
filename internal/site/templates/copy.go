@@ -37,7 +37,7 @@ type FooterCopy struct {
 	SiteHeading  string
 	LinksHeading string
 	Generator    string // the "generator" value, e.g. "Custom Go SSG"
-	JavaScript   string // the "javascript" value, e.g. "0 KB; none"
+	JavaScript   string // the "javascript" value, e.g. "0 KB"
 	LicenseLabel string
 	LicenseURL   string
 	Copyright    string
