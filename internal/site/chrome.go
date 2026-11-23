@@ -12,6 +12,7 @@ var chrome = templates.ChromeCopy{
 		{Num: "03", Label: "Slices", Href: "/slices"},
 		{Num: "04", Label: "Reading", Href: "/reading"},
 		{Num: "05", Label: "Spanish", Href: "/spanish"},
+		{Num: "06", Label: "Everything", Href: "/everything"},
 	},
 	Footer: templates.FooterCopy{
 		Wordmark:     "Henry Percy",

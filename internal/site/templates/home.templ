@@ -87,11 +87,12 @@ templ latestBody(c LatestCell) {
 
 // homeStream is the merged feed in the main column, boxed cards hung from
 // a dateline in the margin, each card sized and enriched to its kind so none
-// reads as an empty frame.
+// reads as an empty frame. The feed is capped, so the section closes with a
+// link to the complete stream.
 templ homeStream(entries []FeedEntry) {
 	if len(entries) > 0 {
 		<section>
-			@sectionHead("All entries", "newest first")
+			@sectionHead("Everything", "newest first")
 			<div class="space-y-6">
 				for _, e := range entries {
 					<div class="relative">
@@ -99,6 +100,9 @@ templ homeStream(entries []FeedEntry) {
 						@streamCard(e)
 					</div>
 				}
+			</div>
+			<div class="mt-8">
+				@indexLink("/everything", "See everything")
 			</div>
 		</section>
 	}

@@ -135,7 +135,7 @@ type PostListItem struct {
 // template.
 type HomeView struct {
 	Copy     HomeCopy
-	Latest []LatestCell
+	Latest   []LatestCell
 	Reads    []RecentRead
 	Levels   DSLevelsView
 	Subjects []TopicCount
@@ -336,6 +336,17 @@ type SliceFeedView struct {
 	Subheading string
 	Empty      string
 	Slices     []SliceItem
+}
+
+// EverythingFeedView is the top-level data for the /everything timeline, the
+// complete merged stream of every feed. Figures counts the entries by kind
+// for the header, Entries is the stream newest first.
+type EverythingFeedView struct {
+	Heading    string
+	Subheading string
+	Empty      string
+	Figures    []Stat
+	Entries    []FeedEntry
 }
 
 // ReadingView is the /reading hub, what's open now, this year's almanac

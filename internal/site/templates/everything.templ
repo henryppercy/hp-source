@@ -1,0 +1,40 @@
+package templates
+
+// Everything is the /everything timeline, every entry from every feed folded
+// into one stream, each a shared streamCard hung from a dateline.
+templ Everything(v EverythingFeedView) {
+	@Layout(docTitle(v.Heading), "/everything") {
+		<div class="mx-auto max-w-measure">
+			<header class="mb-12">
+				<div class="space-y-4">
+					<h1 class="font-sans font-bold tracking-tightest text-display text-fg">{ v.Heading }</h1>
+					if v.Subheading != "" {
+						@subheading(v.Subheading)
+					}
+				</div>
+				if len(v.Entries) > 0 {
+					<dl class="mt-8 flex flex-wrap gap-x-10 gap-y-2 border-t border-rule pt-4">
+						for _, f := range v.Figures {
+							<div class="flex items-baseline gap-2">
+								<dt class="font-mono text-meta text-fainter">{ f.Label }</dt>
+								<dd class="font-mono text-meta text-fg tabular-nums">{ f.Value }</dd>
+							</div>
+						}
+					</dl>
+				}
+			</header>
+			if len(v.Entries) > 0 {
+				<div class="space-y-6">
+					for _, e := range v.Entries {
+						<div class="relative">
+							@dateline(fmtDate(e.Date), "", "lg:top-5", false)
+							@streamCard(e)
+						</div>
+					}
+				</div>
+			} else {
+				<p class="font-serif text-muted">{ v.Empty }</p>
+			}
+		</div>
+	}
+}

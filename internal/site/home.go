@@ -15,7 +15,7 @@ import (
 )
 
 // homeStreamLimit caps the merged stream on the homepage.
-const homeStreamLimit = 6
+const homeStreamLimit = 10
 
 // homeShelfLimit caps the recently-read cover shelf in the rail.
 const homeShelfLimit = 12
@@ -24,8 +24,6 @@ const homeShelfLimit = 12
 // strip.
 const homeCurrently = ""
 
-// Homepage prose. The subheading says who I am and the bio what the site is,
-// so the two do not repeat each other.
 const (
 	homeKicker     = "Field notebook"
 	homeHero       = "I like to keep a record."
@@ -33,7 +31,7 @@ const (
 	homeBio        = "This is my digital field notebook. It's where I write down my thoughts, " +
 		"log my reading, and track my Spanish learning. Everything enters via the command " +
 		"line and the output is this website."
-	homeStreamIntro = "This is everything: articles, notes, completed reads, spanish milestones. " +
+	homeStreamIntro = "This is all posts, slices, completed reads, and spanish milestones. " +
 		"They are outputted in the reverse order that they came in."
 )
 
@@ -47,12 +45,14 @@ var homeCopy = templates.HomeCopy{
 }
 
 // homeView assembles the homepage from the latest-activity strip, the stats,
-// the merged stream, and the section index.
+// the merged stream, and the section index. stream is the complete merged
+// feed, capped here for the homepage and counted for the index.
 func homeView(
 	posts []repo.Post,
 	reads []repo.ReadEntry,
 	notes []templates.SliceItem,
 	spanishLog []repo.SpanishLogEntry,
+	stream []templates.FeedEntry,
 	now time.Time,
 ) templates.HomeView {
 	articles := mainArticles(posts)
@@ -69,9 +69,33 @@ func homeView(
 		Reads:    recentReads(reads, homeShelfLimit),
 		Levels:   spanishLevels(days, total, articles),
 		Subjects: topicCounts(posts),
-		Stream:   lifeStream(articles, notes, reads, spanishMilestones(days, total)),
-		Index:    indexRows(articles, notes, reads, total),
+		Stream:   capStream(stream),
+		Index:    indexRows(articles, notes, reads, total, stream),
 	}
+}
+
+// streamEntries folds every feed into the complete merged stream of all
+// entries, newest first.
+func streamEntries(
+	posts []repo.Post,
+	reads []repo.ReadEntry,
+	notes []templates.SliceItem,
+	spanishLog []repo.SpanishLogEntry,
+) []templates.FeedEntry {
+	days, _ := aggregateSpanish(spanishLog)
+	total := 0
+	for _, d := range days {
+		total += d.sec
+	}
+	return lifeStream(mainArticles(posts), notes, reads, spanishMilestones(days, total))
+}
+
+// capStream trims the merged stream to the homepage's limit.
+func capStream(stream []templates.FeedEntry) []templates.FeedEntry {
+	if len(stream) > homeStreamLimit {
+		return stream[:homeStreamLimit]
+	}
+	return stream
 }
 
 // topicCounts ranks the subjects across all posts by how many
@@ -255,7 +279,7 @@ func milestonePost(articles []templates.PostListItem, hours int) string {
 }
 
 // lifeStream folds articles, notes, finished books and crossed Spanish
-// milestones into one reverse-chronological stream, newest first.
+// milestones into one reverse-chronological stream, newest first, uncapped.
 func lifeStream(
 	articles []templates.PostListItem,
 	notes []templates.SliceItem,
@@ -265,7 +289,7 @@ func lifeStream(
 	var out []templates.FeedEntry
 	for _, p := range articles {
 		out = append(out, templates.FeedEntry{
-			Kind: "post", Kicker: "Filed", Date: p.PublishedAt,
+			Kind: "post", Kicker: "Post", Date: p.PublishedAt,
 			Title: p.Title, Note: p.Headline, URL: p.URL + "/", Topics: p.Topics,
 		})
 	}
@@ -288,9 +312,6 @@ func lifeStream(
 	out = append(out, milestones...)
 
 	sort.SliceStable(out, func(i, j int) bool { return out[i].Date.After(out[j].Date) })
-	if len(out) > homeStreamLimit {
-		out = out[:homeStreamLimit]
-	}
 	return out
 }
 
@@ -343,12 +364,14 @@ func indexRows(
 	notes []templates.SliceItem,
 	reads []repo.ReadEntry,
 	total int,
+	stream []templates.FeedEntry,
 ) []templates.IndexRow {
 	return []templates.IndexRow{
 		{Num: "02", Label: "Posts", URL: "/posts", Note: fmt.Sprintf("%d filed", len(articles))},
 		{Num: "03", Label: "Slices", URL: "/slices", Note: fmt.Sprintf("%d notes", len(notes))},
 		{Num: "04", Label: "Reading", URL: "/reading", Note: readingNote(reads)},
 		{Num: "05", Label: "Spanish", URL: "/spanish", Note: spanishIndexNote(total)},
+		{Num: "06", Label: "Everything", URL: "/everything", Note: fmt.Sprintf("%d total", len(stream))},
 	}
 }
 

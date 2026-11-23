@@ -98,7 +98,9 @@ func (b *builder) Build() error {
 		return err
 	}
 
-	home := homeView(posts, reads, timeline, spanishLog, now)
+	stream := streamEntries(posts, reads, timeline, spanishLog)
+
+	home := homeView(posts, reads, timeline, spanishLog, stream, now)
 	if err := b.render("/", templates.Home(home)); err != nil {
 		return err
 	}
@@ -118,6 +120,10 @@ func (b *builder) Build() error {
 		Empty:      feedEmpty,
 		Slices:     timeline,
 	})); err != nil {
+		return err
+	}
+
+	if err := b.render("/everything", templates.Everything(everythingFeed(stream))); err != nil {
 		return err
 	}
 
