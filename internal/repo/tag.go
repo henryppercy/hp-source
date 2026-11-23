@@ -1,6 +1,6 @@
 package repo
 
-// Tag is a label for works.
+// Tag is a label for books.
 type Tag struct {
 	ID   int
 	Name string

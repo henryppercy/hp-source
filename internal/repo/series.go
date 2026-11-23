@@ -1,12 +1,12 @@
 package repo
 
-// Series is a named sequence of works.
+// Series is a named sequence of books.
 type Series struct {
 	ID   int
 	Name string
 }
 
-// SeriesInput is a work's series membership, with Position its place in the
+// SeriesInput is a book's series membership, with Position its place in the
 // sequence.
 type SeriesInput struct {
 	ID       int

@@ -1,6 +1,6 @@
 package repo
 
-// Author is a writer credited on works.
+// Author is a writer credited on books.
 type Author struct {
 	ID       int
 	Name     string
@@ -8,7 +8,7 @@ type Author struct {
 }
 
 // AuthorInput is an author's editable fields. Role records how they
-// contributed to a particular work.
+// contributed to a particular book.
 type AuthorInput struct {
 	ID       int
 	Name     string
@@ -56,7 +56,7 @@ func createAuthor(tx TX, name, sortName string) (int, error) {
 	return int(id), nil
 }
 
-// LinkBookAuthor credits an author on a work with the given role.
+// LinkBookAuthor credits an author on a book with the given role.
 func (r *Repo) LinkBookAuthor(bookID, authorID int, role string) error {
 	return linkBookAuthor(r.db, bookID, authorID, role)
 }

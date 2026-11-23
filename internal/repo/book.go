@@ -2,7 +2,10 @@ package repo
 
 import "fmt"
 
-// BookInput is a work's details at creation, with its authors, series, and
+// A book is the work itself, the thing published under a title. Copies are
+// the physical editions of it, a book has zero or more.
+
+// BookInput is a book's details at creation, with its authors, series, and
 // tags.
 type BookInput struct {
 	Title            string
@@ -17,7 +20,7 @@ type BookInput struct {
 	TagIDs  []int
 }
 
-// AddBook creates a work and if firstCopy is non-nil its first copy.
+// AddBook creates a book and if firstCopy is non-nil its first copy.
 func (r *Repo) AddBook(input *BookInput, firstCopy *CopyInput) error {
 	tx, err := r.db.Begin()
 	if err != nil {
@@ -87,7 +90,7 @@ func (r *Repo) AddBook(input *BookInput, firstCopy *CopyInput) error {
 	return tx.Commit()
 }
 
-// BookEdit is a work's editable fields without copies, authors, or tags.
+// BookEdit is a book's editable fields without copies, authors, or tags.
 type BookEdit struct {
 	Title            string
 	BookType         string
@@ -97,7 +100,7 @@ type BookEdit struct {
 	URL              string
 }
 
-// GetBook returns a work's editable fields, erroring when none exists.
+// GetBook returns a book's editable fields, erroring when none exists.
 func (r *Repo) GetBook(bookID int) (*BookEdit, error) {
 	var b BookEdit
 	var url *string
@@ -112,7 +115,7 @@ func (r *Repo) GetBook(bookID int) (*BookEdit, error) {
 	return &b, nil
 }
 
-// UpdateBook replaces a work's fields.
+// UpdateBook replaces a book's fields.
 func (r *Repo) UpdateBook(bookID int, in *BookEdit) error {
 	_, err := r.db.Exec(
 		`UPDATE book SET title = ?, type = ?, genre_id = ?, date_published = ?, original_language = ?, url = ?
@@ -122,14 +125,14 @@ func (r *Repo) UpdateBook(bookID int, in *BookEdit) error {
 	return err
 }
 
-// BookSummary is a work's id, title, and author for selection menus.
+// BookSummary is a book's id, title, and author for selection menus.
 type BookSummary struct {
 	ID     int
 	Title  string
 	Author string
 }
 
-// ListBooks returns works by title, optionally only those with copies.
+// ListBooks returns books by title, optionally only those with copies.
 func (r *Repo) ListBooks(withCopies bool) ([]BookSummary, error) {
 	query := `SELECT b.id, b.title, a.name
         FROM book b

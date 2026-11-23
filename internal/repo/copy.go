@@ -132,7 +132,7 @@ func (r *Repo) UpdateCopy(copyID int, in *CopyInput) error {
 	return tx.Commit()
 }
 
-// Copy is a single edition of a work.
+// Copy is a single edition of a book.
 type Copy struct {
 	ID       int
 	Title    string
@@ -140,7 +140,7 @@ type Copy struct {
 	Language string
 }
 
-// ListCopies returns a work's copies in insertion order.
+// ListCopies returns a book's copies in insertion order.
 func (r *Repo) ListCopies(bookID int) ([]Copy, error) {
 	rows, err := r.db.Query(
 		"SELECT id, title, format, language FROM book_copy WHERE book_id = ? ORDER BY id",

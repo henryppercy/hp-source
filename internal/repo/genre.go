@@ -1,6 +1,6 @@
 package repo
 
-// Genre is a category of work.
+// Genre is a category of book.
 type Genre struct {
 	ID   int
 	Name string

@@ -10,7 +10,7 @@ import (
 	"github.com/henryppercy/hp-source/internal/text"
 )
 
-// AddBook collects a work's details, returning whether the user wants to add a copy.
+// AddBook collects a book's details, returning whether the user wants to add a copy.
 // Authors, series and tags must be created first with author/series/tag add.
 func AddBook(
 	input *repo.BookInput,
@@ -52,7 +52,7 @@ func AddBook(
 		huh.NewGroup(
 			huh.NewNote().
 				Title("Add Book").
-				Description("Add a new work to your collection.").
+				Description("Add a new book to your collection.").
 				Next(true).
 				NextLabel("Next"),
 		),
@@ -269,7 +269,7 @@ func bookSummary(
 	return sb.String()
 }
 
-// EditBook edits a work's fields, prefilled from its current values.
+// EditBook edits a book's fields, prefilled from its current values.
 func EditBook(in *repo.BookEdit, genres []repo.Genre) error {
 	genreOptions := make([]huh.Option[int], len(genres))
 	for i, g := range genres {
