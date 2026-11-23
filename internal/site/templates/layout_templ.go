@@ -14,7 +14,7 @@ func docTitle(section string) string {
 	if section == "" {
 		return Chrome.SiteName
 	}
-	return section + "; " + Chrome.SiteName
+	return section + " | " + Chrome.SiteName
 }
 
 // Layout is the HTML shell shared by every page. The title and the href of
