@@ -152,11 +152,6 @@ func (b *builder) Build() error {
 		return err
 	}
 
-	// Uncomment for local dev. Not rendered in the output.
-	// if err := b.render("/design", templates.Design()); err != nil {
-	// 	return err
-	// }
-
 	if err := b.render("/404", templates.NotFound()); err != nil {
 		return err
 	}
