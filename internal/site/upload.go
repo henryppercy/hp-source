@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/charmbracelet/log"
 )
 
 // UploadImages mirrors the local image tree to the R2 bucket with rclone.
@@ -27,7 +29,13 @@ func UploadImages() error {
 	}
 
 	src := filepath.Join(devAssetDir, imageDir)
-	return cfg.rclone("sync", src, cfg.remote(), "--progress")
+	log.Info("syncing images", "src", src, "dst", cfg.remote())
+	start := time.Now()
+	if err := cfg.rclone("sync", src, cfg.remote(), "--progress"); err != nil {
+		return err
+	}
+	log.Info("images synced", "in", time.Since(start).Round(time.Second))
+	return nil
 }
 
 // backupLatestKey is the stable object key holding the newest snapshot,
@@ -54,14 +62,17 @@ func BackupDatabase(db *sql.DB) error {
 	snapshot := filepath.Join(os.TempDir(), name)
 	defer os.Remove(snapshot)
 
+	log.Info("snapshotting database", "to", snapshot)
 	if err := snapshotDatabase(db, snapshot); err != nil {
 		return err
 	}
 
 	key := "snapshots/" + name
+	log.Info("uploading snapshot", "to", cfg.remote()+"/"+key)
 	if err := cfg.rclone("copyto", snapshot, cfg.remote()+"/"+key, "--progress"); err != nil {
 		return err
 	}
+	log.Info("updating latest backup")
 	return cfg.rclone("copyto", cfg.remote()+"/"+key, cfg.remote()+"/"+backupLatestKey)
 }
 

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/a-h/templ"
+	"github.com/charmbracelet/log"
 	"github.com/frostybee/kazari"
 	"github.com/henryppercy/hp-source/internal/repo"
 	"github.com/henryppercy/hp-source/internal/site/templates"
@@ -35,6 +36,7 @@ type builder struct {
 	drafts bool
 	engine *kazari.Engine
 	md     goldmark.Markdown
+	pages  int // pages rendered by the current Build, reset each run
 }
 
 func newBuilder(r *repo.Repo, assets fs.FS, out string, images, drafts bool) *builder {
@@ -51,8 +53,11 @@ func newBuilder(r *repo.Repo, assets fs.FS, out string, images, drafts bool) *bu
 }
 
 // Build wipes the output directory, then renders every page and copies the
-// static assets and generated code-block assets into it.
+// static assets and generated code-block assets into it. It logs a summary of
+// the pages written and how long the run took.
 func (b *builder) Build() error {
+	start := time.Now()
+	b.pages = 0
 	if err := os.RemoveAll(b.out); err != nil {
 		return fmt.Errorf("failed to clear output directory: %w", err)
 	}
@@ -159,7 +164,11 @@ func (b *builder) Build() error {
 	if err := b.copyStatic(); err != nil {
 		return err
 	}
-	return b.writeCodeCSS()
+	if err := b.writeCodeCSS(); err != nil {
+		return err
+	}
+	log.Info("built", "pages", b.pages, "out", b.out, "in", time.Since(start).Round(time.Millisecond))
+	return nil
 }
 
 func loadImageConfig() {
@@ -311,6 +320,7 @@ func (b *builder) render(urlPath string, c templ.Component) error {
 	if err := c.Render(context.Background(), f); err != nil {
 		return fmt.Errorf("failed to render %s: %w", urlPath, err)
 	}
+	b.pages++
 	return nil
 }
 

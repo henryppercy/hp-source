@@ -2,12 +2,12 @@ package site
 
 import (
 	"io/fs"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/charmbracelet/log"
 	"github.com/fsnotify/fsnotify"
 	"github.com/henryppercy/hp-source/internal/repo"
 )
@@ -43,7 +43,7 @@ func Serve(r *repo.Repo, out string, cfg ServeConfig) error {
 		go watchAndRebuild(b, cfg.DBPath)
 	}
 
-	log.Printf("serving %s on http://localhost%s", out, cfg.Addr)
+	log.Info("serving", "out", out, "url", "http://localhost"+cfg.Addr)
 	return http.ListenAndServe(cfg.Addr, fileServer(out))
 }
 
@@ -66,7 +66,9 @@ type notFoundWriter struct {
 
 func (w *notFoundWriter) WriteHeader(status int) {
 	if status == http.StatusNotFound {
-		if data, err := os.ReadFile(filepath.Join(w.out, "404.html")); err == nil {
+		if data, err := os.ReadFile(filepath.Join(w.out, "404.html")); err != nil {
+			log.Debug("no 404 page to serve", "error", err)
+		} else {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			w.ResponseWriter.WriteHeader(http.StatusNotFound)
 			w.ResponseWriter.Write(data)
@@ -87,7 +89,7 @@ func (w *notFoundWriter) Write(b []byte) (int, error) {
 func watchAndRebuild(b *builder, dbPath string) {
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
-		log.Printf("watch: %v", err)
+		log.Error("watch", "error", err)
 		return
 	}
 	defer w.Close()
@@ -97,23 +99,27 @@ func watchAndRebuild(b *builder, dbPath string) {
 	for _, root := range []string{
 		filepath.Join(devAssetDir, "static"),
 	} {
-		fs.WalkDir(os.DirFS(root), ".", func(path string, d fs.DirEntry, err error) error {
+		if err := fs.WalkDir(os.DirFS(root), ".", func(path string, d fs.DirEntry, err error) error {
 			if err != nil || !d.IsDir() {
 				return nil
 			}
 			dir := filepath.Join(root, path)
 			if err := w.Add(dir); err != nil {
-				log.Printf("watch %s: %v", dir, err)
+				log.Error("watch dir", "dir", dir, "error", err)
 			}
 			return nil
-		})
+		}); err != nil {
+			// A failed walk leaves the watcher silently incomplete, so
+			// say so instead of rebuilding nothing forever.
+			log.Error("watch walk", "root", root, "error", err)
+		}
 	}
 
 	// The content lives in SQLite. In WAL mode commits write to the -wal
 	// file, so watch the database's directory rather than the file itself.
 	if dbPath != "" {
 		if err := w.Add(filepath.Dir(dbPath)); err != nil {
-			log.Printf("watch %s: %v", filepath.Dir(dbPath), err)
+			log.Error("watch db", "dir", filepath.Dir(dbPath), "error", err)
 		}
 	}
 
@@ -132,16 +138,17 @@ func watchAndRebuild(b *builder, dbPath string) {
 			}
 			timer = time.AfterFunc(100*time.Millisecond, func() {
 				if err := b.Build(); err != nil {
-					log.Printf("rebuild: %v", err)
+					log.Error("rebuild", "error", err)
 					return
 				}
-				log.Println("rebuilt")
+				// The built summary comes from Build itself.
+				log.Debug("rebuilt")
 			})
 		case err, ok := <-w.Errors:
 			if !ok {
 				return
 			}
-			log.Printf("watch: %v", err)
+			log.Error("watch", "error", err)
 		}
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/charmbracelet/log"
 	"github.com/henryppercy/hp-source/internal/database"
 	"github.com/henryppercy/hp-source/internal/repo"
 	"github.com/spf13/cobra"
@@ -67,9 +68,10 @@ func newRootCmd() *cobra.Command {
 	var dbFlag string
 
 	root := &cobra.Command{
-		Use:          "hp",
-		Short:        "Personal data manager",
-		SilenceUsage: true,
+		Use:           "hp",
+		Short:         "Personal data manager",
+		SilenceUsage:  true,
+		SilenceErrors: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			path, err := resolveDBPath(dbFlag)
 			if err != nil {
@@ -105,7 +107,6 @@ func newRootCmd() *cobra.Command {
 // Execute runs the root command and exits non-zero on error.
 func Execute() {
 	if err := newRootCmd().Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
