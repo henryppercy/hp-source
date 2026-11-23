@@ -68,6 +68,16 @@ func (r *Repo) ListPublishedPosts() ([]Post, error) {
 	)
 }
 
+// ListPostsWithDrafts returns every post, drafts included, newest first.
+// Drafts are dated by their last edit, so they sit where publishing them
+// would put them.
+func (r *Repo) ListPostsWithDrafts() ([]Post, error) {
+	return r.queryPosts(
+		`SELECT ` + postColumns + ` FROM post
+         ORDER BY COALESCE(published_at, updated_at) DESC`,
+	)
+}
+
 // ListArticles returns articles most recently changed first.
 func (r *Repo) ListArticles() ([]Post, error) {
 	return r.queryPosts(

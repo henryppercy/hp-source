@@ -17,26 +17,34 @@ import (
 // the binary by templ, so template edits need a rebuild (air handles that in dev).
 const devAssetDir = "internal/site"
 
+// ServeConfig tunes the dev server built by Serve.
+type ServeConfig struct {
+	Addr   string // listen address, e.g. ":8080"
+	Watch  bool   // rebuild when static assets or the database change
+	Drafts bool   // include draft posts in the build
+	DBPath string // database file to watch when Watch is set
+}
+
 // Serve builds the site and serves it over HTTP. With watch enabled it reads
-// static assets from disk and rebuilds when they change.
-func Serve(r *repo.Repo, out, addr string, watch bool) error {
+// static assets from disk and rebuilds when they or the database change.
+func Serve(r *repo.Repo, out string, cfg ServeConfig) error {
 	assets := embeddedAssets()
-	if watch {
+	if cfg.Watch {
 		assets = os.DirFS(devAssetDir)
 	}
 
 	// Local serving always includes images so the site works offline.
-	b := newBuilder(r, assets, out, true)
+	b := newBuilder(r, assets, out, true, cfg.Drafts)
 	if err := b.Build(); err != nil {
 		return err
 	}
 
-	if watch {
-		go watchAndRebuild(b)
+	if cfg.Watch {
+		go watchAndRebuild(b, cfg.DBPath)
 	}
 
-	log.Printf("serving %s on http://localhost%s", out, addr)
-	return http.ListenAndServe(addr, fileServer(out))
+	log.Printf("serving %s on http://localhost%s", out, cfg.Addr)
+	return http.ListenAndServe(cfg.Addr, fileServer(out))
 }
 
 // fileServer serves the built site, falling back to the generated 404.html
@@ -76,7 +84,7 @@ func (w *notFoundWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-func watchAndRebuild(b *builder) {
+func watchAndRebuild(b *builder, dbPath string) {
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Printf("watch: %v", err)
@@ -101,12 +109,23 @@ func watchAndRebuild(b *builder) {
 		})
 	}
 
+	// The content lives in SQLite. In WAL mode commits write to the -wal
+	// file, so watch the database's directory rather than the file itself.
+	if dbPath != "" {
+		if err := w.Add(filepath.Dir(dbPath)); err != nil {
+			log.Printf("watch %s: %v", filepath.Dir(dbPath), err)
+		}
+	}
+
 	var timer *time.Timer
 	for {
 		select {
-		case _, ok := <-w.Events:
+		case ev, ok := <-w.Events:
 			if !ok {
 				return
+			}
+			if !relevantEvent(ev.Name, dbPath) {
+				continue
 			}
 			if timer != nil {
 				timer.Stop()
@@ -125,4 +144,21 @@ func watchAndRebuild(b *builder) {
 			log.Printf("watch: %v", err)
 		}
 	}
+}
+
+// relevantEvent reports whether a filesystem event should trigger a rebuild.
+// Changes outside the database's directory always count. Inside it, only the
+// database and its WAL or journal files do.
+func relevantEvent(name, dbPath string) bool {
+	if dbPath == "" || filepath.Dir(name) != filepath.Dir(dbPath) {
+		return true
+	}
+	// The -shm file moves on ordinary reads, so reacting to it would rebuild
+	// for nothing.
+	base := filepath.Base(dbPath)
+	switch filepath.Base(name) {
+	case base, base + "-wal", base + "-journal":
+		return true
+	}
+	return false
 }

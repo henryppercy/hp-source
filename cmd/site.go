@@ -61,12 +61,19 @@ func newSiteServeCmd(a *app) *cobra.Command {
 			out, _ := cmd.Flags().GetString("out")
 			addr, _ := cmd.Flags().GetString("addr")
 			watch, _ := cmd.Flags().GetBool("watch")
-			return site.Serve(a.repo, out, addr, watch)
+			drafts, _ := cmd.Flags().GetBool("drafts")
+			return site.Serve(a.repo, out, site.ServeConfig{
+				Addr:   addr,
+				Watch:  watch,
+				Drafts: drafts,
+				DBPath: a.dbPath,
+			})
 		},
 	}
 	cmd.Flags().String("out", "./dist", "Output directory for the built site")
 	cmd.Flags().String("addr", ":8080", "Address to serve on")
-	cmd.Flags().Bool("watch", false, "Rebuild on template/asset changes (reads from internal/site on disk)")
+	cmd.Flags().Bool("watch", false, "Rebuild on template/asset and database changes (reads from internal/site on disk)")
+	cmd.Flags().Bool("drafts", false, "Include draft posts in the build, for previewing before publishing")
 	return cmd
 }
 

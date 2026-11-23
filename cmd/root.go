@@ -12,8 +12,9 @@ import (
 )
 
 type app struct {
-	repo *repo.Repo
-	db   *sql.DB
+	repo   *repo.Repo
+	db     *sql.DB
+	dbPath string // resolved database file, watched by serve --watch
 }
 
 func (a *app) open(path string) error {
@@ -28,6 +29,7 @@ func (a *app) open(path string) error {
 		return err
 	}
 	a.db = db
+	a.dbPath = path
 	a.repo = repo.New(db)
 	return nil
 }

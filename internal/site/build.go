@@ -24,7 +24,7 @@ const imageDir = "static/images"
 // false the local image tree is left out of the output, as it is
 // served from the CDN instead.
 func Build(r *repo.Repo, out string, images bool) error {
-	return newBuilder(r, embeddedAssets(), out, images).Build()
+	return newBuilder(r, embeddedAssets(), out, images, false).Build()
 }
 
 type builder struct {
@@ -32,17 +32,19 @@ type builder struct {
 	assets fs.FS
 	out    string
 	images bool
+	drafts bool
 	engine *kazari.Engine
 	md     goldmark.Markdown
 }
 
-func newBuilder(r *repo.Repo, assets fs.FS, out string, images bool) *builder {
+func newBuilder(r *repo.Repo, assets fs.FS, out string, images, drafts bool) *builder {
 	engine := newCodeEngine()
 	return &builder{
 		repo:   r,
 		assets: assets,
 		out:    out,
 		images: images,
+		drafts: drafts,
 		engine: engine,
 		md:     newMarkdown(engine),
 	}
@@ -57,10 +59,11 @@ func (b *builder) Build() error {
 	templates.Chrome = chrome
 	loadImageConfig()
 
-	posts, err := b.repo.ListPublishedPosts()
+	posts, err := b.listPosts()
 	if err != nil {
 		return err
 	}
+	dateDrafts(posts)
 	reads, err := b.repo.ListReads()
 	if err != nil {
 		return err
@@ -167,6 +170,23 @@ func (b *builder) Build() error {
 func loadImageConfig() {
 	if p := os.Getenv("HP_IMAGE_PATTERN"); p != "" {
 		imagePattern = p
+	}
+}
+
+func (b *builder) listPosts() ([]repo.Post, error) {
+	if b.drafts {
+		return b.repo.ListPostsWithDrafts()
+	}
+	return b.repo.ListPublishedPosts()
+}
+
+// dateDrafts gives draft posts their last edit date as the display date, so
+// feeds, datelines and permalinks render them sensibly before publishing.
+func dateDrafts(posts []repo.Post) {
+	for i := range posts {
+		if posts[i].PublishedAt == "" {
+			posts[i].PublishedAt = posts[i].UpdatedAt
+		}
 	}
 }
 
