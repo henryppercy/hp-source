@@ -30,11 +30,11 @@ const (
 	homeKicker     = "Field notebook"
 	homeHero       = "I like to keep a record."
 	homeSubheading = "Software developer based in Sheffield and semi-obsessive logger of things."
-	homeBio        = "This is my digital field notebook; it's where I write down my thoughts, " +
+	homeBio        = "This is my digital field notebook. It's where I write down my thoughts, " +
 		"log my reading, and track my Spanish learning. Everything enters via the command " +
 		"line and the output is this website."
-	homeStreamIntro = "This is everything: articles, notes, completed reads, spanish milestones; " +
-		"being outputted in the reverse order that they came in."
+	homeStreamIntro = "This is everything: articles, notes, completed reads, spanish milestones. " +
+		"They are outputted in the reverse order that they came in."
 )
 
 // homeCopy is the homepage prose.
@@ -65,7 +65,7 @@ func homeView(
 
 	return templates.HomeView{
 		Copy:     homeCopy,
-		Latest: latestCells(reads, days, total, articles, notes, now),
+		Latest:   latestCells(reads, days, total, articles, notes, now),
 		Reads:    recentReads(reads, homeShelfLimit),
 		Levels:   spanishLevels(days, total, articles),
 		Subjects: topicCounts(posts),

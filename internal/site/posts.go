@@ -11,7 +11,7 @@ import (
 // Section copy for the post, slice and topic listings. Edit the wording here.
 const (
 	postsHeading    = "Posts"
-	postsSubheading = "Longer form writing; about anything I feel like writing about."
+	postsSubheading = "Longer form writing about anything I feel like writing about."
 
 	slicesHeading    = "Slices"
 	slicesSubheading = "Get a slice of my life. A personal feed of my thoughts, notes, and updates."
