@@ -189,9 +189,9 @@ templ recentReadsCard(reads []RecentRead) {
 					<li>
 						<a href={ r.URL } title={ r.Meta } class="block">
 							if r.ImageURL != "" {
-								<img src={ r.ImageURL } alt={ r.Title } class="aspect-[2/3] w-full object-cover"/>
+								<img src={ r.ImageURL } alt={ r.Title } class="aspect-2/3 w-full object-cover border border-rule"/>
 							} else {
-								<div class="flex aspect-[2/3] w-full items-center justify-center border border-rule bg-surface p-1.5">
+								<div class="flex aspect-2/3 w-full items-center justify-center border border-rule bg-surface p-1.5">
 									<span class="font-serif italic text-meta text-muted leading-tight">{ r.Title }</span>
 								</div>
 							}

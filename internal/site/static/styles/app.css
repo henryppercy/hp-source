@@ -785,6 +785,9 @@
   .table {
     display: table;
   }
+  .aspect-2\/3 {
+    aspect-ratio: 2/3;
+  }
   .aspect-\[2\/3\] {
     aspect-ratio: 2/3;
   }
