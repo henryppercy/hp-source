@@ -83,6 +83,7 @@ func bookView(p *repo.BookPage) templates.BookView {
 	v := templates.BookView{
 		Title:       p.Title,
 		Kind:        text.TitleCase(p.BookType),
+		KindURL:     kindURL(p.BookType),
 		ImageURL:    coverURL(p.CoverImage),
 		Credits:     bookCredits(p.Authors),
 		Series:      seriesLabel(p.Series, p.SeriesPosition),

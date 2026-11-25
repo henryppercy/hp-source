@@ -352,6 +352,7 @@ func almanac(reads []repo.ReadEntry, year int) templates.AlmanacView {
 	}
 	a.FictionPct = percent(fiction, a.Books)
 	a.FictionNote = countNote(fiction, a.Books)
+	a.FictionURL = kindURL("fiction")
 	a.SecondHandPct = percent(secondHand, owned)
 	a.SecondHandNote = countNote(secondHand, owned)
 	return a

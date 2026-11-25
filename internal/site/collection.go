@@ -132,6 +132,57 @@ func (b *builder) renderGenrePages(pages []genrePage) error {
 	return nil
 }
 
+// kindURLs maps book kinds to their page URLs, filled by loadKindPages
+// before any link is built. A kind missing from the map has no page.
+var kindURLs map[string]string
+
+// kindURL returns the kind's page URL, "" when it has no page.
+func kindURL(kind string) string {
+	return kindURLs[kind]
+}
+
+// bookKinds are the kinds a book carries, each with its own index page.
+var bookKinds = [2]string{"fiction", "non-fiction"}
+
+// kindPage is one kind's collection page, the name with its slug and books.
+type kindPage struct {
+	Kind  string
+	Slug  string
+	Books []repo.CollectionBook
+}
+
+// loadKindPages fetches each kind's books and fills kindURLs, skipping a
+// kind with nothing paged so no index stands empty.
+func (b *builder) loadKindPages() ([]kindPage, error) {
+	kindURLs = make(map[string]string, len(bookKinds))
+	var pages []kindPage
+	for _, kind := range bookKinds {
+		books, err := b.repo.ListBooksByKind(kind)
+		if err != nil {
+			return nil, err
+		}
+		if len(books) == 0 {
+			continue
+		}
+		slug := text.Slug(kind)
+		kindURLs[kind] = "/reading/kind/" + slug
+		pages = append(pages, kindPage{Kind: kind, Slug: slug, Books: books})
+	}
+	return pages, nil
+}
+
+// renderKindPages writes each kind's page under /reading/kind so the
+// reading nav stays the active section.
+func (b *builder) renderKindPages(pages []kindPage) error {
+	for _, p := range pages {
+		view := collectionView("Kind", text.TitleCase(p.Kind), p.Books)
+		if err := b.render("/reading/kind/"+p.Slug, templates.Collection(view)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // collectionView assembles the shared view for a collection page, the kind
 // label over the name, the tally strip under it, and the books split into
 // status sections in the repo's publication order.

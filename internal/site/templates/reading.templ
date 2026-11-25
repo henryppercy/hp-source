@@ -100,8 +100,8 @@ templ statCells(a AlmanacView) {
 	@stat("pages", fmt.Sprintf("%d", a.Pages))
 	@stat("avg pace", a.AvgPace)
 	@stat("avg rating", a.AvgRating)
-	@statSplit("second-hand", a.SecondHandPct, a.SecondHandNote)
-	@statSplit("fiction", a.FictionPct, a.FictionNote)
+	@statSplit("second-hand", a.SecondHandPct, a.SecondHandNote, "")
+	@statSplit("fiction", a.FictionPct, a.FictionNote, a.FictionURL)
 }
 
 // monthStrip is the year's reading density, a bar per month over a
@@ -573,11 +573,18 @@ templ stat(label, value string) {
 	</div>
 }
 
-// statSplit is an almanac cell whose figure is a percentage, with the raw count
-// noted beneath.
-templ statSplit(label, value, note string) {
+// statSplit is an almanac cell whose figure is a percentage, with the raw
+// count noted beneath. href links the label to its page when set, the
+// fiction split opening the fiction index.
+templ statSplit(label, value, note, href string) {
 	<div class="bg-surface p-5">
-		<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ label }</dt>
+		<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">
+			if href != "" {
+				<a href={ href } class="hover:text-accent">{ label }</a>
+			} else {
+				{ label }
+			}
+		</dt>
 		<dd class="mt-1.5 font-sans text-h2 text-fg tabular-nums leading-none">{ value }</dd>
 		if note != "" {
 			<dd class="mt-1.5 font-mono text-meta text-faint tabular-nums">{ note }</dd>

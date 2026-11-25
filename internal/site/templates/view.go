@@ -457,6 +457,7 @@ type CollectionBookView struct {
 type BookView struct {
 	Title         string
 	Kind          string           // fiction or non-fiction
+	KindURL       string           // the kind's index page, "" without one
 	OriginalTitle string           // the title in the original language, shown in parentheses
 	Credits       []BookCreditView // the names on the work, linked when known
 	Translators   string
@@ -582,6 +583,7 @@ type AlmanacView struct {
 	AvgPace        string
 	FictionPct     string // percent of the year that was fiction
 	FictionNote    string // "17 of 19"
+	FictionURL     string // the fiction index page, "" without one
 	SecondHandPct  string // percent that came second-hand
 	SecondHandNote string
 	Abandoned      int

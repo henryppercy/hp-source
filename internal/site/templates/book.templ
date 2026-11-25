@@ -87,9 +87,13 @@ templ bookPlate(v BookView) {
 			</dl>
 			if v.Kind != "" || len(v.Tags) > 0 {
 				<div class="mt-3 flex flex-wrap gap-2">
-					if v.Kind != "" {
+				if v.Kind != "" {
+					if v.KindURL != "" {
+						<a href={ v.KindURL } class="font-mono text-meta text-muted border border-rule-soft p-2 leading-none hover:border-fg">{ v.Kind }</a>
+					} else {
 						<span class="font-mono text-meta text-muted border border-rule-soft p-2 leading-none">{ v.Kind }</span>
 					}
+				}
 					for _, t := range v.Tags {
 						<span class="font-mono text-meta text-muted border border-rule-soft p-2 leading-none">{ t }</span>
 					}
