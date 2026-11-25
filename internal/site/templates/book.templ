@@ -60,7 +60,7 @@ templ Book(v BookView) {
 }
 
 // bookPlate is the book's frontispiece, the cover standing free beside
-// the work's facts in a boxed stat grid with the tags beneath it.
+// the work's facts in a typed box with the tags beneath it.
 templ bookPlate(v BookView) {
 	<div class="flex flex-col gap-8 lg:flex-row lg:items-stretch lg:gap-10">
 		if v.ImageURL != "" {
@@ -73,9 +73,11 @@ templ bookPlate(v BookView) {
 		<div class="flex min-w-0 flex-1 flex-col">
 			<dl class="grid grid-cols-2 gap-px border border-fg bg-rule-soft">
 				for i, f := range v.Facts {
-					<div class={ "bg-surface p-5", bookFactSpan(i, len(v.Facts)) }>
+					<div class={ "bg-surface p-4", bookFactSpan(i, len(v.Facts)) }>
 						<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ f.Label }</dt>
-						<dd class="mt-1.5 font-sans text-h2 text-fg tabular-nums leading-none">{ f.Value }</dd>
+						<dd class="mt-1 font-mono text-lead text-fg tabular-nums">
+							{ f.Value }
+						</dd>
 					</div>
 				}
 			</dl>
@@ -93,8 +95,9 @@ templ bookPlate(v BookView) {
 	</div>
 }
 
-// bookFactSpan is the grid classes for a fact, the last one spanning the
-// full row when the count is odd so the grid never leaves a gap.
+// bookFactSpan is the grid classes for a typed box cell, the last one
+// spanning the full row when the count is odd so no box shows an empty
+// grey half.
 func bookFactSpan(i, n int) string {
 	if i != n-1 || n%2 == 0 {
 		return ""
@@ -102,74 +105,88 @@ func bookFactSpan(i, n int) string {
 	return "col-span-2"
 }
 
-// readRow is one leader row on a read card, a label, a value, and an
-// optional muted note run on from the value.
-type readRow struct {
+// readField is one typed field on a read card, a printed kicker over a
+// value the reader wrote in. Every field on a read describes the copy
+// rather than the work, so none of them are preprinted.
+type readField struct {
 	Label string
 	Value string
 	Note  string
 }
 
-// bookReadCard is one read as a card, headed by its period with the
-// rating, or by the progress bar when still open.
+// bookReadCard is one read as a typed box, opening on a full-width cell
+// whose kicker is the status and whose value is the written-in period with
+// the rating pips, or the progress bar while still open, over the read's
+// facts as kicker and value cells.
 templ bookReadCard(r BookReadView) {
-	<article class="border border-rule-soft p-6">
-		if r.Status == "reading" {
-			@bookReadProgress(r)
-			@bookReadRows(bookReadMeta(r), true)
-		} else {
-			<div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-rule pb-4">
-				<p class="font-serif text-lead italic text-fg tabular-nums">
-					if !r.StartedAt.IsZero() && !r.FinishedAt.IsZero() {
-						{ fmtDate(r.StartedAt) }
-						if !sameDay(r.StartedAt, r.FinishedAt) {
-							<span class="text-faint">&rarr;</span>
+	<dl class="grid grid-cols-2 gap-px border border-fg bg-rule-soft">
+		<div class="col-span-2 bg-surface p-4">
+			<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ bookReadKicker(r.Status) }</dt>
+			if r.Status == "reading" {
+				<dd class="mt-2">
+					@bookReadProgress(r)
+				</dd>
+			} else {
+				<dd class="mt-1 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+					<p class="font-serif text-lead italic text-fg tabular-nums">
+						if !r.StartedAt.IsZero() && !r.FinishedAt.IsZero() {
+							{ fmtDate(r.StartedAt) }
+							if !sameDay(r.StartedAt, r.FinishedAt) {
+								<span class="text-faint">&rarr;</span>
+								{ fmtDate(r.FinishedAt) }
+							}
+						} else if !r.FinishedAt.IsZero() {
 							{ fmtDate(r.FinishedAt) }
+						} else if !r.StartedAt.IsZero() {
+							{ fmtDate(r.StartedAt) }
+							if r.Status == "abandoned" {
+								<span class="text-faint">&rarr;</span>
+								set aside
+							}
 						}
-					} else if !r.FinishedAt.IsZero() {
-						{ fmtDate(r.FinishedAt) }
-					} else if !r.StartedAt.IsZero() {
-						{ fmtDate(r.StartedAt) }
-						if r.Status == "abandoned" {
-							<span class="text-faint">&rarr;</span>
-							set aside
-						}
+					</p>
+					if r.Rating > 0 {
+						@ratingMeter(r.Rating)
+					} else {
+						<span class="font-mono text-meta text-faint">unrated</span>
 					}
-				</p>
-				if r.Rating > 0 {
-					@ratingMeter(r.Rating)
-				} else {
-					<span class="font-mono text-meta text-faint">unrated</span>
-				}
-			</div>
-			@bookReadRows(bookReadMeta(r), false)
-		}
-	</article>
+				</dd>
+			}
+		</div>
+		@bookReadFields(bookReadMeta(r))
+	</dl>
 }
 
-// bookReadRows are the read's leader rows, ruled off with a hairline when
-// they follow the progress bar.
-templ bookReadRows(rows []readRow, divided bool) {
-	if len(rows) > 0 {
-		<ul class={ "mt-5 space-y-2.5", templ.KV("border-t border-rule pt-5", divided) }>
-			for _, m := range rows {
-				<li class="flex items-baseline gap-3">
-					<span class="shrink-0 font-mono text-meta text-faint">{ m.Label }</span>
-					<span class="grow border-b border-dotted border-rule"></span>
-					<span class="text-right font-mono text-label text-fg tabular-nums">
-						{ m.Value }
-						if m.Note != "" {
-							<span class="ml-1 font-serif text-label text-faint italic">({ m.Note })</span>
-						}
-					</span>
-				</li>
-			}
-		</ul>
+// bookReadFields are the read's typed fields as cells under the opening
+// one, the last field spanning its row when the count is odd.
+templ bookReadFields(fields []readField) {
+	for i, f := range fields {
+		<div class={ "bg-surface p-4", bookFactSpan(i, len(fields)) }>
+			<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ f.Label }</dt>
+			<dd class="mt-1 font-serif italic text-label text-fg">
+				{ f.Value }
+				if f.Note != "" {
+					<span class="ml-1 font-serif text-label text-faint italic">({ f.Note })</span>
+				}
+			</dd>
+		</div>
 	}
 }
 
-// bookReadProgress is the open read's desk block, heading the card in
-// place of a period.
+// bookReadKicker is the status word that opens a read card's first cell.
+func bookReadKicker(status string) string {
+	switch status {
+	case "reading":
+		return "reading"
+	case "abandoned":
+		return "set aside"
+	}
+	return "read"
+}
+
+// bookReadProgress is the open read's desk block, the page and percent as
+// printed figures over the accent bar with the since and day notes written
+// in beneath.
 templ bookReadProgress(r BookReadView) {
 	<div>
 		<div class="mb-1.5 flex items-baseline justify-between font-mono text-label text-fg tabular-nums">
@@ -185,7 +202,7 @@ templ bookReadProgress(r BookReadView) {
 		<div class="h-1.5 w-full bg-rule">
 			<div class="h-full bg-accent" style={ fmt.Sprintf("width:%d%%", r.Percent) }></div>
 		</div>
-		<div class="mt-2.5 flex flex-wrap items-center gap-x-3 font-mono text-meta text-faint">
+		<div class="mt-2.5 flex flex-wrap items-baseline gap-x-3 font-serif text-label text-faint italic tabular-nums">
 			if !r.StartedAt.IsZero() {
 				<span>since { fmtDate(r.StartedAt) }</span>
 			}
@@ -200,33 +217,33 @@ templ bookReadProgress(r BookReadView) {
 	</div>
 }
 
-// bookReadMeta is the read's facts as leader rows, each left out when
-// unrecorded.
-func bookReadMeta(r BookReadView) []readRow {
-	var meta []readRow
+// bookReadMeta is the read's facts as typed fields, each left out when
+// unrecorded, all written in by hand as the copy's facts.
+func bookReadMeta(r BookReadView) []readField {
+	var fields []readField
 	if r.Edition != "" {
-		meta = append(meta, readRow{Label: "edition", Value: r.Edition})
+		fields = append(fields, readField{Label: "edition", Value: r.Edition})
 	}
 	if r.Format != "" {
-		meta = append(meta, readRow{Label: "format", Value: r.Format})
+		fields = append(fields, readField{Label: "format", Value: r.Format})
 	}
 	if r.Language != "" {
-		meta = append(meta, readRow{Label: "language", Value: r.Language})
+		fields = append(fields, readField{Label: "language", Value: r.Language})
 	}
 	if r.Source != "" || r.SecondHand {
-		row := readRow{Label: "source", Value: r.Source}
+		f := readField{Label: "source", Value: r.Source}
 		if r.SecondHand {
-			row.Note = "second-hand"
+			f.Note = "second-hand"
 		}
-		meta = append(meta, row)
+		fields = append(fields, f)
 	}
 	if r.Days > 0 {
-		meta = append(meta, readRow{Label: "took", Value: fmt.Sprintf("%d %s", r.Days, plural(r.Days, "day"))})
+		fields = append(fields, readField{Label: "took", Value: fmt.Sprintf("%d %s", r.Days, plural(r.Days, "day"))})
 	}
 	if r.Pace != "" {
-		meta = append(meta, readRow{Label: "pace", Value: r.Pace})
+		fields = append(fields, readField{Label: "pace", Value: r.Pace})
 	}
-	return meta
+	return fields
 }
 
 // sameDay reports whether two times fall on the same calendar day.
