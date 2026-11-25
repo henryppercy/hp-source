@@ -22,6 +22,7 @@ type ActiveRead struct {
 
 // ReadEntry is a read with the book detail the site's reading page needs.
 type ReadEntry struct {
+	BookID       int
 	Title        string
 	Author       string
 	CoverImage   string
@@ -41,6 +42,7 @@ type ReadEntry struct {
 
 // ShelfEntry is an owned book with no read yet.
 type ShelfEntry struct {
+	BookID         int
 	Title          string
 	Author         string
 	CoverImage     string
@@ -157,7 +159,7 @@ func (r *Repo) ListActiveReads() ([]ActiveRead, error) {
 // ListReads returns all reads with book detail, newest finished first.
 func (r *Repo) ListReads() ([]ReadEntry, error) {
 	rows, err := r.db.Query(
-		`SELECT COALESCE(bc.title, b.title), a.name, bc.cover_image, g.name, b.type, bc.format, bc.source, bc.second_hand,
+		`SELECT b.id, COALESCE(bc.title, b.title), a.name, bc.cover_image, g.name, b.type, bc.format, bc.source, bc.second_hand,
                 rd.status, rd.rating, bc.page_count,
                 (SELECT rl.page FROM read_log rl
                  WHERE rl.read_id = rd.id AND rl.page IS NOT NULL
@@ -185,7 +187,7 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 		var author, coverImage, format, source, dateStarted, dateFinished, lastLogged *string
 		var rating, pageCount, currentPage, secondHand *int
 		if err := rows.Scan(
-			&e.Title, &author, &coverImage, &e.Genre, &e.BookType, &format, &source, &secondHand,
+			&e.BookID, &e.Title, &author, &coverImage, &e.Genre, &e.BookType, &format, &source, &secondHand,
 			&e.Status, &rating, &pageCount, &currentPage, &dateStarted, &dateFinished, &lastLogged,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan read: %w", err)
@@ -230,7 +232,7 @@ func (r *Repo) ListReads() ([]ReadEntry, error) {
 // is per copy so a book owned in two languages shows as two entries.
 func (r *Repo) ListShelf() ([]ShelfEntry, error) {
 	rows, err := r.db.Query(
-		`SELECT COALESCE(bc.title, b.title), a.name, bc.cover_image, g.name, bc.format,
+		`SELECT b.id, COALESCE(bc.title, b.title), a.name, bc.cover_image, g.name, bc.format,
                 bc.source, bc.second_hand, s.name, b.series_position,
                 bc.page_count, bc.date_acquired
          FROM book_copy bc
@@ -254,7 +256,7 @@ func (r *Repo) ListShelf() ([]ShelfEntry, error) {
 		var author, coverImage, format, source, series, dateAcquired *string
 		var pageCount, secondHand *int
 		if err := rows.Scan(
-			&e.Title, &author, &coverImage, &e.Genre, &format,
+			&e.BookID, &e.Title, &author, &coverImage, &e.Genre, &format,
 			&source, &secondHand, &series, &e.SeriesPosition,
 			&pageCount, &dateAcquired,
 		); err != nil {

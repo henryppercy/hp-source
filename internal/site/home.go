@@ -228,7 +228,7 @@ func recentReads(reads []repo.ReadEntry, n int) []templates.RecentRead {
 		out = append(out, templates.RecentRead{
 			Title:    e.Title,
 			ImageURL: coverURL(e.CoverImage),
-			URL:      "/reading",
+			URL:      bookURL(e.BookID),
 			Meta:     meta,
 		})
 	}
@@ -306,7 +306,7 @@ func lifeStream(
 		out = append(out, templates.FeedEntry{
 			Kind: "book", Kicker: "Finished", Date: parseDate(e.DateFinished),
 			Title: e.Title, Note: e.Author, Rating: e.Rating,
-			ImageURL: coverURL(e.CoverImage), Meta: bookMeta(e),
+			URL: bookURL(e.BookID), ImageURL: coverURL(e.CoverImage), Meta: bookMeta(e),
 		})
 	}
 	out = append(out, milestones...)

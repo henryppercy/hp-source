@@ -82,6 +82,11 @@ func (b *builder) Build() error {
 		return err
 	}
 
+	bookPages, err := b.loadBookPages()
+	if err != nil {
+		return err
+	}
+
 	if err := b.loadLocations(); err != nil {
 		return err
 	}
@@ -160,6 +165,10 @@ func (b *builder) Build() error {
 		}
 	}
 	if err := b.render("/reading/shelf", templates.ReadingShelf(readingShelf(shelf))); err != nil {
+		return err
+	}
+
+	if err := b.renderBookPages(bookPages); err != nil {
 		return err
 	}
 

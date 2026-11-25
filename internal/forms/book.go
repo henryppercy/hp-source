@@ -63,6 +63,10 @@ func AddBook(
 				Placeholder("required").
 				Validate(huh.ValidateNotEmpty()).
 				Value(&input.Title),
+			huh.NewInput().
+				Title("Original Title").
+				Placeholder("optional, the title in the original language").
+				Value(&input.OriginalTitle),
 			huh.NewSelect[string]().
 				Title("Type").
 				Options(huh.NewOptions("fiction", "non-fiction")...).
@@ -212,6 +216,9 @@ func bookSummary(
 	var sb strings.Builder
 
 	fmt.Fprintf(&sb, "Title:      %s\n", input.Title)
+	if input.OriginalTitle != "" {
+		fmt.Fprintf(&sb, "Original:   %s\n", input.OriginalTitle)
+	}
 	fmt.Fprintf(&sb, "Type:       %s\n", input.BookType)
 
 	for _, g := range genres {
@@ -289,6 +296,10 @@ func EditBook(in *repo.BookEdit, genres []repo.Genre) error {
 				Title("Title").
 				Validate(huh.ValidateNotEmpty()).
 				Value(&in.Title),
+			huh.NewInput().
+				Title("Original Title").
+				Placeholder("optional").
+				Value(&in.OriginalTitle),
 			huh.NewSelect[string]().
 				Title("Type").
 				Options(huh.NewOptions("fiction", "non-fiction")...).
@@ -321,6 +332,9 @@ func EditBook(in *repo.BookEdit, genres []repo.Genre) error {
 				DescriptionFunc(func() string {
 					var sb strings.Builder
 					fmt.Fprintf(&sb, "Title:      %s\n", in.Title)
+					if in.OriginalTitle != "" {
+						fmt.Fprintf(&sb, "Original:   %s\n", in.OriginalTitle)
+					}
 					fmt.Fprintf(&sb, "Type:       %s\n", in.BookType)
 					for _, g := range genres {
 						if g.ID == in.GenreID {

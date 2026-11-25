@@ -143,12 +143,16 @@ templ streamCard(e FeedEntry) {
 		case "book":
 			<article class="flex gap-4 border border-rule-soft p-5">
 				if e.ImageURL != "" {
-					<img src={ e.ImageURL } alt="" class="h-20 w-14 shrink-0 self-start border border-rule object-cover"/>
+					<a href={ e.URL } class="shrink-0 self-start">
+						<img src={ e.ImageURL } alt="" class="h-20 w-14 border border-rule object-cover"/>
+					</a>
 				}
 				<div class="flex min-w-0 grow flex-col">
 					<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ e.Kicker }</span>
-					<h3 class="mt-1 font-serif italic text-lead text-fg leading-tight">{ e.Title }</h3>
-					<p class="mt-0.5 font-sans text-label text-muted">{ e.Note }</p>
+					<a href={ e.URL } class="group mt-1 block">
+						<h3 class="font-serif italic text-lead text-fg leading-tight group-hover:text-accent">{ e.Title }</h3>
+						<p class="mt-0.5 font-sans text-label text-muted">{ e.Note }</p>
+					</a>
 					<div class="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1.5 pt-2.5">
 						if e.Rating > 0 {
 							@ratingMeter(e.Rating)

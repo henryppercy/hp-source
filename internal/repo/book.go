@@ -9,6 +9,7 @@ import "fmt"
 // tags.
 type BookInput struct {
 	Title            string
+	OriginalTitle    string
 	BookType         string
 	GenreID          int
 	DatePublished    string
@@ -43,9 +44,10 @@ func (r *Repo) AddBook(input *BookInput, firstCopy *CopyInput) error {
 	}
 
 	result, err := tx.Exec(
-		`INSERT INTO book (title, date_published, original_language, type, genre_id, series_id, series_position, url)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		`INSERT INTO book (title, original_title, date_published, original_language, type, genre_id, series_id, series_position, url)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		input.Title,
+		nullable(input.OriginalTitle),
 		input.DatePublished,
 		input.OriginalLanguage,
 		input.BookType,
@@ -93,6 +95,7 @@ func (r *Repo) AddBook(input *BookInput, firstCopy *CopyInput) error {
 // BookEdit is a book's editable fields without copies, authors, or tags.
 type BookEdit struct {
 	Title            string
+	OriginalTitle    string
 	BookType         string
 	GenreID          int
 	DatePublished    string
@@ -103,24 +106,25 @@ type BookEdit struct {
 // GetBook returns a book's editable fields, erroring when none exists.
 func (r *Repo) GetBook(bookID int) (*BookEdit, error) {
 	var b BookEdit
-	var url *string
+	var url, originalTitle *string
 	err := r.db.QueryRow(
-		"SELECT title, type, genre_id, date_published, original_language, url FROM book WHERE id = ?",
+		"SELECT title, original_title, type, genre_id, date_published, original_language, url FROM book WHERE id = ?",
 		bookID,
-	).Scan(&b.Title, &b.BookType, &b.GenreID, &b.DatePublished, &b.OriginalLanguage, &url)
+	).Scan(&b.Title, &originalTitle, &b.BookType, &b.GenreID, &b.DatePublished, &b.OriginalLanguage, &url)
 	if err != nil {
 		return nil, err
 	}
 	b.URL = deref(url)
+	b.OriginalTitle = deref(originalTitle)
 	return &b, nil
 }
 
 // UpdateBook replaces a book's fields.
 func (r *Repo) UpdateBook(bookID int, in *BookEdit) error {
 	_, err := r.db.Exec(
-		`UPDATE book SET title = ?, type = ?, genre_id = ?, date_published = ?, original_language = ?, url = ?
+		`UPDATE book SET title = ?, original_title = ?, type = ?, genre_id = ?, date_published = ?, original_language = ?, url = ?
          WHERE id = ?`,
-		in.Title, in.BookType, in.GenreID, in.DatePublished, in.OriginalLanguage, nullable(in.URL), bookID,
+		in.Title, nullable(in.OriginalTitle), in.BookType, in.GenreID, in.DatePublished, in.OriginalLanguage, nullable(in.URL), bookID,
 	)
 	return err
 }

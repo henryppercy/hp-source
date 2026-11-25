@@ -167,6 +167,7 @@ func currentReads(reads []repo.ReadEntry) []templates.CurrentRead {
 	for _, e := range reading {
 		started := parseDate(e.DateStarted)
 		out = append(out, templates.CurrentRead{
+			URL:         bookURL(e.BookID),
 			Title:       e.Title,
 			Author:      e.Author,
 			ImageURL:    coverURL(e.CoverImage),
@@ -238,6 +239,7 @@ func finishedLog(reads []repo.ReadEntry) []templates.FinishedYear {
 
 func finishedBook(e repo.ReadEntry) templates.FinishedBook {
 	return templates.FinishedBook{
+		URL:        bookURL(e.BookID),
 		Title:      e.Title,
 		Author:     e.Author,
 		Genre:      e.Genre,
@@ -259,6 +261,7 @@ func shelfBooks(shelf []repo.ShelfEntry) []templates.ShelfBook {
 	for _, e := range shelf {
 		acquired := parseDate(e.DateAcquired)
 		out = append(out, templates.ShelfBook{
+			URL:        bookURL(e.BookID),
 			Title:      e.Title,
 			Author:     e.Author,
 			ImageURL:   coverURL(e.CoverImage),
@@ -447,6 +450,7 @@ func standouts(books []repo.ReadEntry) []templates.Superlative {
 func superlative(label string, e *repo.ReadEntry, value string) templates.Superlative {
 	return templates.Superlative{
 		Label:    label,
+		URL:      bookURL(e.BookID),
 		Title:    e.Title,
 		Author:   e.Author,
 		ImageURL: coverURL(e.CoverImage),

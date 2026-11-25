@@ -138,8 +138,10 @@ templ deskBook(r CurrentRead) {
 			<img src={ r.ImageURL } alt="" class="hidden w-28 shrink-0 self-start border border-rule sm:block"/>
 		}
 		<div class="flex min-w-0 grow flex-col">
-			<h2 class="font-serif italic text-h3 text-fg leading-tight">{ r.Title }</h2>
-			<p class="mt-1 font-sans text-label text-muted">{ r.Author }</p>
+			<a href={ r.URL } class="group block">
+				<h2 class="font-serif italic text-h3 text-fg leading-tight group-hover:text-accent">{ r.Title }</h2>
+				<p class="mt-1 font-sans text-label text-muted">{ r.Author }</p>
+			</a>
 			<div class="mt-auto pt-6">
 				<div class="mb-1.5 flex items-baseline justify-between font-mono text-meta text-faint tabular-nums">
 					if r.CurrentPage > 0 && r.Pages > 0 {
@@ -196,8 +198,10 @@ templ deskCompanions(reads []CurrentRead) {
 templ companionLine(r CurrentRead) {
 	<div class="flex items-baseline justify-between gap-x-2">
 		<div class="min-w-0 truncate">
-			<span class="font-serif italic text-body text-fg">{ r.Title }</span>
-			<span class="ml-2 font-sans text-label text-muted">{ r.Author }</span>
+			<a href={ r.URL } class="group">
+				<span class="font-serif italic text-body text-fg group-hover:text-accent">{ r.Title }</span>
+				<span class="ml-2 font-sans text-label text-muted">{ r.Author }</span>
+			</a>
 		</div>
 		if r.Percent > 0 {
 			<span class="shrink-0 font-mono text-meta text-faint tabular-nums">{ fmt.Sprintf("%d%%", r.Percent) }</span>
@@ -244,8 +248,10 @@ templ ledgerRow(b FinishedBook) {
 	<tr class="border-b border-rule align-baseline">
 		<td class={ "py-4 pr-3 font-mono text-meta tabular-nums", templ.KV("font-medium text-accent", b.Standout), templ.KV("text-faint", !b.Standout) }>{ fmt.Sprintf("%d", b.Index) }</td>
 		<td class="py-4 pr-4">
-			<div class="font-serif text-lead text-fg leading-tight">{ b.Title }</div>
-			<div class="mt-0.5 font-sans text-label text-muted">{ b.Author }</div>
+			<a href={ b.URL } class="group">
+				<div class="font-serif text-lead text-fg leading-tight group-hover:text-accent">{ b.Title }</div>
+				<div class="mt-0.5 font-sans text-label text-muted">{ b.Author }</div>
+			</a>
 		</td>
 		<td class="hidden px-4 py-4 align-middle font-mono text-meta text-muted lowercase md:table-cell">{ b.Genre }</td>
 		<td class="px-4 py-4 align-middle">
@@ -305,7 +311,7 @@ templ setAside(books []FinishedBook) {
 				for _, b := range books {
 					<li class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-rule py-3 first:border-t-0">
 						<div class="flex flex-wrap items-baseline gap-x-3">
-							<span class="font-serif text-body text-faint">{ b.Title }</span>
+							<a href={ b.URL } class="group font-serif text-body text-faint hover:text-accent">{ b.Title }</a>
 							<span class="font-sans text-label text-faint">{ b.Author }</span>
 						</div>
 						<span class="font-mono text-meta text-faint lowercase">{ b.Genre }</span>
@@ -341,8 +347,10 @@ templ shelfGlance(s ShelfSummary) {
 				for _, b := range s.Oldest {
 					<li class="flex items-baseline justify-between gap-x-4 border-t border-rule py-2.5 first:border-t-0">
 						<div class="min-w-0">
-							<div class="truncate font-serif text-body text-fg">{ b.Title }</div>
-							<div class="font-sans text-meta text-muted">{ b.Author }</div>
+							<a href={ b.URL } class="group block">
+								<div class="truncate font-serif text-body text-fg group-hover:text-accent">{ b.Title }</div>
+								<div class="font-sans text-meta text-muted">{ b.Author }</div>
+							</a>
 						</div>
 						if b.Waiting != "" {
 							<span class="shrink-0 font-mono text-label text-fg tabular-nums">{ b.Waiting }</span>
@@ -369,15 +377,17 @@ templ standoutsCard(items []Superlative) {
 			</header>
 			<ul class="space-y-4">
 				for _, s := range items {
-					<li class="flex gap-3">
-						if s.ImageURL != "" {
-							<img src={ s.ImageURL } alt="" class="h-16 w-11 shrink-0 self-start border border-rule object-cover"/>
-						}
-						<div class="flex min-w-0 grow flex-col">
-							<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ s.Label }</span>
-							<span class="mt-1 font-serif text-body text-fg leading-tight">{ s.Title }</span>
-							<span class="mt-1.5 font-mono text-label text-fg tabular-nums">{ s.Value }</span>
-						</div>
+					<li>
+						<a href={ s.URL } class="group flex gap-3">
+							if s.ImageURL != "" {
+								<img src={ s.ImageURL } alt="" class="h-16 w-11 shrink-0 self-start border border-rule object-cover"/>
+							}
+							<div class="flex min-w-0 grow flex-col">
+								<span class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ s.Label }</span>
+								<span class="mt-1 font-serif text-body text-fg leading-tight group-hover:text-accent">{ s.Title }</span>
+								<span class="mt-1.5 font-mono text-label text-fg tabular-nums">{ s.Value }</span>
+							</div>
+						</a>
 					</li>
 				}
 			</ul>
@@ -425,8 +435,10 @@ templ shelf(books []ShelfBook) {
 				for _, b := range books {
 					<tr class="border-b border-rule align-baseline">
 						<td class="py-3 pr-4">
-							<span class="font-serif text-body text-fg">{ b.Title }</span>
-							<span class="ml-2 font-sans text-label text-muted">{ b.Author }</span>
+							<a href={ b.URL } class="group">
+								<span class="font-serif text-body text-fg group-hover:text-accent">{ b.Title }</span>
+								<span class="ml-2 font-sans text-label text-muted">{ b.Author }</span>
+							</a>
 							if b.Series != "" {
 								<span class="ml-2 hidden font-mono text-meta text-faint xl:inline">{ b.Series }</span>
 							}

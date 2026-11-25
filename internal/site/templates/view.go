@@ -390,6 +390,7 @@ func hasInsights(i Insights) bool {
 // Superlative is one standout book, e.g. the fastest read, with its cover.
 type Superlative struct {
 	Label    string // "fastest" | "slowest" | "longest" | "shortest"
+	URL      string
 	Title    string
 	Author   string
 	ImageURL string
@@ -406,6 +407,44 @@ type Tally struct {
 type ShelfView struct {
 	Subheading string
 	Books      []ShelfBook
+}
+
+// BookView is a book's own page, the work with its oldest copy merged in,
+// above every read of it.
+type BookView struct {
+	Title         string
+	Kind          string // fiction or non-fiction
+	OriginalTitle string // the title in the original language, shown in parentheses
+	Authors       string
+	Translators   string
+	Series        string
+	Tags          []string
+	Facts         []Stat
+	ImageURL      string
+	Head          string // the reads count, "once" or "3 times"
+	Reads         []BookReadView
+	UnreadNote    string // replaces the reads for a book never started
+}
+
+// BookReadView is one read on a book page. Edition names a copy title that
+// differs from the page's. Percent, CurrentPage and DayCount are set only
+// for a read in progress.
+type BookReadView struct {
+	Status      string
+	Edition     string
+	Rating      int
+	StartedAt   time.Time
+	FinishedAt  time.Time
+	Days        int
+	Pages       int
+	Pace        string // pages a day for a finished read with both dates, else ""
+	Format      string
+	Language    string
+	Source      string // bought, gifted, borrowed, etc
+	SecondHand  bool
+	Percent     int
+	CurrentPage int
+	DayCount    int
 }
 
 // ShelfSummary is the hub's glance at the shelf, a count, the longest
@@ -504,6 +543,7 @@ type AlmanacView struct {
 // started. Percent is progress through the book. CurrentPage over Pages is
 // that progress in pages.
 type CurrentRead struct {
+	URL         string // the book's page
 	Title       string
 	Author      string
 	ImageURL    string
@@ -516,9 +556,11 @@ type CurrentRead struct {
 
 // FinishedBook is one entry in the reading log. Index is its lifetime number
 // (oldest is 1). Rating is the raw 0-10 score for the pip meter, RatingText its
-// display form. Standout marks a top rating for the margin mark.
+// display form. Standout marks a top rating for the margin mark. URL links to
+// the book's page.
 type FinishedBook struct {
 	Index      int
+	URL        string
 	Title      string
 	Author     string
 	Genre      string
@@ -543,6 +585,7 @@ type FinishedYear struct {
 // how long it has sat unread, "" when the acquisition date is unknown. Series is
 // preformatted with its position, e.g. "Wolf Hall #2".
 type ShelfBook struct {
+	URL        string // the book's page
 	Title      string
 	Author     string
 	ImageURL   string
