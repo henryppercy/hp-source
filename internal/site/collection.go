@@ -70,6 +70,68 @@ func (b *builder) renderAuthorPages(pages []authorPage) error {
 	return nil
 }
 
+// genreURLs maps genre names to their page URLs, filled by loadGenrePages
+// before any link is built. A name missing from the map has no page.
+var genreURLs map[string]string
+
+// genreURL returns the genre's page URL, "" when it has no page.
+func genreURL(name string) string {
+	return genreURLs[name]
+}
+
+// genrePage is one genre's collection page, the name with its slug and
+// books.
+type genrePage struct {
+	Name  string
+	Slug  string
+	Books []repo.CollectionBook
+}
+
+// loadGenrePages fetches every genre with a paged book and fills genreURLs.
+// It errors when two genres share a slug, since one would silently
+// overwrite the other's page.
+func (b *builder) loadGenrePages() ([]genrePage, error) {
+	genres, err := b.repo.ListGenres()
+	if err != nil {
+		return nil, err
+	}
+	genreURLs = make(map[string]string, len(genres))
+	bySlug := make(map[string]string)
+	var pages []genrePage
+	for _, g := range genres {
+		books, err := b.repo.ListBooksByGenre(g.ID)
+		if err != nil {
+			return nil, err
+		}
+		if len(books) == 0 {
+			continue
+		}
+		slug := text.Slug(g.Name)
+		if slug == "" {
+			slug = fmt.Sprintf("genre-%d", g.ID)
+		}
+		if other, ok := bySlug[slug]; ok {
+			return nil, fmt.Errorf("genres %q and %q share slug %q, give one a distinct name", other, g.Name, slug)
+		}
+		bySlug[slug] = g.Name
+		genreURLs[g.Name] = "/reading/genre/" + slug
+		pages = append(pages, genrePage{Name: g.Name, Slug: slug, Books: books})
+	}
+	return pages, nil
+}
+
+// renderGenrePages writes each genre's page under /reading/genre so the
+// reading nav stays the active section.
+func (b *builder) renderGenrePages(pages []genrePage) error {
+	for _, p := range pages {
+		view := collectionView("Genre", text.TitleCase(p.Name), p.Books)
+		if err := b.render("/reading/genre/"+p.Slug, templates.Collection(view)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // collectionView assembles the shared view for a collection page, the kind
 // label over the name, the tally strip under it, and the books split into
 // status sections in the repo's publication order.

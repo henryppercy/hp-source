@@ -277,7 +277,13 @@ templ ledgerRow(b FinishedBook) {
 				}
 			</div>
 		</td>
-		<td class="hidden px-4 py-4 align-middle font-mono text-meta text-muted lowercase md:table-cell">{ b.Genre }</td>
+		<td class="hidden px-4 py-4 align-middle font-mono text-meta text-muted lowercase md:table-cell">
+			if b.GenreURL != "" {
+				<a href={ b.GenreURL } class="hover:text-accent">{ b.Genre }</a>
+			} else {
+				{ b.Genre }
+			}
+		</td>
 		<td class="px-4 py-4 align-middle">
 			if b.Rating > 0 {
 				@ratingMeter(b.Rating)
@@ -344,7 +350,13 @@ templ setAside(books []FinishedBook) {
 								}
 							</span>
 						</div>
-						<span class="font-mono text-meta text-faint lowercase">{ b.Genre }</span>
+						<span class="font-mono text-meta text-faint lowercase">
+						if b.GenreURL != "" {
+							<a href={ b.GenreURL } class="hover:text-accent">{ b.Genre }</a>
+						} else {
+							{ b.Genre }
+						}
+					</span>
 					</li>
 				}
 			</ul>
@@ -491,7 +503,13 @@ templ shelf(books []ShelfBook) {
 								<span class="ml-2 hidden font-mono text-meta text-faint xl:inline">{ b.Series }</span>
 							}
 						</td>
-						<td class="hidden px-4 py-3 font-mono text-meta text-muted lowercase md:table-cell">{ b.Genre }</td>
+						<td class="hidden px-4 py-3 font-mono text-meta text-muted lowercase md:table-cell">
+						if b.GenreURL != "" {
+							<a href={ b.GenreURL } class="hover:text-accent">{ b.Genre }</a>
+						} else {
+							{ b.Genre }
+						}
+					</td>
 						<td class="hidden px-4 py-3 font-mono text-meta text-muted lowercase lg:table-cell">
 							if b.Source != "" || b.SecondHand {
 								<span class="inline-flex items-baseline gap-x-2">

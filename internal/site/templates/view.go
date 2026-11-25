@@ -198,7 +198,8 @@ type LatestCell struct {
 // FeedEntry is one item in the home stream, a union over the feeds. Kind
 // selects how it renders, and only the fields that kind needs are set. Note
 // carries the author (book) or headline (post). Rating is the book's 0-10
-// score. ImageURL is its cover and Meta its genre, pages and days line.
+// score. ImageURL is its cover. Genre and GenreURL link a finished book to
+// its genre's page, with Meta the pages and days line that follows it.
 // BodyHTML is the rendered note. Topics tag a post or note.
 type FeedEntry struct {
 	Kind      string // "post" | "note" | "book" | "milestone"
@@ -210,6 +211,8 @@ type FeedEntry struct {
 	URL       string
 	Rating    int
 	ImageURL  string
+	Genre     string
+	GenreURL  string // the genre's page, when the book names one
 	Meta      string
 	BodyHTML  template.HTML
 	Topics    []TopicLink
@@ -264,10 +267,12 @@ type SpanishView struct {
 	Articles   []PostListItem
 }
 
-// Stat is a label over or beside a figure, shared across the Spanish cards.
+// Stat is a label over or beside a figure, shared across the Spanish
+// cards and the book plate. URL links the value to its page when set.
 type Stat struct {
 	Label string
 	Value string
+	URL   string
 }
 
 // BandView is progress through the current hours band toward the next mark, the
@@ -612,6 +617,7 @@ type FinishedBook struct {
 	Author     string
 	AuthorURL  string // the author's page, "" without one
 	Genre      string
+	GenreURL   string // the genre's page, "" without one
 	Rating     int
 	RatingText string
 	StartedAt  time.Time
@@ -639,6 +645,7 @@ type ShelfBook struct {
 	AuthorURL  string // the author's page, "" without one
 	ImageURL   string
 	Genre      string
+	GenreURL   string // the genre's page, "" without one
 	Series     string
 	Source     string
 	SecondHand bool

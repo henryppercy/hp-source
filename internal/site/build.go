@@ -92,6 +92,11 @@ func (b *builder) Build() error {
 		return err
 	}
 
+	genrePages, err := b.loadGenrePages()
+	if err != nil {
+		return err
+	}
+
 	if err := b.loadLocations(); err != nil {
 		return err
 	}
@@ -178,6 +183,10 @@ func (b *builder) Build() error {
 	}
 
 	if err := b.renderAuthorPages(authorPages); err != nil {
+		return err
+	}
+
+	if err := b.renderGenrePages(genrePages); err != nil {
 		return err
 	}
 

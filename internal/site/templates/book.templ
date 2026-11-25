@@ -76,7 +76,11 @@ templ bookPlate(v BookView) {
 					<div class={ "bg-surface p-4", bookFactSpan(i, len(v.Facts)) }>
 						<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">{ f.Label }</dt>
 						<dd class="mt-1 font-mono text-lead text-fg tabular-nums">
-							{ f.Value }
+							if f.URL != "" {
+								<a href={ f.URL } class="hover:text-accent">{ f.Value }</a>
+							} else {
+								{ f.Value }
+							}
 						</dd>
 					</div>
 				}

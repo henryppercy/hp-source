@@ -1,6 +1,9 @@
 package repo
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+)
 
 // CollectionBook is one book on a collection page (an author's, a tag's, a
 // genre's or a series's), its reads folded into one representative status.
@@ -46,7 +49,44 @@ func (r *Repo) ListBooksByAuthor(authorID int) ([]CollectionBook, error) {
 		return nil, fmt.Errorf("failed to list books by author: %w", err)
 	}
 	defer rows.Close()
+	return scanCollectionBooks(rows)
+}
 
+// ListBooksByGenre returns the genre's books that have a copy or a read,
+// in publication order earliest first, each with its oldest copy merged in.
+func (r *Repo) ListBooksByGenre(genreID int) ([]CollectionBook, error) {
+	// The same listing as ListBooksByAuthor with the author join traded
+	// for the genre column.
+	rows, err := r.db.Query(
+		`SELECT b.id, COALESCE(bc.title, b.title), bc.cover_image, rd.status, rd.rating,
+		        rd.date_started, rd.date_finished,
+		        (SELECT rl.page FROM read_log rl
+		         WHERE rl.read_id = rd.id AND rl.page IS NOT NULL
+		         ORDER BY rl.id DESC LIMIT 1),
+		        bc.page_count, b.date_published, bc.date_acquired
+		 FROM book b
+		 LEFT JOIN book_copy bc ON bc.id = (SELECT MIN(bc2.id) FROM book_copy bc2 WHERE bc2.book_id = b.id)
+		 LEFT JOIN read rd ON rd.id = (
+		     SELECT r2.id FROM read r2 WHERE r2.book_id = b.id
+		     ORDER BY CASE r2.status WHEN 'reading' THEN 0 WHEN 'finished' THEN 1 ELSE 2 END,
+		              r2.date_finished DESC, r2.id DESC
+		     LIMIT 1)
+		 WHERE b.genre_id = ?
+		   AND (EXISTS (SELECT 1 FROM book_copy bc3 WHERE bc3.book_id = b.id)
+		        OR EXISTS (SELECT 1 FROM read r3 WHERE r3.book_id = b.id))
+		 ORDER BY b.date_published, b.title, b.id`,
+		genreID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list books by genre: %w", err)
+	}
+	defer rows.Close()
+	return scanCollectionBooks(rows)
+}
+
+// scanCollectionBooks reads one listing's rows into books, shared by the
+// author and genre pages since both query the same fields.
+func scanCollectionBooks(rows *sql.Rows) ([]CollectionBook, error) {
 	var books []CollectionBook
 	for rows.Next() {
 		var b CollectionBook

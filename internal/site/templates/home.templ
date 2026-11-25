@@ -165,8 +165,18 @@ templ streamCard(e FeedEntry) {
 						if e.Rating > 0 {
 							@ratingMeter(e.Rating)
 						}
-						if e.Meta != "" {
-							<span class="font-mono text-meta text-faint lowercase">{ e.Meta }</span>
+						if e.GenreURL != "" || e.Meta != "" {
+							<span class="font-mono text-meta text-faint lowercase">
+								if e.GenreURL != "" {
+									<a href={ e.GenreURL } class="hover:text-accent">{ e.Genre }</a>
+								}
+								if e.Meta != "" {
+									if e.GenreURL != "" {
+										<span>; </span>
+									}
+									{ e.Meta }
+								}
+							</span>
 						}
 					</div>
 				</div>

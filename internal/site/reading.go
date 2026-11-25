@@ -245,6 +245,7 @@ func finishedBook(e repo.ReadEntry) templates.FinishedBook {
 		Author:     e.Author,
 		AuthorURL:  authorURL(e.Author),
 		Genre:      e.Genre,
+		GenreURL:   genreURL(e.Genre),
 		Rating:     e.Rating,
 		RatingText: repo.RatingDisplay(e.Rating),
 		StartedAt:  parseDate(e.DateStarted),
@@ -269,6 +270,7 @@ func shelfBooks(shelf []repo.ShelfEntry) []templates.ShelfBook {
 			AuthorURL:  authorURL(e.Author),
 			ImageURL:   coverURL(e.CoverImage),
 			Genre:      e.Genre,
+			GenreURL:   genreURL(e.Genre),
 			Series:     seriesLabel(e.Series, e.SeriesPosition),
 			Source:     e.Source,
 			SecondHand: e.SecondHand,
@@ -467,6 +469,9 @@ func topGenres(books []repo.ReadEntry) []templates.Tally {
 	genres := tally(books, func(e repo.ReadEntry) string { return e.Genre })
 	if len(genres) < 2 {
 		return nil
+	}
+	for i := range genres {
+		genres[i].URL = genreURL(genres[i].Name)
 	}
 	return topTally(genres)
 }

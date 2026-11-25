@@ -306,7 +306,8 @@ func lifeStream(
 		out = append(out, templates.FeedEntry{
 			Kind: "book", Kicker: "Finished", Date: parseDate(e.DateFinished),
 			Title: e.Title, Note: e.Author, AuthorURL: authorURL(e.Author), Rating: e.Rating,
-			URL: bookURL(e.BookID), ImageURL: coverURL(e.CoverImage), Meta: bookMeta(e),
+			URL: bookURL(e.BookID), ImageURL: coverURL(e.CoverImage),
+			Genre: e.Genre, GenreURL: genreURL(e.Genre), Meta: bookMeta(e),
 		})
 	}
 	out = append(out, milestones...)
@@ -315,13 +316,11 @@ func lifeStream(
 	return out
 }
 
-// bookMeta is a finished book's stream caption, joining the known parts of
-// genre, page count and reading time with semicolons.
+// bookMeta is a finished book's stream caption, joining the known parts
+// of page count and reading time with semicolons. The genre is left out
+// since it renders as its own link ahead of the line.
 func bookMeta(e repo.ReadEntry) string {
 	var parts []string
-	if e.Genre != "" {
-		parts = append(parts, e.Genre)
-	}
 	if e.PageCount > 0 {
 		parts = append(parts, fmt.Sprintf("%d pp", e.PageCount))
 	}

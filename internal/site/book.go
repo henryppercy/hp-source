@@ -128,7 +128,7 @@ func bookTranslators(names []string) string {
 // bookFacts lists the work's facts, each left out when unrecorded.
 func bookFacts(p *repo.BookPage) []templates.Stat {
 	facts := []templates.Stat{
-		{Label: "genre", Value: text.TitleCase(p.Genre)},
+		{Label: "genre", Value: text.TitleCase(p.Genre), URL: genreURL(p.Genre)},
 	}
 	if y := parseDate(p.DatePublished).Format("2006"); y != "0001" {
 		facts = append(facts, templates.Stat{Label: "published", Value: y})
