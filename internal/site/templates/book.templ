@@ -11,21 +11,18 @@ templ Book(v BookView) {
 	@Layout(docTitle(v.Title), "/reading") {
 		<div class="mx-auto max-w-measure">
 			<header class="mb-10">
-				<div class="flex flex-wrap items-baseline gap-x-3">
-					<span class="font-mono text-kicker tracking-kicker text-fainter">{ v.Kind }</span>
-					if v.Series != "" {
-						<span class="font-mono text-meta text-faint">{ v.Series }</span>
-					}
-				</div>
-				<h1 class="mt-3 font-serif italic text-display text-fg leading-tight tracking-tight">{ v.Title }</h1>
+				if v.Series != "" {
+					<span class="font-mono text-meta text-faint">{ v.Series }</span>
+				}
+				<h1 class={ "font-serif italic text-display text-fg leading-tight tracking-tight", templ.KV("mt-2", v.Series != "") }>{ v.Title }</h1>
 				if v.OriginalTitle != "" {
-					<p class="mt-1.5 font-serif text-body text-faint italic leading-snug">({ v.OriginalTitle })</p>
+					<p class="font-serif text-body text-faint italic leading-snug">({ v.OriginalTitle })</p>
 				}
 				if v.Authors != "" {
-					<p class="mt-2 font-sans text-lead text-muted">{ v.Authors }</p>
+					<p class="mt-3 font-sans text-lead text-muted">{ v.Authors }</p>
 				}
 				if v.Translators != "" {
-					<p class="mt-1 font-sans text-label text-faint">{ v.Translators }</p>
+					<p class="font-sans text-label text-faint">{ v.Translators }</p>
 				}
 			</header>
 			@bookPlate(v)
@@ -68,8 +65,11 @@ templ bookPlate(v BookView) {
 					</div>
 				}
 			</dl>
-			if len(v.Tags) > 0 {
+			if v.Kind != "" || len(v.Tags) > 0 {
 				<div class="mt-3 flex flex-wrap gap-2">
+					if v.Kind != "" {
+						<span class="font-mono text-meta text-muted border border-rule-soft p-2 leading-none">{ v.Kind }</span>
+					}
 					for _, t := range v.Tags {
 						<span class="font-mono text-meta text-muted border border-rule-soft p-2 leading-none">{ t }</span>
 					}
