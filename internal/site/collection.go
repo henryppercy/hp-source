@@ -244,6 +244,69 @@ func (b *builder) renderTagPages(pages []tagPage) error {
 	return nil
 }
 
+// seriesURLs maps series names to their page URLs, filled by
+// loadSeriesPages before any link is built. A name missing from the map has
+// no page.
+var seriesURLs map[string]string
+
+// seriesURL returns the series's page URL, "" when it has no page.
+func seriesURL(name string) string {
+	return seriesURLs[name]
+}
+
+// seriesPage is one series's collection page, the name with its slug and
+// books.
+type seriesPage struct {
+	Name  string
+	Slug  string
+	Books []repo.CollectionBook
+}
+
+// loadSeriesPages fetches every series with a paged book and fills seriesURLs.
+// It errors when two series share a slug, since one would silently
+// overwrite the other's page.
+func (b *builder) loadSeriesPages() ([]seriesPage, error) {
+	series, err := b.repo.ListSeries()
+	if err != nil {
+		return nil, err
+	}
+	seriesURLs = make(map[string]string, len(series))
+	bySlug := make(map[string]string)
+	var pages []seriesPage
+	for _, s := range series {
+		books, err := b.repo.ListBooksBySeries(s.ID)
+		if err != nil {
+			return nil, err
+		}
+		if len(books) == 0 {
+			continue
+		}
+		slug := text.Slug(s.Name)
+		if slug == "" {
+			slug = fmt.Sprintf("series-%d", s.ID)
+		}
+		if other, ok := bySlug[slug]; ok {
+			return nil, fmt.Errorf("series %q and %q share slug %q, give one a distinct name", other, s.Name, slug)
+		}
+		bySlug[slug] = s.Name
+		seriesURLs[s.Name] = "/reading/series/" + slug
+		pages = append(pages, seriesPage{Name: s.Name, Slug: slug, Books: books})
+	}
+	return pages, nil
+}
+
+// renderSeriesPages writes each series's page under /reading/series so the
+// reading nav stays the active section.
+func (b *builder) renderSeriesPages(pages []seriesPage) error {
+	for _, p := range pages {
+		view := collectionView("Series", p.Name, p.Books)
+		if err := b.render("/reading/series/"+p.Slug, templates.Collection(view)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // collectionView assembles the shared view for a collection page, the kind
 // label over the name, the tally strip under it, and the books split into
 // status sections in the repo's publication order.

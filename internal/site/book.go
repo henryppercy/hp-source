@@ -87,6 +87,7 @@ func bookView(p *repo.BookPage) templates.BookView {
 		ImageURL:    coverURL(p.CoverImage),
 		Credits:     bookCredits(p.Authors),
 		Series:      seriesLabel(p.Series, p.SeriesPosition),
+		SeriesURL:   seriesURL(p.Series),
 		Translators: bookTranslators(p.Translators),
 		Tags:        tags,
 		Facts:       bookFacts(p),

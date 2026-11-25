@@ -12,7 +12,11 @@ templ Book(v BookView) {
 		<div class="mx-auto max-w-measure">
 			<header class="mb-10">
 				if v.Series != "" {
-					<span class="font-mono text-meta text-faint">{ v.Series }</span>
+					if v.SeriesURL != "" {
+						<a href={ v.SeriesURL } class="font-mono text-meta text-faint hover:text-accent">{ v.Series }</a>
+					} else {
+						<span class="font-mono text-meta text-faint">{ v.Series }</span>
+					}
 				}
 				<h1 class={ "font-serif italic text-display text-fg leading-tight tracking-tight", templ.KV("mt-2", v.Series != "") }>{ v.Title }</h1>
 				if v.OriginalTitle != "" {

@@ -500,7 +500,11 @@ templ shelf(books []ShelfBook) {
 								</span>
 							}
 							if b.Series != "" {
-								<span class="ml-2 hidden font-mono text-meta text-faint xl:inline">{ b.Series }</span>
+								if b.SeriesURL != "" {
+									<a href={ b.SeriesURL } class="ml-2 hidden font-mono text-meta text-faint hover:text-accent xl:inline">{ b.Series }</a>
+								} else {
+									<span class="ml-2 hidden font-mono text-meta text-faint xl:inline">{ b.Series }</span>
+								}
 							}
 						</td>
 						<td class="hidden px-4 py-3 font-mono text-meta text-muted lowercase md:table-cell">

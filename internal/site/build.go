@@ -107,6 +107,11 @@ func (b *builder) Build() error {
 		return err
 	}
 
+	seriesPages, err := b.loadSeriesPages()
+	if err != nil {
+		return err
+	}
+
 	if err := b.loadLocations(); err != nil {
 		return err
 	}
@@ -205,6 +210,10 @@ func (b *builder) Build() error {
 	}
 
 	if err := b.renderTagPages(tagPages); err != nil {
+		return err
+	}
+
+	if err := b.renderSeriesPages(seriesPages); err != nil {
 		return err
 	}
 

@@ -468,6 +468,7 @@ type BookView struct {
 	Credits       []BookCreditView // the names on the work, linked when known
 	Translators   string
 	Series        string
+	SeriesURL     string // the series's index page, "" without one
 	Tags          []TagLink
 	Facts         []Stat
 	ImageURL      string
@@ -655,6 +656,7 @@ type ShelfBook struct {
 	Genre      string
 	GenreURL   string // the genre's page, "" without one
 	Series     string
+	SeriesURL  string // the series's index page, "" without one
 	Source     string
 	SecondHand bool
 	Pages      int

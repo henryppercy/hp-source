@@ -272,6 +272,7 @@ func shelfBooks(shelf []repo.ShelfEntry) []templates.ShelfBook {
 			Genre:      e.Genre,
 			GenreURL:   genreURL(e.Genre),
 			Series:     seriesLabel(e.Series, e.SeriesPosition),
+			SeriesURL:  seriesURL(e.Series),
 			Source:     e.Source,
 			SecondHand: e.SecondHand,
 			Pages:      e.PageCount,
