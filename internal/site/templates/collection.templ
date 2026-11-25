@@ -1,0 +1,183 @@
+package templates
+
+import "fmt"
+
+// Collection is the shared page for an author, tag, genre or series, the
+// kind label and name above the tally line, and the books split into status
+// sections, each hung from a marginal head over an implied grid of covers.
+templ Collection(v CollectionView) {
+	@Layout(docTitle(v.Title), "/reading") {
+		<div class="mx-auto max-w-wide">
+			<header class="mb-10">
+				<span class="font-mono text-meta text-faint">{ v.Kicker }</span>
+				<h1 class="mt-2 font-serif italic text-display text-fg leading-tight tracking-tight">{ v.Title }</h1>
+				if len(v.Figures) > 0 {
+					<dl class="mt-8 flex flex-wrap gap-x-10 gap-y-2 border-t border-rule pt-4">
+						for _, f := range v.Figures {
+							<div class="flex items-baseline gap-2">
+								<dt class="font-mono text-meta text-fainter">{ f.Label }</dt>
+								<dd class="font-mono text-meta text-fg tabular-nums">{ f.Value }</dd>
+							</div>
+						}
+					</dl>
+				}
+			</header>
+			if len(v.Sections) > 0 {
+				<div>
+					for i, s := range v.Sections {
+						<section class={ "relative", templ.KV("mt-10 border-t border-rule pt-10", i > 0) }>
+							@collectionHead(s.Label, len(s.Books), collectionHeadTop(i))
+							<div class="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+								for _, b := range s.Books {
+									@collectionCell(b)
+								}
+							</div>
+						</section>
+					}
+				</div>
+			}
+			<div class="mt-12">
+				@indexLink("/reading", "Back to reading")
+			</div>
+		</div>
+	}
+}
+
+// collectionHead is a section's head, the label in the serif italic of the
+// marginal datelines with the count trailing in mono, stacked above the grid
+// until xl hangs it into the left margin like the home stream's dates.
+templ collectionHead(label string, count int, top string) {
+	<div class={ datelineBase, top, datelineHangClass(true) }>
+		{ label }
+		<span class="ml-2 font-mono text-meta text-fainter">{ fmt.Sprintf("%d", count) }</span>
+	</div>
+}
+
+// collectionHeadTop is the hang offset that keeps a section's marginal head
+// flush with the first row of covers, past the divider's padding when the
+// section carries one.
+func collectionHeadTop(i int) string {
+	if i > 0 {
+		return "xl:top-[41px]"
+	}
+	return "xl:top-1"
+}
+
+// collectionCell is one book in the implied grid, the framed cover above the
+// typed meta box whose first cell carries the title.
+templ collectionCell(b CollectionBookView) {
+	<a href={ b.URL } class="group block">
+		if b.ImageURL != "" {
+			<img src={ b.ImageURL } alt="" class="aspect-2/3 w-full border border-rule object-cover"/>
+		} else {
+			<div class="flex aspect-2/3 w-full items-center justify-center border border-rule">
+				<span class="px-4 text-center font-serif italic text-body text-ghost">No cover</span>
+			</div>
+		}
+		@collectionMeta(b)
+	</a>
+}
+
+// collectionMeta is a cell's typed fields in a ruled box, the title on its
+// full-width cell over the status fields, closing on the publish year with
+// the page count beside it, so every box opens and closes the same way.
+templ collectionMeta(b CollectionBookView) {
+	<dl class="mt-3 grid grid-cols-2 gap-px border border-fg bg-rule-soft">
+		<div class="col-span-2 bg-surface p-2.5">
+			<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">title</dt>
+			<dd class="mt-1">
+				<h3 class="font-serif text-body text-fg leading-tight group-hover:text-accent">{ b.Title }</h3>
+				if b.Author != "" {
+					<p class="mt-1 font-sans text-meta text-muted">{ b.Author }</p>
+				}
+			</dd>
+		</div>
+		switch b.Status {
+			case "finished":
+				<div class={ "bg-surface p-2.5", collectionStatusSpan(b) }>
+					<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">rating</dt>
+					<dd class="mt-1">
+						if b.Rating > 0 {
+							@ratingMeter(b.Rating)
+						} else {
+							<span class="font-mono text-meta text-faint">unrated</span>
+						}
+					</dd>
+				</div>
+				if !b.FinishedAt.IsZero() {
+					<div class="bg-surface p-2.5">
+						<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">read</dt>
+						<dd class="mt-1 font-serif italic text-label text-fg">{ fmtDate(b.FinishedAt) }</dd>
+					</div>
+				}
+			case "reading":
+				<div class={ "bg-surface p-2.5", collectionStatusSpan(b) }>
+					<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">progress</dt>
+					<dd class="mt-2 flex items-center gap-2">
+						<div class="h-1.5 grow bg-rule">
+							<div class="h-full bg-accent" style={ fmt.Sprintf("width:%d%%", b.Percent) }></div>
+						</div>
+						<span class="font-mono text-label text-fg tabular-nums">{ fmt.Sprintf("%d%%", b.Percent) }</span>
+					</dd>
+				</div>
+				if b.DayCount > 0 {
+					<div class="bg-surface p-2.5">
+						<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">day</dt>
+						<dd class="mt-1 font-serif italic text-label text-fg tabular-nums">{ fmt.Sprintf("%d", b.DayCount) }</dd>
+					</div>
+				}
+			case "abandoned":
+				<div class="col-span-2 bg-surface p-2.5">
+					<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">status</dt>
+					<dd class="mt-1 font-mono text-label text-faint">set aside</dd>
+				</div>
+			default:
+				if !b.AcquiredAt.IsZero() {
+					<div class="col-span-2 bg-surface p-2.5">
+						<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">since</dt>
+						<dd class="mt-1 font-serif italic text-label text-fg">{ b.AcquiredAt.Format("Jan 2006") }</dd>
+					</div>
+				} else {
+					<div class="col-span-2 bg-surface p-2.5">
+						<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">status</dt>
+						<dd class="mt-1 font-mono text-label text-faint">not read yet</dd>
+					</div>
+				}
+		}
+		if b.Published != "" {
+			<div class={ "bg-surface p-2.5", collectionPublishedSpan(b) }>
+				<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">published</dt>
+				<dd class="mt-1 font-mono text-label text-fg tabular-nums">{ b.Published }</dd>
+			</div>
+		}
+		if b.Pages > 0 {
+			<div class="bg-surface p-2.5">
+				<dt class="font-mono text-kicker tracking-kicker uppercase text-fainter">pages</dt>
+				<dd class="mt-1 font-mono text-label text-fg tabular-nums">{ fmt.Sprintf("%d", b.Pages) }</dd>
+			</div>
+		}
+	</dl>
+}
+
+// collectionStatusSpan is the classes for a status field's cell, spanning the
+// full row when the status shows a single field, so the row never leaves an
+// empty half.
+func collectionStatusSpan(b CollectionBookView) string {
+	if b.Status == "finished" && !b.FinishedAt.IsZero() {
+		return ""
+	}
+	if b.Status == "reading" && b.DayCount > 0 {
+		return ""
+	}
+	return "col-span-2"
+}
+
+// collectionPublishedSpan is the classes for a cell's publish field, spanning
+// the full row when the page count is unknown and would leave its half
+// empty.
+func collectionPublishedSpan(b CollectionBookView) string {
+	if b.Pages > 0 {
+		return ""
+	}
+	return "col-span-2"
+}

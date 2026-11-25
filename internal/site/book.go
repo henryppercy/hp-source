@@ -84,7 +84,7 @@ func bookView(p *repo.BookPage) templates.BookView {
 		Title:       p.Title,
 		Kind:        text.TitleCase(p.BookType),
 		ImageURL:    coverURL(p.CoverImage),
-		Authors:     bookAuthors(p.Authors),
+		Credits:     bookCredits(p.Authors),
 		Series:      seriesLabel(p.Series, p.SeriesPosition),
 		Translators: bookTranslators(p.Translators),
 		Tags:        tags,
@@ -102,16 +102,20 @@ func bookView(p *repo.BookPage) templates.BookView {
 	return v
 }
 
-func bookAuthors(credits []repo.BookCredit) string {
-	var names, others []string
+// bookCredits turns the work's credits into display order, authors first,
+// anyone else after with their role in parentheses, each linked when known.
+func bookCredits(credits []repo.BookCredit) []templates.BookCreditView {
+	var authors, others []templates.BookCreditView
 	for _, c := range credits {
+		v := templates.BookCreditView{Name: c.Name, URL: authorURL(c.Name)}
 		if c.Role == "author" {
-			names = append(names, c.Name)
+			authors = append(authors, v)
 			continue
 		}
-		others = append(others, fmt.Sprintf("%s (%s)", c.Name, c.Role))
+		v.Role = c.Role
+		others = append(others, v)
 	}
-	return strings.Join(append(names, others...), ", ")
+	return append(authors, others...)
 }
 
 func bookTranslators(names []string) string {

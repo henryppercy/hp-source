@@ -170,6 +170,7 @@ func currentReads(reads []repo.ReadEntry) []templates.CurrentRead {
 			URL:         bookURL(e.BookID),
 			Title:       e.Title,
 			Author:      e.Author,
+			AuthorURL:   authorURL(e.Author),
 			ImageURL:    coverURL(e.CoverImage),
 			StartedAt:   started,
 			DayCount:    daysSince(started),
@@ -242,6 +243,7 @@ func finishedBook(e repo.ReadEntry) templates.FinishedBook {
 		URL:        bookURL(e.BookID),
 		Title:      e.Title,
 		Author:     e.Author,
+		AuthorURL:  authorURL(e.Author),
 		Genre:      e.Genre,
 		Rating:     e.Rating,
 		RatingText: repo.RatingDisplay(e.Rating),
@@ -264,6 +266,7 @@ func shelfBooks(shelf []repo.ShelfEntry) []templates.ShelfBook {
 			URL:        bookURL(e.BookID),
 			Title:      e.Title,
 			Author:     e.Author,
+			AuthorURL:  authorURL(e.Author),
 			ImageURL:   coverURL(e.CoverImage),
 			Genre:      e.Genre,
 			Series:     seriesLabel(e.Series, e.SeriesPosition),
@@ -477,6 +480,9 @@ func topAuthors(books []repo.ReadEntry) []templates.Tally {
 		if a.Count > 1 {
 			repeats = append(repeats, a)
 		}
+	}
+	for i := range repeats {
+		repeats[i].URL = authorURL(repeats[i].Name)
 	}
 	return topTally(repeats)
 }

@@ -201,17 +201,18 @@ type LatestCell struct {
 // score. ImageURL is its cover and Meta its genre, pages and days line.
 // BodyHTML is the rendered note. Topics tag a post or note.
 type FeedEntry struct {
-	Kind     string // "post" | "note" | "book" | "milestone"
-	Kicker   string
-	Date     time.Time
-	Title    string
-	Note     string
-	URL      string
-	Rating   int
-	ImageURL string
-	Meta     string
-	BodyHTML template.HTML
-	Topics   []TopicLink
+	Kind      string // "post" | "note" | "book" | "milestone"
+	Kicker    string
+	Date      time.Time
+	Title     string
+	Note      string
+	AuthorURL string // the author's page, when the note names one
+	URL       string
+	Rating    int
+	ImageURL  string
+	Meta      string
+	BodyHTML  template.HTML
+	Topics    []TopicLink
 }
 
 // IndexRow is one line of the section index, a numbered directory entry
@@ -397,9 +398,11 @@ type Superlative struct {
 	Value    string // "84 pages/day" | "912 pages"
 }
 
-// Tally is one name with a count, shared by the top-genres and top-authors cards.
+// Tally is one name with a count, shared by the top-genres and top-authors
+// cards. URL links the name to its page when one exists.
 type Tally struct {
 	Name  string
+	URL   string
 	Count int
 }
 
@@ -409,13 +412,48 @@ type ShelfView struct {
 	Books      []ShelfBook
 }
 
+// CollectionView is the shared page for one author, tag, genre or series, a
+// kind label over the name, the tally strip beneath it, and the book grid
+// split into status sections, each hung from a marginal head.
+type CollectionView struct {
+	Kicker   string // "Author", "Tag", "Genre", "Series"
+	Title    string
+	Figures  []Stat
+	Sections []CollectionSection
+}
+
+// CollectionSection is one status slice of a collection, reading, read, set
+// aside or unread, its books in publication order earliest first.
+type CollectionSection struct {
+	Label string
+	Books []CollectionBookView
+}
+
+// CollectionBookView is one book in a collection grid. Status decides the
+// cell's boxed meta fields, the printed part in mono with one written-in
+// serif italic value.
+type CollectionBookView struct {
+	URL        string
+	Title      string
+	Author     string // left empty when the collection itself is the author
+	ImageURL   string
+	Status     string // reading | finished | abandoned | unread
+	Rating     int
+	Percent    int
+	FinishedAt time.Time
+	DayCount   int
+	AcquiredAt time.Time
+	Published  string // the year, "" when unknown
+	Pages      int    // the copy's length, 0 when unknown
+}
+
 // BookView is a book's own page, the work with its oldest copy merged in,
 // above every read of it.
 type BookView struct {
 	Title         string
-	Kind          string // fiction or non-fiction
-	OriginalTitle string // the title in the original language, shown in parentheses
-	Authors       string
+	Kind          string           // fiction or non-fiction
+	OriginalTitle string           // the title in the original language, shown in parentheses
+	Credits       []BookCreditView // the names on the work, linked when known
 	Translators   string
 	Series        string
 	Tags          []string
@@ -424,6 +462,14 @@ type BookView struct {
 	Head          string // the reads count, "once" or "3 times"
 	Reads         []BookReadView
 	UnreadNote    string // replaces the reads for a book never started
+}
+
+// BookCreditView is one credited name on a book page, its role for anyone
+// credited beyond authorship, and its page link when they have one.
+type BookCreditView struct {
+	Name string
+	Role string
+	URL  string
 }
 
 // BookReadView is one read on a book page. Edition names a copy title that
@@ -546,6 +592,7 @@ type CurrentRead struct {
 	URL         string // the book's page
 	Title       string
 	Author      string
+	AuthorURL   string // the author's page, "" without one
 	ImageURL    string
 	StartedAt   time.Time
 	DayCount    int
@@ -563,6 +610,7 @@ type FinishedBook struct {
 	URL        string
 	Title      string
 	Author     string
+	AuthorURL  string // the author's page, "" without one
 	Genre      string
 	Rating     int
 	RatingText string
@@ -588,6 +636,7 @@ type ShelfBook struct {
 	URL        string // the book's page
 	Title      string
 	Author     string
+	AuthorURL  string // the author's page, "" without one
 	ImageURL   string
 	Genre      string
 	Series     string

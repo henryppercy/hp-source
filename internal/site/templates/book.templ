@@ -18,8 +18,22 @@ templ Book(v BookView) {
 				if v.OriginalTitle != "" {
 					<p class="font-serif text-body text-faint italic leading-snug">({ v.OriginalTitle })</p>
 				}
-				if v.Authors != "" {
-					<p class="mt-3 font-sans text-lead text-muted">{ v.Authors }</p>
+				if len(v.Credits) > 0 {
+					<p class="mt-3 font-sans text-lead text-muted">
+						for i, c := range v.Credits {
+							if i > 0 {
+								<span class="text-faint">, </span>
+							}
+							if c.URL != "" {
+								<a href={ c.URL } class="hover:text-accent">{ c.Name }</a>
+							} else {
+								{ c.Name }
+							}
+							if c.Role != "" {
+								<span class="text-faint">({ c.Role })</span>
+							}
+						}
+					</p>
 				}
 				if v.Translators != "" {
 					<p class="font-sans text-label text-faint">{ v.Translators }</p>

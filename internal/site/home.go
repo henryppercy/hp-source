@@ -305,7 +305,7 @@ func lifeStream(
 		}
 		out = append(out, templates.FeedEntry{
 			Kind: "book", Kicker: "Finished", Date: parseDate(e.DateFinished),
-			Title: e.Title, Note: e.Author, Rating: e.Rating,
+			Title: e.Title, Note: e.Author, AuthorURL: authorURL(e.Author), Rating: e.Rating,
 			URL: bookURL(e.BookID), ImageURL: coverURL(e.CoverImage), Meta: bookMeta(e),
 		})
 	}
