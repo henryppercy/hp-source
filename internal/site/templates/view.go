@@ -452,6 +452,12 @@ type CollectionBookView struct {
 	Pages      int    // the copy's length, 0 when unknown
 }
 
+// TagLink is one of a book's tags, linking to its index page.
+type TagLink struct {
+	Name string
+	URL  string
+}
+
 // BookView is a book's own page, the work with its oldest copy merged in,
 // above every read of it.
 type BookView struct {
@@ -462,7 +468,7 @@ type BookView struct {
 	Credits       []BookCreditView // the names on the work, linked when known
 	Translators   string
 	Series        string
-	Tags          []string
+	Tags          []TagLink
 	Facts         []Stat
 	ImageURL      string
 	Head          string // the reads count, "once" or "3 times"

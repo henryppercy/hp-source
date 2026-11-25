@@ -95,7 +95,11 @@ templ bookPlate(v BookView) {
 					}
 				}
 					for _, t := range v.Tags {
-						<span class="font-mono text-meta text-muted border border-rule-soft p-2 leading-none">{ t }</span>
+						if t.URL != "" {
+							<a href={ t.URL } class="font-mono text-meta text-muted border border-rule-soft p-2 leading-none hover:border-fg">{ t.Name }</a>
+						} else {
+							<span class="font-mono text-meta text-muted border border-rule-soft p-2 leading-none">{ t.Name }</span>
+						}
 					}
 				</div>
 			}

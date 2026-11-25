@@ -75,9 +75,9 @@ func bookSlug(p *repo.BookPage) string {
 }
 
 func bookView(p *repo.BookPage) templates.BookView {
-	tags := make([]string, len(p.Tags))
-	for i, t := range p.Tags {
-		tags[i] = text.TitleCase(t)
+	tags := make([]templates.TagLink, 0, len(p.Tags))
+	for _, t := range p.Tags {
+		tags = append(tags, templates.TagLink{Name: text.TitleCase(t), URL: tagURL(t)})
 	}
 	reads := bookReads(p)
 	v := templates.BookView{

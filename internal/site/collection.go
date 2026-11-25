@@ -183,6 +183,67 @@ func (b *builder) renderKindPages(pages []kindPage) error {
 	return nil
 }
 
+// tagURLs maps tag names to their page URLs, filled by loadTagPages
+// before any link is built. A name missing from the map has no page.
+var tagURLs map[string]string
+
+// tagURL returns the tag's page URL, "" when it has no page.
+func tagURL(name string) string {
+	return tagURLs[name]
+}
+
+// tagPage is one tag's collection page, the name with its slug and books.
+type tagPage struct {
+	Name  string
+	Slug  string
+	Books []repo.CollectionBook
+}
+
+// loadTagPages fetches every tag with a paged book and fills tagURLs. It
+// errors when two tags share a slug, since one would silently overwrite
+// the other's page.
+func (b *builder) loadTagPages() ([]tagPage, error) {
+	tags, err := b.repo.ListTags()
+	if err != nil {
+		return nil, err
+	}
+	tagURLs = make(map[string]string, len(tags))
+	bySlug := make(map[string]string)
+	var pages []tagPage
+	for _, t := range tags {
+		books, err := b.repo.ListBooksByTag(t.ID)
+		if err != nil {
+			return nil, err
+		}
+		if len(books) == 0 {
+			continue
+		}
+		slug := text.Slug(t.Name)
+		if slug == "" {
+			slug = fmt.Sprintf("tag-%d", t.ID)
+		}
+		if other, ok := bySlug[slug]; ok {
+			return nil, fmt.Errorf("tags %q and %q share slug %q, give one a distinct name", other, t.Name, slug)
+		}
+		bySlug[slug] = t.Name
+		tagURLs[t.Name] = "/reading/tag/" + slug
+		pages = append(pages, tagPage{Name: t.Name, Slug: slug, Books: books})
+	}
+	return pages, nil
+}
+
+// renderTagPages writes each tag's page under /reading/tag so the reading
+// nav stays the active section.
+func (b *builder) renderTagPages(pages []tagPage) error {
+	for _, p := range pages {
+		view := collectionView("Tag", text.TitleCase(p.Name), p.Books)
+		if err := b.render("/reading/tag/"+p.Slug, templates.Collection(view)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // collectionView assembles the shared view for a collection page, the kind
 // label over the name, the tally strip under it, and the books split into
 // status sections in the repo's publication order.
